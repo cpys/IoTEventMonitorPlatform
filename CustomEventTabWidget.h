@@ -5,9 +5,11 @@
 #ifndef IOTEVENTMONITORPLATFORM_EVENTTABWIDGET_H
 #define IOTEVENTMONITORPLATFORM_EVENTTABWIDGET_H
 
+#include <string>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTabWidget>
 #include "CustomEventWidget.h"
+#include "ConstStyle.h"
 
 /**
  * 事件窗口TabWidget的重写
@@ -18,6 +20,7 @@ class CustomEventTabWidget : public QTabWidget {
   public:
     explicit CustomEventTabWidget(QWidget *parent = nullptr);
     void paintEvent(QPaintEvent* event) override ;
+    void mousePressEvent(QMouseEvent *event) override ;
 
   private slots:
     /**
@@ -29,6 +32,8 @@ class CustomEventTabWidget : public QTabWidget {
 
   private:
     CustomEventWidget *addEventTabButton;
+    QRect *saveButton = nullptr;
+    QRect *deleteButton = nullptr;
 };
 
 

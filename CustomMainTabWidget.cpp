@@ -3,6 +3,8 @@
 //
 
 #include <QtGui/QPainter>
+#include <c++/iostream>
+#include <QtWidgets/QTabBar>
 #include "CustomMainTabWidget.h"
 
 CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
@@ -13,19 +15,6 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     this->addTab(eventTabWidget, "事件模板定义");
     this->addTab(stateTabWidget, "事件状态机定义");
     this->addTab(runWidget, "运行展示");
-
-    this->setStyleSheet(
-            "QTabWidget::pane {"
-                    "border: none;"
-            "}"
-            "QTabWidget::tab-bar {"
-                    "border: none;"
-            "}"
-            "QTabBar::tab {"
-                    "min-width: 75px;"
-                    "height: 30px;"
-            "}"
-    );
 
 //    this->setStyleSheet("QTabWidget::pane { "
 //                                "border: none;"
@@ -52,4 +41,17 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
 
 void CustomMainTabWidget::paintEvent(QPaintEvent *event) {
     QTabWidget::paintEvent(event);
+
+    this->setStyleSheet((
+                                "QTabWidget::pane {"
+                                        "border: none;"
+                                        "}"
+                                        "QTabWidget::tab-bar {"
+                                        "border: none;"
+                                        "}"
+                                        "QTabBar::tab {"
+                                        "min-width: " + std::to_string(width() / 3) + "px;"
+                                        "height: " + std::to_string(MAIN_TAB_HEIGHT) + "px;"
+                                        "}"
+                        ).c_str());
 }

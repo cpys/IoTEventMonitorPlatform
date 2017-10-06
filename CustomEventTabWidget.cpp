@@ -3,7 +3,9 @@
 //
 
 #include <QtGui/QPainter>
+#include <qevent.h>
 #include <string>
+#include <c++/iostream>
 #include "CustomEventTabWidget.h"
 
 CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : QTabWidget(parent) {
@@ -15,16 +17,48 @@ CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : QTabWidget(parent)
 }
 
 void CustomEventTabWidget::paintEvent(QPaintEvent *event) {
+    if (saveButton == nullptr) {
+        saveButton = new QRect(0, height() - EVENT_TAB_HEIGHT, EVENT_TAB_WIDTH, EVENT_TAB_HEIGHT);
+    }
+    if (deleteButton == nullptr) {
+        deleteButton = new QRect(0, height() - 2 * EVENT_TAB_HEIGHT, EVENT_TAB_WIDTH, EVENT_TAB_HEIGHT);
+    }
+
     QPainter painter(this);
-//    QRect rectAdd(width()-m_tablepic.width(),tabBar()->rect().bottom()-m_tablepic.height()+7,m_tablepic.width(),m_tablepic.height()-5);
-//    painter.drawImage(rectAdd,m_tablepic);
-    painter.drawRect(0, height() - 30, 30, 30);
-    painter.drawText(0, height() - 30, "haha");
+    painter.drawRect(*saveButton);
+    painter.drawRect(*deleteButton);
+    painter.drawText(*saveButton, Qt::AlignCenter, "保存");
+    painter.drawText(*deleteButton, Qt::AlignCenter, "删除");
+
     QTabWidget::paintEvent(event);
+
+    this->setStyleSheet((
+                                "QTabWidget::pane {"
+                                        "border: none;"
+                                        "}"
+                                        "QTabWidget::tab-bar {"
+                                        "border: none;"
+                                        "}"
+                                        "QTabBar::tab {"
+                                        "min-width: " + std::to_string(EVENT_TAB_WIDTH) + "px;"
+                                        "height: " + std::to_string(EVENT_TAB_HEIGHT) + "px;"
+                                        "}"
+                        ).c_str());
 }
 
 void CustomEventTabWidget::addEventTab(int clickedTab) {
     if (clickedTab + 1 == this->count()) {
         this->insertTab(clickedTab, new CustomEventWidget((QWidget*)this->parent()), ( std::to_string(clickedTab + 1)).c_str());
     }
+}
+
+void CustomEventTabWidget::mousePressEvent(QMouseEvent *event) {
+    QPoint pos = event->pos();
+    if (saveButton->contains(pos)) {
+        std::cout << "save" << std::endl;
+    }
+    else if (deleteButton->contains(pos)) {
+        std::cout << "delete" << std::endl;
+    }
+    QWidget::mousePressEvent(event);
 }

@@ -9,6 +9,7 @@
 #include "CustomEventTabWidget.h"
 #include "CustomStateTabWidget.h"
 #include "CustomRunWidget.h"
+#include "ConstStyle.h"
 
 /**
  * 中央tabWidget的重写
