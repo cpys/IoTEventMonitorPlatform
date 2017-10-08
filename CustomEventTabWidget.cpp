@@ -53,14 +53,14 @@ void CustomEventTabWidget::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void CustomEventTabWidget::addCustomTab(int clickedTab) {
-    if (clickedTab + 1 == this->count()) {
+void CustomEventTabWidget::clickListWidget(QListWidgetItem *clickedListWidgetItem) {
+    if (clickedListWidgetItem + 1 == this->count()) {
         if ((this->count() + 3) * EVENT_TAB_HEIGHT > currentHeight) {
             emit sendStatusMessage("无法添加更多事件");
         }
         else {
             auto eventWidget = new CustomEventWidget(this);
-            this->insertTab(clickedTab, eventWidget, (std::to_string(clickedTab + 1)).c_str());
+            this->insertTab(clickedListWidgetItem, eventWidget, (std::to_string(clickedListWidgetItem + 1)).c_str());
             QObject::connect(eventWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
         }
     }

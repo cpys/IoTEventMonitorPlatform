@@ -57,14 +57,14 @@ void CustomStateTabWidget::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void CustomStateTabWidget::addCustomTab(int clickedTab) {
-    if (clickedTab + 1 == this->count()) {
+void CustomStateTabWidget::clickListWidget(QListWidgetItem *clickedListWidgetItem) {
+    if (clickedListWidgetItem + 1 == this->count()) {
         if ((this->count() + 4) * STATE_TAB_HEIGHT > height()) {
             emit sendStatusMessage("无法添加更多状态机");
         }
         else {
             auto stateWidget = new CustomStateWidget(this);
-            this->insertTab(clickedTab, stateWidget, (std::to_string(clickedTab + 1)).c_str());
+            this->insertTab(clickedListWidgetItem, stateWidget, (std::to_string(clickedListWidgetItem + 1)).c_str());
             QObject::connect(stateWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
         }
     }

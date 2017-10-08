@@ -38,9 +38,9 @@ class CustomStateTabWidget : public CustomSubTabWidget {
     /**
      * 接收单击添加事件按钮，判断是否点击了+号
      * 如果点击了+号，在最后插入一个选项卡
-     * @param clickedTab 点击的选项卡编号
+     * @param clickedListWidgetItem 点击的选项卡编号
      */
-    void addCustomTab(int clickedTab) override ;
+    void clickListWidget(QListWidgetItem *clickedListWidgetItem) override ;
 
   private:
     /**
