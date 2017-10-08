@@ -24,7 +24,7 @@ link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
 # .qrc文件
 #set(QRC_FILES)
 # 代码文件
-set(SOURCE_FILES main.cpp CustomMainTabWidget.cpp CustomEventTabWidget.cpp CustomStateTabWidget.cpp CustomRunWidget.cpp CustomEventWidget.cpp CustomStateWidget.cpp)
+set(SOURCE_FILES main.cpp CustomMainTabWidget.cpp CustomEventTabWidget.cpp CustomStateTabWidget.cpp CustomRunWidget.cpp CustomEventWidget.cpp CustomStateWidget.cpp CustomSubTabWidget.cpp CustomSubTabWidget.h)
 
 add_executable(IoTEventMonitorPlatform ${UI_FILES} ${RC_FILES} ${QRC_FILES} ${SOURCE_FILES})
 

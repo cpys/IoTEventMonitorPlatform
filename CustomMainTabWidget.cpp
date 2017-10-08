@@ -8,15 +8,29 @@
 #include "CustomMainTabWidget.h"
 
 CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
-    eventTabWidget = new CustomEventTabWidget(parent);
-    stateTabWidget = new CustomStateTabWidget(parent);
-    runWidget = new CustomRunWidget(parent);
+    eventTabWidget = new CustomEventTabWidget(this);
+    stateTabWidget = new CustomStateTabWidget(this);
+    runWidget = new CustomRunWidget(this);
 
     this->addTab(eventTabWidget, "事件模板定义");
     this->addTab(stateTabWidget, "事件状态机定义");
     this->addTab(runWidget, "运行展示");
 
-//    this->setStyleSheet("QTabWidget::pane { "
+    QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(runWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+}
+
+void CustomMainTabWidget::paintEvent(QPaintEvent *event) {
+    QTabWidget::paintEvent(event);
+
+    // 只有当界面宽度变化时才进行标签的重绘
+    if (currentWidth != width()) {
+        currentWidth = width();
+        changeTabStyle();
+    }
+
+    //    this->setStyleSheet("QTabWidget::pane { "
 //                                "border: none;"
 ////                                "border-top: 3px solid rgb(0, 0, 255);"
 ////                                "background: rgb(255, 255, 255);"
@@ -39,9 +53,11 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
 //                                "}");
 }
 
-void CustomMainTabWidget::paintEvent(QPaintEvent *event) {
-    QTabWidget::paintEvent(event);
+void CustomMainTabWidget::recvStatusMessage(const QString &message) {
+    emit sendStatusMessage(message);
+}
 
+void CustomMainTabWidget::changeTabStyle() {
     this->setStyleSheet((
                                 "QTabWidget::pane {"
                                         "border: none;"
@@ -50,7 +66,7 @@ void CustomMainTabWidget::paintEvent(QPaintEvent *event) {
                                         "border: none;"
                                         "}"
                                         "QTabBar::tab {"
-                                        "min-width: " + std::to_string(width() / 3) + "px;"
+                                        "min-width: " + std::to_string(currentWidth / 3) + "px;"
                                         "height: " + std::to_string(MAIN_TAB_HEIGHT) + "px;"
                                         "}"
                         ).c_str());

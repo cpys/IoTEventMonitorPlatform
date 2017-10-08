@@ -12,8 +12,13 @@
 #include <QtWidgets/QGridLayout>
 
 class CustomEventWidget : public QWidget {
+  Q_OBJECT
+
   public:
     explicit CustomEventWidget(QWidget *parent = nullptr);
+
+  signals:
+    void sendStatusMessage(const QString&);
 
   private:
     QGridLayout *gridLayout;

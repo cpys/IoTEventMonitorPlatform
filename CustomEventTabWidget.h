@@ -10,16 +10,29 @@
 #include <QtWidgets/QTabWidget>
 #include "CustomEventWidget.h"
 #include "ConstStyle.h"
+#include "CustomSubTabWidget.h"
 
 /**
  * 事件窗口TabWidget的重写
  */
-class CustomEventTabWidget : public QTabWidget {
+class CustomEventTabWidget : public CustomSubTabWidget {
   Q_OBJECT
 
   public:
+    /**
+     * 构造函数中需要添加默认的eventWidget
+     * @param parent
+     */
     explicit CustomEventTabWidget(QWidget *parent = nullptr);
+    /**
+     * 事件窗口需要重绘出删除和保存按钮
+     * @param event
+     */
     void paintEvent(QPaintEvent* event) override ;
+    /**
+     * 鼠标点击事件响应需要对重绘的删除和保存按钮进行响应
+     * @param event
+     */
     void mousePressEvent(QMouseEvent *event) override ;
 
   private slots:
@@ -28,12 +41,14 @@ class CustomEventTabWidget : public QTabWidget {
      * 如果点击了+号，在最后插入一个选项卡
      * @param clickedTab 点击的选项卡编号
      */
-    void addEventTab(int clickedTab);
+    void addCustomTab(int clickedTab) override ;
 
   private:
-    CustomEventWidget *addEventTabButton;
-    QRect *saveButton = nullptr;
+    /**
+     * 删除按钮和保存按钮的位置
+     */
     QRect *deleteButton = nullptr;
+    QRect *saveButton = nullptr;
 };
 
 

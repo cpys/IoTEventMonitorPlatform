@@ -6,22 +6,27 @@
 #include <qevent.h>
 #include <string>
 #include <c++/iostream>
+#include <QtWidgets/QMainWindow>
 #include "CustomEventTabWidget.h"
 
-CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : QTabWidget(parent) {
-    addEventTabButton = new CustomEventWidget(parent);
-    this->addTab(addEventTabButton, "+");
-    this->setTabPosition(West);
+CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : CustomSubTabWidget(parent) {
+    auto eventWidget = new CustomEventWidget(this);
+    this->insertTab(0, eventWidget, "1");
+    this->setCurrentIndex(0);
 
-    QObject::connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(addEventTab(int)));
+    QObject::connect(eventWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
 }
 
 void CustomEventTabWidget::paintEvent(QPaintEvent *event) {
-    if (saveButton == nullptr) {
-        saveButton = new QRect(0, height() - EVENT_TAB_HEIGHT, EVENT_TAB_WIDTH, EVENT_TAB_HEIGHT);
-    }
-    if (deleteButton == nullptr) {
-        deleteButton = new QRect(0, height() - 2 * EVENT_TAB_HEIGHT, EVENT_TAB_WIDTH, EVENT_TAB_HEIGHT);
+    CustomSubTabWidget::paintEvent(event);
+
+    // 如果高度发生变化则重绘
+    if (currentHeight == 0 || currentHeight != height()) {
+        currentHeight = height();
+        delete saveButton;
+        delete deleteButton;
+        saveButton = new QRect(0, currentHeight - EVENT_TAB_HEIGHT, EVENT_TAB_WIDTH, EVENT_TAB_HEIGHT);
+        deleteButton = new QRect(0, currentHeight - 2 * EVENT_TAB_HEIGHT, EVENT_TAB_WIDTH, EVENT_TAB_HEIGHT);
     }
 
     QPainter painter(this);
@@ -29,36 +34,34 @@ void CustomEventTabWidget::paintEvent(QPaintEvent *event) {
     painter.drawRect(*deleteButton);
     painter.drawText(*saveButton, Qt::AlignCenter, "保存");
     painter.drawText(*deleteButton, Qt::AlignCenter, "删除");
-
-    QTabWidget::paintEvent(event);
-
-    this->setStyleSheet((
-                                "QTabWidget::pane {"
-                                        "border: none;"
-                                        "}"
-                                        "QTabWidget::tab-bar {"
-                                        "border: none;"
-                                        "}"
-                                        "QTabBar::tab {"
-                                        "min-width: " + std::to_string(EVENT_TAB_WIDTH) + "px;"
-                                        "height: " + std::to_string(EVENT_TAB_HEIGHT) + "px;"
-                                        "}"
-                        ).c_str());
-}
-
-void CustomEventTabWidget::addEventTab(int clickedTab) {
-    if (clickedTab + 1 == this->count()) {
-        this->insertTab(clickedTab, new CustomEventWidget((QWidget*)this->parent()), ( std::to_string(clickedTab + 1)).c_str());
-    }
 }
 
 void CustomEventTabWidget::mousePressEvent(QMouseEvent *event) {
+    QWidget::mousePressEvent(event);
+
     QPoint pos = event->pos();
     if (saveButton->contains(pos)) {
-        std::cout << "save" << std::endl;
+        // TODO save event
     }
     else if (deleteButton->contains(pos)) {
-        std::cout << "delete" << std::endl;
+        int currentIndex = this->currentIndex();
+        if (currentIndex != this->count() - 1) {
+            emit sendStatusMessage("删除标签:" + this->tabText(currentIndex));
+            // TODO delete confirm
+            this->removeTab(currentIndex);
+        }
     }
-    QWidget::mousePressEvent(event);
+}
+
+void CustomEventTabWidget::addCustomTab(int clickedTab) {
+    if (clickedTab + 1 == this->count()) {
+        if ((this->count() + 3) * EVENT_TAB_HEIGHT > height()) {
+            emit sendStatusMessage("无法添加更多事件");
+        }
+        else {
+            auto eventWidget = new CustomEventWidget(this);
+            this->insertTab(clickedTab, eventWidget, (std::to_string(clickedTab + 1)).c_str());
+            QObject::connect(eventWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+        }
+    }
 }
