@@ -5,7 +5,7 @@
 #include <QtGui/QPainter>
 #include <qevent.h>
 #include <string>
-#include <c++/iostream>
+#include <iostream>
 #include <QtWidgets/QMainWindow>
 #include "CustomEventTabWidget.h"
 
@@ -55,7 +55,7 @@ void CustomEventTabWidget::mousePressEvent(QMouseEvent *event) {
 
 void CustomEventTabWidget::addCustomTab(int clickedTab) {
     if (clickedTab + 1 == this->count()) {
-        if ((this->count() + 3) * EVENT_TAB_HEIGHT > height()) {
+        if ((this->count() + 3) * EVENT_TAB_HEIGHT > currentHeight) {
             emit sendStatusMessage("无法添加更多事件");
         }
         else {

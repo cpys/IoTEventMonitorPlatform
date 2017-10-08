@@ -2,6 +2,7 @@
 // Created by yingzi on 2017/10/6.
 //
 
+#include <QtWidgets/QFormLayout>
 #include "CustomRunWidget.h"
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {

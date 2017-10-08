@@ -3,7 +3,7 @@
 //
 
 #include <QtGui/QPainter>
-#include <c++/iostream>
+#include <iostream>
 #include <QtWidgets/QTabBar>
 #include "CustomMainTabWidget.h"
 
