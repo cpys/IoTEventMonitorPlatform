@@ -7,6 +7,8 @@
 
 
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QHBoxLayout>
 
 class CustomStateWidget : public QWidget {
   Q_OBJECT
@@ -18,6 +20,9 @@ class CustomStateWidget : public QWidget {
     void sendStatusMessage(const QString&);
 
   private:
+    QHBoxLayout *vBoxLayout;
+    QGraphicsView *canvas;
+    QGraphicsView *graphBoard;
 };
 
 
