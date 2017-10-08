@@ -16,17 +16,23 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setMargin(0);
     gridLayout->setSpacing(0);
-    gridLayout->addWidget(upperOutLayer, 0, 0, 1, 4);
-    gridLayout->addWidget(upperIndicator, 0, 4, 1, 1);
-    gridLayout->addWidget(middleLayer, 1, 0, 3, 4);
-    gridLayout->addWidget(middleIndicator, 1, 4, 3, 1);
-    gridLayout->addWidget(bottomOutLayer, 4, 0, 1, 4);
-    gridLayout->addWidget(bottomIndicator, 4, 4, 1, 1);
+    gridLayout->addWidget(upperOutLayer,0, 0);
+    gridLayout->addWidget(middleLayer, 1, 0);
+    gridLayout->addWidget(bottomOutLayer, 2, 0);
+    gridLayout->addWidget(upperIndicator, 0, 1);
+    gridLayout->addWidget(middleIndicator, 1, 1);
+    gridLayout->addWidget(bottomIndicator, 2, 1);
+    gridLayout->setColumnStretch(0, 9);
+    gridLayout->setColumnStretch(1, 1);
+    gridLayout->setRowStretch(0, 2);
+    gridLayout->setRowStretch(1, 6);
+    gridLayout->setRowStretch(2, 2);
 
-    upperOutLayer->setText("upperOutLayer");
-    middleLayer->setText("middleLayer");
-    bottomOutLayer->setText("bottomOutLayer");
-    upperIndicator->setText("upperIndicator");
-    middleIndicator->setText("middleIndicator");
-    bottomIndicator->setText("bottomIndicator");
+    upperOutLayer->setText("<xml ...>");
+    middleLayer->setText("<div> ...\n</div>");
+    bottomOutLayer->setText("</xml>");
+    upperIndicator->setText("<- 锁定外层");
+    middleIndicator->setText("<- 浮动内层");
+    bottomIndicator->setText("<- 锁定外层");
+
 }

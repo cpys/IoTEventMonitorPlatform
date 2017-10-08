@@ -10,12 +10,12 @@ set(CMAKE_AUTOMOC ON)
 #set(CMAKE_AUTORCC ON)
 
 # 查找 QT的库
-set(CMAKE_PREFIX_PATH D:\\Qt\\5.9.1\\mingw53_32)
+#set(CMAKE_PREFIX_PATH D:\\Qt\\5.9.1\\mingw53_32)
 #set(Qt5Widgets_DIR D:\\Qt\\5.9.1\\mingw53_32\\lib\\cmake\\Qt5Widgets)
 find_package(Qt5Widgets)
 
 # 依赖库
-link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
+#link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
 
 # UI文件
 #set(UI_FILES)
