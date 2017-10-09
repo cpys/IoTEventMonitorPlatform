@@ -28,9 +28,26 @@ class CustomSubTabWidget : public QWidget {
 
   protected:
     /**
-     * 保存当前高度
+    * 左侧列表
+    */
+    QListWidget *listWidget;
+    /**
+     * 右侧的stackedWidget
      */
-    int currentHeight = 0;
+    QStackedWidget *stackedWidget;
+    /**
+    * 整体采用左右布局
+    */
+    QHBoxLayout *hBoxLayout;
+    /**
+     * 左侧采用上下布局
+     */
+    QVBoxLayout *leftVBoxLayout;
+    /**
+     * 公有的保存和删除按钮
+     */
+    QPushButton *saveButton;
+    QPushButton *deleteButton;
     /**
      * 为listWidget和stackedWidget在最后一页添加选项卡
      */
@@ -38,12 +55,12 @@ class CustomSubTabWidget : public QWidget {
 
   protected slots:
     /**
-     * 接收左侧list点击信号
-     * 如果点击了+号，插入一个选项卡
+     * 接收左侧list更换行信号
+     * 如果点击了+号，插入一个选项卡，并将当前行置于非+号上
      * 如果点击了非+号，切换选项卡
-     * @param clickedListWidgetItem 点击的listItem
+     * @param row 点击的list行号
      */
-    void clickListWidget(QListWidgetItem *clickedListWidgetItem);
+    void changeListRow(int row);
     /**
      * 接收子widget发来的状态栏消息并转发到外层
      * @param message
@@ -63,27 +80,6 @@ class CustomSubTabWidget : public QWidget {
     * 重绘标签，更改标签宽度高度等样式
     */
     void changeTabStyle();
-    /**
-     * 左侧列表
-     */
-    QListWidget *listWidget;
-    /**
-     * 右侧的stackedWidget
-     */
-    QStackedWidget *stackedWidget;
-    /**
-     * 整体采用左右布局
-     */
-    QVBoxLayout *vBoxLayout;
-    /**
-     * 左侧采用上下布局
-     */
-    QHBoxLayout *leftHBoxLayout;
-    /**
-     * 公有的保存和删除按钮
-     */
-    QPushButton *saveButton;
-    QPushButton *deleteButton;
 };
 
 

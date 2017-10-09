@@ -7,6 +7,9 @@
 
 const int MAIN_TAB_HEIGHT = 40;
 
+const int SUB_TAB_WIDTH = 100;
+const int SUB_TAB_HEIGHT = 40;
+
 const int EVENT_TAB_WIDTH = 100;
 const int EVENT_TAB_HEIGHT = 40;
 

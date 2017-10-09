@@ -7,65 +7,22 @@
 #include "CustomStateTabWidget.h"
 
 CustomStateTabWidget::CustomStateTabWidget(QWidget *parent) : CustomSubTabWidget(parent) {
+    listWidget->insertItem(0, "状态机1");
+    listWidget->setCurrentRow(0);
+
     auto stateWidget = new CustomStateWidget(this);
-    this->insertTab(0, stateWidget, "1");
-    this->setCurrentIndex(0);
+    stackedWidget->addWidget(stateWidget);
 
     QObject::connect(stateWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
 }
 
-void CustomStateTabWidget::paintEvent(QPaintEvent *event) {
-    QTabWidget::paintEvent(event);
-    
-    // 如果高度发生变化则重绘
-    if (currentHeight == 0 || currentHeight != height()) {
-        currentHeight = height();
-        delete saveButton;
-        delete viewXMLButton;
-        delete deleteButton;
-        saveButton = new QRect(0, currentHeight - STATE_TAB_HEIGHT, STATE_TAB_WIDTH, STATE_TAB_HEIGHT);
-        viewXMLButton = new QRect(0, currentHeight - 2 * STATE_TAB_HEIGHT, STATE_TAB_WIDTH, STATE_TAB_HEIGHT);
-        deleteButton = new QRect(0, currentHeight - 3 * STATE_TAB_HEIGHT, STATE_TAB_WIDTH, STATE_TAB_HEIGHT);
-    }
+void CustomStateTabWidget::addCustomTab() {
+    listWidget->insertItem(listWidget->count() - 1, ("状态机" + std::to_string(listWidget->count())).c_str());
 
-    QPainter painter(this);
-    painter.drawRect(*saveButton);
-    painter.drawRect(*viewXMLButton);
-    painter.drawRect(*deleteButton);
-    painter.drawText(*saveButton, Qt::AlignCenter, "保存");
-    painter.drawText(*viewXMLButton, Qt::AlignCenter, "查看XML");
-    painter.drawText(*deleteButton, Qt::AlignCenter, "删除");
+    auto stateWidget = new CustomStateWidget(this);
+    stackedWidget->addWidget(stateWidget);
 }
 
-void CustomStateTabWidget::mousePressEvent(QMouseEvent *event) {
-    QWidget::mousePressEvent(event);
-
-    QPoint pos = event->pos();
-    if (saveButton->contains(pos)) {
-        // TODO save state machine
-    }
-    else if (viewXMLButton->contains(pos)) {
-        // TODO view xml
-    }
-    else if (deleteButton->contains(pos)) {
-        int currentIndex = this->currentIndex();
-        if (currentIndex != this->count() - 1) {
-            emit sendStatusMessage("删除标签:" + this->tabText(currentIndex));
-            // TODO delete confirm
-            this->removeTab(currentIndex);
-        }
-    }
-}
-
-void CustomStateTabWidget::clickListWidget(QListWidgetItem *clickedListWidgetItem) {
-    if (clickedListWidgetItem + 1 == this->count()) {
-        if ((this->count() + 4) * STATE_TAB_HEIGHT > height()) {
-            emit sendStatusMessage("无法添加更多状态机");
-        }
-        else {
-            auto stateWidget = new CustomStateWidget(this);
-            this->insertTab(clickedListWidgetItem, stateWidget, (std::to_string(clickedListWidgetItem + 1)).c_str());
-            QObject::connect(stateWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
-        }
-    }
+void CustomStateTabWidget::saveCurrentTab() {
+    // TODO save state machine
 }

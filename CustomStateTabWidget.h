@@ -23,32 +23,12 @@ class CustomStateTabWidget : public CustomSubTabWidget {
      * @param parent
      */
     explicit CustomStateTabWidget(QWidget *parent = nullptr);
-    /**
-     * 事件窗口需要重绘出“删除”、“查看XML”、“保存”按钮
-     * @param event
-     */
-    void paintEvent(QPaintEvent* event) override ;
-    /**
-     * 鼠标点击事件响应需要对重绘的三个按钮进行响应
-     * @param event
-     */
-    void mousePressEvent(QMouseEvent *event) override ;
 
-  private slots:
-    /**
-     * 接收单击添加事件按钮，判断是否点击了+号
-     * 如果点击了+号，在最后插入一个选项卡
-     * @param clickedListWidgetItem 点击的选项卡编号
-     */
-    void clickListWidget(QListWidgetItem *clickedListWidgetItem) override ;
+  protected:
+    void addCustomTab() override ;
 
-  private:
-    /**
-     * “删除”、“查看XML”、“保存”的位置
-     */
-    QRect *deleteButton = nullptr;
-    QRect *viewXMLButton = nullptr;
-    QRect *saveButton = nullptr;
+  protected slots:
+    void saveCurrentTab() override ;
 };
 
 
