@@ -59,6 +59,10 @@ void CustomSubTabWidget::changeTabStyle() {
     listWidget->setFixedWidth(SUB_TAB_WIDTH);
     listWidget->setContentsMargins(0, 0, 0, 0);
     stackedWidget->setContentsMargins(0, 0, 0, 0);
+
+    addButton->setContentsMargins(0, 0, 0, 0);
+    deleteButton->setContentsMargins(0, 0, 0, 0);
+    saveButton->setContentsMargins(0, 0, 0, 0);
 }
 
 

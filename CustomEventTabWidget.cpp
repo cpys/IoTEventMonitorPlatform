@@ -10,8 +10,7 @@
 #include "CustomEventTabWidget.h"
 
 CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : CustomSubTabWidget(parent) {
-    listWidget->insertItem(0, "事件1");
-    listWidget->setCurrentRow(0);
+    listWidget->addItem("事件1");
 
     auto eventWidget = new CustomEventWidget(this);
     stackedWidget->addWidget(eventWidget);

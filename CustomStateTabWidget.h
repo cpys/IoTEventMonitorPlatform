@@ -29,6 +29,12 @@ class CustomStateTabWidget : public CustomSubTabWidget {
 
   protected slots:
     void saveCurrentTab() override ;
+
+  private:
+    QPushButton *viewXMLButton;
+
+  private slots:
+    void viewCurrentXML();
 };
 
 

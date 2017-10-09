@@ -7,13 +7,16 @@
 #include "CustomStateTabWidget.h"
 
 CustomStateTabWidget::CustomStateTabWidget(QWidget *parent) : CustomSubTabWidget(parent) {
-    listWidget->insertItem(0, "状态机1");
-    listWidget->setCurrentRow(0);
+    listWidget->addItem("状态机1");
 
     auto stateWidget = new CustomStateWidget(this);
     stackedWidget->addWidget(stateWidget);
 
+    viewXMLButton = new QPushButton("查看XML", this);
+    leftVBoxLayout->addWidget(viewXMLButton);
+
     QObject::connect(stateWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(viewXMLButton, SIGNAL(clicked()), this, SLOT(viewCurrentXML()));
 }
 
 void CustomStateTabWidget::addCustomTab() {
@@ -27,4 +30,8 @@ void CustomStateTabWidget::addCustomTab() {
 
 void CustomStateTabWidget::saveCurrentTab() {
     // TODO save state machine
+}
+
+void CustomStateTabWidget::viewCurrentXML() {
+    // TODO show current xml
 }
