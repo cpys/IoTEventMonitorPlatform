@@ -17,10 +17,12 @@ CustomStateTabWidget::CustomStateTabWidget(QWidget *parent) : CustomSubTabWidget
 }
 
 void CustomStateTabWidget::addCustomTab() {
-    listWidget->insertItem(listWidget->count() - 1, ("状态机" + std::to_string(listWidget->count())).c_str());
+    listWidget->addItem(("状态机" + std::to_string(listWidget->count() + 1)).c_str());
 
     auto stateWidget = new CustomStateWidget(this);
     stackedWidget->addWidget(stateWidget);
+
+    listWidget->setCurrentRow(listWidget->count() - 1);
 }
 
 void CustomStateTabWidget::saveCurrentTab() {

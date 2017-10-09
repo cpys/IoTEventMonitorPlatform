@@ -44,28 +44,22 @@ class CustomSubTabWidget : public QWidget {
      */
     QVBoxLayout *leftVBoxLayout;
     /**
-     * 公有的保存和删除按钮
+     * 公有的保存和增加/删除按钮
      */
     QPushButton *saveButton;
     QPushButton *deleteButton;
-    /**
-     * 为listWidget和stackedWidget在最后一页添加选项卡
-     */
-    virtual void addCustomTab() = 0;
+    QPushButton *addButton;
 
   protected slots:
-    /**
-     * 接收左侧list更换行信号
-     * 如果点击了+号，插入一个选项卡，并将当前行置于非+号上
-     * 如果点击了非+号，切换选项卡
-     * @param row 点击的list行号
-     */
-    void changeListRow(int row);
     /**
      * 接收子widget发来的状态栏消息并转发到外层
      * @param message
      */
     void recvStatusMessage(const QString& message);
+    /**
+     * 为listWidget和stackedWidget在最后一页添加选项卡
+     */
+    virtual void addCustomTab() = 0;
     /**
      * 删除当前选项卡
      */

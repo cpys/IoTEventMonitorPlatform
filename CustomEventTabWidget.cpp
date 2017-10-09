@@ -20,10 +20,12 @@ CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : CustomSubTabWidget
 }
 
 void CustomEventTabWidget::addCustomTab() {
-    listWidget->insertItem(listWidget->count() - 1, ("事件" + std::to_string(listWidget->count())).c_str());
+    listWidget->addItem(("事件" + std::to_string(listWidget->count() + 1)).c_str());
 
     auto eventWidget = new CustomEventWidget(this);
     stackedWidget->addWidget(eventWidget);
+
+    listWidget->setCurrentRow(listWidget->count() - 1);
 }
 
 void CustomEventTabWidget::saveCurrentTab() {
