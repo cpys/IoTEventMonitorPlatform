@@ -24,7 +24,7 @@ find_package(Qt5Widgets)
 # .qrc文件
 #set(QRC_FILES)
 # 代码文件
-set(SOURCE_FILES main.cpp CustomMainTabWidget.cpp CustomEventTabWidget.cpp CustomStateTabWidget.cpp CustomRunWidget.cpp CustomEventWidget.cpp CustomStateWidget.cpp CustomSubTabWidget.cpp CustomSubTabWidget.h CustomIpEdit.cpp CustomIpEdit.h ConstStyle.h)
+set(SOURCE_FILES main.cpp CustomMainTabWidget.cpp CustomEventTabWidget.cpp CustomStateTabWidget.cpp CustomRunWidget.cpp CustomEventWidget.cpp CustomStateWidget.cpp CustomSubTabWidget.cpp CustomSubTabWidget.h CustomIpEdit.cpp CustomIpEdit.h ConstStyle.h CustomCircleGraph.cpp CustomCircleGraph.h)
 
 add_executable(IoTEventMonitorPlatform ${UI_FILES} ${RC_FILES} ${QRC_FILES} ${SOURCE_FILES})
 

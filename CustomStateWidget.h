@@ -8,7 +8,10 @@
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QHBoxLayout>
+#include "CustomCircleGraph.h"
 
 class CustomStateWidget : public QWidget {
   Q_OBJECT
@@ -21,8 +24,13 @@ class CustomStateWidget : public QWidget {
 
   private:
     QHBoxLayout *vBoxLayout;
-    QGraphicsView *canvas;
-    QGraphicsView *graphBoard;
+
+    QGraphicsView *canvasView;
+    QGraphicsScene *canvasScene;
+
+    QGraphicsView *graphBoardView;
+    QGraphicsScene *graphBoardScene;
+    CustomCircleGraph *circleItem;
 };
 
 
