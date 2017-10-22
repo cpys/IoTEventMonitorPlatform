@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QStatusBar>
-#include "CustomMainTabWidget.h"
+#include "GUI/CustomMainTabWidget.h"
 
 int main(int argc, char *argv[])
 {

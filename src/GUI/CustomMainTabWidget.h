@@ -6,10 +6,14 @@
 #define IOTEVENTMONITORPLATFORM_MAINTABWIDGET_H
 
 #include <QTabWidget>
+#include <QXmlStreamReader>
 #include "CustomEventTabWidget.h"
 #include "CustomStateTabWidget.h"
 #include "CustomRunWidget.h"
 #include "ConstStyle.h"
+#include <tinyxml2.h>
+#include <fstream>
+using namespace tinyxml2;
 
 /**
  * 中央tabWidget的重写
@@ -18,15 +22,21 @@ class CustomMainTabWidget : public QTabWidget{
   Q_OBJECT
 
   public:
-    explicit CustomMainTabWidget(QWidget *parent = nullptr);
     /**
-     * 重绘标签，使得标签铺满TabWidget
-     * @param event
+     * 载入配置文件
+     * @param parent
      */
-    void paintEvent(QPaintEvent* event) override ;
+    explicit CustomMainTabWidget(QWidget *parent = nullptr);
 
   signals:
     void sendStatusMessage(const QString&);
+
+  protected:
+    /**
+    * 重绘事件，判断宽度是否发生变化，变化则调用函数使得标签铺满TabWidget
+    * @param event
+    */
+    void paintEvent(QPaintEvent* event) override ;
 
   private:
     /**
@@ -44,6 +54,23 @@ class CustomMainTabWidget : public QTabWidget{
     * 重绘标签，使得标签铺满TabWidget
     */
     void changeTabStyle();
+    /**
+     * GUI界面的记忆配置读取存放于此
+     */
+    XMLDocument GUIConf;
+    XMLElement *eventConf;
+    XMLElement *stateConf;
+    XMLElement *runConf;
+    /**
+     * 从配置文件中读取配置保存至GUIConf
+     * 无配置文件则创建默认配置文件
+     */
+    void readConf();
+    /**
+     * 解析配置文件
+     * @return 解析结果
+     */
+    bool parseConf(const char *confStr);
 
   private slots:
     void recvStatusMessage(const QString& message);

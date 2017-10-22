@@ -6,6 +6,7 @@
 #include <iostream>
 #include <QtWidgets/QTabBar>
 #include "CustomMainTabWidget.h"
+#include "conf.h"
 
 CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     eventTabWidget = new CustomEventTabWidget(this);
@@ -16,6 +17,11 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     this->addTab(stateTabWidget, "事件状态机定义");
     this->addTab(runWidget, "运行展示");
 
+    readConf();
+    eventTabWidget->setConf(eventConf);
+    stateTabWidget->setConf(stateConf);
+    runWidget->setConf(runConf);
+
     QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(runWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
@@ -23,38 +29,11 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
 
 void CustomMainTabWidget::paintEvent(QPaintEvent *event) {
     QTabWidget::paintEvent(event);
-
     // 只有当界面宽度变化时才进行标签的重绘
     if (currentWidth != width()) {
         currentWidth = width();
         changeTabStyle();
     }
-
-    //    this->setStyleSheet("QTabWidget::pane { "
-//                                "border: none;"
-////                                "border-top: 3px solid rgb(0, 0, 255);"
-////                                "background: rgb(255, 255, 255);"
-//                                "}"
-//                                "QTabWidget::tab-bar {"
-//                                "border: none;"
-//                                "}"
-//                                "QTabBar::tab {"
-//                                "border: 1px solid transparent;"
-//                                "color: white;"
-//                                "background: transparent;"
-//                                "height: 22px;"
-//                                "min-width: 75px;"
-//                                "}"
-//                                "QTabBar::tab:hover {"
-////                                "background: rgb(0, 0, 0);\n"
-//                                "}"
-//                                "QTabBar::tab:selected {"
-////                                "background: rgb(255, 255, 255);\n"
-//                                "}");
-}
-
-void CustomMainTabWidget::recvStatusMessage(const QString &message) {
-    emit sendStatusMessage(message);
 }
 
 void CustomMainTabWidget::changeTabStyle() {
@@ -70,4 +49,42 @@ void CustomMainTabWidget::changeTabStyle() {
                                         "height: " + std::to_string(MAIN_TAB_HEIGHT) + "px;"
                                         "}"
                         ).c_str());
+}
+
+void CustomMainTabWidget::readConf() {
+    bool readConfResult = true;
+
+    std::fstream confFile(GUI_CONF_FILE, std::fstream::in | std::fstream::out);
+    if (!confFile.is_open()) {
+        readConfResult = false;
+    }
+    else {
+        std::string confStr;
+        confFile >> confStr;
+        readConfResult = parseConf(confStr.c_str());
+    }
+
+    // 如果文件不存在或者解析失败，则写入默认配置
+    if (!readConfResult) {
+        parseConf(GUI_CONF_TEMPLATE);
+        confFile << GUI_CONF_TEMPLATE;
+    }
+    confFile.close();
+}
+
+bool CustomMainTabWidget::parseConf(const char *confStr) {
+    XMLError xmlError = GUIConf.Parse(confStr);
+    if (xmlError != XML_SUCCESS) {
+        return false;
+    }
+    XMLElement *root = GUIConf.FirstChildElement();
+    if (root->Attribute("projectName") != "IoTEventMonitorPlatform") {
+        return false;
+    }
+
+    // TODO 继续解析后续配置
+}
+
+void CustomMainTabWidget::recvStatusMessage(const QString &message) {
+    emit sendStatusMessage(message);
 }
