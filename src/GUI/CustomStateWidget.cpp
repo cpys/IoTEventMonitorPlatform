@@ -22,3 +22,11 @@ CustomStateWidget::CustomStateWidget(QWidget *parent) : QWidget(parent) {
     canvasView->setScene(canvasScene);
     graphBoardView->setScene(graphBoardScene);
 }
+
+void CustomStateWidget::setConf(XMLElement *stateMachineConf) {
+    // TODO
+}
+
+void CustomStateWidget::saveConfToXML(XMLElement *stateMachineElement) {
+    // TODO
+}

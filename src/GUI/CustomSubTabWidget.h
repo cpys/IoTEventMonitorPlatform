@@ -28,7 +28,11 @@ class CustomSubTabWidget : public QWidget {
      * 输入配置并使配置在页面上生效，交由具体的页面执行
      * @param conf
      */
-    virtual void setConf(XMLElement *conf) = 0;
+    virtual void setConf(XMLElement *) = 0;
+    /**
+     * 将当前页的配置更新到XMLElement*中，交由具体的页面执行
+     */
+    virtual void saveConfToXML() = 0;
 
   signals:
     void sendStatusMessage(const QString&);
@@ -56,10 +60,6 @@ class CustomSubTabWidget : public QWidget {
     QPushButton *saveButton;
     QPushButton *deleteButton;
     QPushButton *addButton;
-    /**
-     * 当前页的配置
-     */
-    XMLElement *conf;
 
   protected slots:
     /**

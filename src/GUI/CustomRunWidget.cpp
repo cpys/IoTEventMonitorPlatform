@@ -74,3 +74,9 @@ void CustomRunWidget::setConf(XMLElement *conf) {
     // TODO
 }
 
+void CustomRunWidget::saveConfToXML() {
+    // TODO
+}
+
+
+

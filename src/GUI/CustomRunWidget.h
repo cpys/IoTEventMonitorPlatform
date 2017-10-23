@@ -30,6 +30,10 @@ class CustomRunWidget : public QWidget {
      * @param conf
      */
     void setConf(XMLElement *conf);
+    /**
+     * 将当前页面配置更新到XMLElement*中
+     */
+    void saveConfToXML();
 
   signals:
     void sendStatusMessage(const QString&);

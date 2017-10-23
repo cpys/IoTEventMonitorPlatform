@@ -19,13 +19,24 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     this->addTab(runWidget, "运行展示");
 
     readConf();
-    eventTabWidget->setConf(eventConf);
-    stateTabWidget->setConf(stateConf);
+    eventTabWidget->setConf(eventsConf);
+    stateTabWidget->setConf(stateMachinesConf);
     runWidget->setConf(runConf);
 
     QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(runWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+}
+
+void CustomMainTabWidget::saveConf() {
+    eventTabWidget->saveConfToXML();
+    stateTabWidget->saveConfToXML();
+    runWidget->saveConfToXML();
+
+    // TODO Value function may be wrong
+    char *GUIStr = nullptr;
+    GUIConf.SaveFile(GUIStr);
+    this->writeConf(GUIStr);
 }
 
 void CustomMainTabWidget::paintEvent(QPaintEvent *event) {
@@ -57,7 +68,7 @@ void CustomMainTabWidget::readConf() {
     std::string confStr;
 
     std::ifstream inputConfFile(GUI_CONF_FILE, std::fstream::in);
-    if (!inputConfFile) {
+    if (!inputConfFile.is_open()) {
         readConfResult = false;
     }
     else {
@@ -69,10 +80,27 @@ void CustomMainTabWidget::readConf() {
         inputConfFile.close();
     }
 
-    // 如果文件不存在或者解析失败，则使用并写入默认配置
+    // 如果文件不存在或者解析失败，则读取默认配置
     if (!readConfResult) {
-        parseConf(GUI_CONF_TEMPLATE);
-        writeConf(GUI_CONF_TEMPLATE);
+        readConfResult = true;
+
+        inputConfFile.open(GUI_CONF_DEFAULT_FILE, std::fstream::in);
+        if (!inputConfFile.is_open()) {
+            readConfResult = false;
+        }
+        else {
+            std::string line;
+            while (getline(inputConfFile, line)) {
+                confStr.append(line);
+            }
+            readConfResult = parseConf(confStr.c_str());
+            inputConfFile.close();
+        }
+
+        // 如果默认配置不存在或者读取后解析失败，则使用默认配置字符串
+        if (!readConfResult) {
+            parseConf(GUI_CONF_TEMPLATE);
+        }
     }
 }
 
@@ -82,17 +110,29 @@ bool CustomMainTabWidget::parseConf(const char *confStr) {
         return false;
     }
     XMLElement *root = GUIConf.FirstChildElement();
-    if (root == nullptr || root->Attribute("projectName") != "IoTEventMonitorPlatform") {
+    if (root == nullptr || strcmp(root->Attribute("projectName"), "IoTEventMonitorPlatform") != 0) {
         return false;
     }
-
-    eventConf = root->FirstChildElement("events");
-    stateConf = root->FirstChildElement("stateMachines");
+    eventsConf = root->FirstChildElement("events");
+    if (eventsConf == nullptr) {
+        eventsConf = GUIConf.NewElement("events");
+        root->InsertEndChild(eventsConf);
+    }
+    stateMachinesConf = root->FirstChildElement("stateMachines");
+    if (stateMachinesConf == nullptr) {
+        stateMachinesConf = GUIConf.NewElement("stateMachines");
+        root->InsertEndChild(stateMachinesConf);
+    }
     runConf = root->FirstChildElement("run");
+    if (runConf == nullptr) {
+        runConf = GUIConf.NewElement("run");
+        root->InsertEndChild(runConf);
+    }
     return true;
 }
 
-void CustomMainTabWidget::writeConf(const std::string &confStr) {
+void CustomMainTabWidget::writeConf(const char *confStr) {
+    std::cout << "save file: " << confStr << std:: endl;
     std::ofstream outputConfFile(GUI_CONF_FILE, std::ofstream::out);
     outputConfFile << confStr;
     outputConfFile.close();

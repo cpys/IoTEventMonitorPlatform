@@ -7,6 +7,7 @@
 
 #include <QTabWidget>
 #include <QXmlStreamReader>
+#include <QCloseEvent>
 #include "CustomEventTabWidget.h"
 #include "CustomStateTabWidget.h"
 #include "CustomRunWidget.h"
@@ -26,6 +27,10 @@ class CustomMainTabWidget : public QTabWidget{
      * @param parent
      */
     explicit CustomMainTabWidget(QWidget *parent = nullptr);
+    /**
+     * 被调用时收集各subWidget配置信息保存到文件
+     */
+    void saveConf();
 
   signals:
     void sendStatusMessage(const QString&);
@@ -57,8 +62,8 @@ class CustomMainTabWidget : public QTabWidget{
      * GUI界面的记忆配置读取存放于此
      */
     XMLDocument GUIConf;
-    XMLElement *eventConf;
-    XMLElement *stateConf;
+    XMLElement *eventsConf;
+    XMLElement *stateMachinesConf;
     XMLElement *runConf;
     /**
      * 从配置文件中读取配置保存至GUIConf
@@ -74,7 +79,7 @@ class CustomMainTabWidget : public QTabWidget{
      * 写入配置到文件中
      * @param confStr 配置字符串
      */
-    void writeConf(const std::string& confStr);
+    void writeConf(const char *confStr);
 
   private slots:
     void recvStatusMessage(const QString& message);

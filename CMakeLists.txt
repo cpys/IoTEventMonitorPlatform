@@ -23,7 +23,9 @@ aux_source_directory(src/GUI SRC_GUI)
 aux_source_directory(src/tinyxml2 SRC_TINY_XML)
 aux_source_directory(src/verification SRC_VERIFICATION)
 
-add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_TINY_XML} ${SRC_VERIFICATION} src/GUI/conf.h)
+add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_TINY_XML} ${SRC_VERIFICATION})
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
 
 # 链接QT库
 target_link_libraries(IoTEventMonitorPlatform Qt5::Widgets)

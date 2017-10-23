@@ -36,5 +36,26 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     bottomIndicator->setText("<- 锁定外层");
 
     upperIndicator->setAlignment(Qt::AlignCenter|Qt::AlignBottom|Qt::AlignHCenter);
-
 }
+
+void CustomEventWidget::setConf(XMLElement *eventConf) {
+    auto headConf = eventConf->FirstChildElement("head");
+    auto bodyConf = eventConf->FirstChildElement("body");
+    auto tailConf = eventConf->FirstChildElement("tail");
+
+    if (headConf) upperOutLayer->setText(headConf->GetText());
+    if (bodyConf) middleLayer->setText(bodyConf->GetText());
+    if (tailConf) bottomOutLayer->setText(tailConf->GetText());
+}
+
+void CustomEventWidget::saveConfToXML(XMLElement *eventElement) {
+    auto head = eventElement->InsertEndChild(eventElement->GetDocument()->NewElement("head"))->ToElement();
+    auto body = eventElement->InsertEndChild(eventElement->GetDocument()->NewElement("body"))->ToElement();
+    auto tail = eventElement->InsertEndChild(eventElement->GetDocument()->NewElement("tail"))->ToElement();
+
+    head->SetText(upperOutLayer->toPlainText().toStdString().c_str());
+    body->SetText(middleLayer->toPlainText().toStdString().c_str());
+    tail->SetText(bottomOutLayer->toPlainText().toStdString().c_str());
+}
+
+

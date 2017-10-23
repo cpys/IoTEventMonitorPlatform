@@ -23,7 +23,8 @@ class CustomStateTabWidget : public CustomSubTabWidget {
      * @param parent
      */
     explicit CustomStateTabWidget(QWidget *parent = nullptr);
-    void setConf(XMLElement *conf) override ;
+    void setConf(XMLElement *stateMachinesConf) override ;
+    void saveConfToXML() override ;
 
   protected slots:
     void addCustomTab() override ;
@@ -31,6 +32,10 @@ class CustomStateTabWidget : public CustomSubTabWidget {
 
   private:
     QPushButton *viewXMLButton;
+    /**
+    * 当前页的配置
+    */
+    XMLElement *stateMachinesConf;
 
   private slots:
     void viewCurrentXML();

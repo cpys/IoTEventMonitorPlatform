@@ -7,20 +7,36 @@
 #include "CustomStateTabWidget.h"
 
 CustomStateTabWidget::CustomStateTabWidget(QWidget *parent) : CustomSubTabWidget(parent) {
-    listWidget->addItem("状态机1");
-
-    auto stateWidget = new CustomStateWidget(this);
-    stackedWidget->addWidget(stateWidget);
-
     viewXMLButton = new QPushButton("查看XML", this);
     leftVBoxLayout->addWidget(viewXMLButton);
 
-    QObject::connect(stateWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(viewXMLButton, SIGNAL(clicked()), this, SLOT(viewCurrentXML()));
 }
 
-void CustomStateTabWidget::setConf(XMLElement *conf) {
-    // TODO
+void CustomStateTabWidget::setConf(XMLElement *stateMachinesConf) {
+    this->stateMachinesConf = stateMachinesConf;
+    // 遍历所有<stateMachine>节点
+    for (XMLElement *stateMachineConf = stateMachinesConf->FirstChildElement("stateMachine"); stateMachineConf != nullptr; stateMachineConf = stateMachineConf->NextSiblingElement("stateMachine")) {
+        // 添加到listWidget上
+        listWidget->addItem(stateMachineConf->Attribute("name"));
+        // 添加到stackedWidget上
+        auto customStateWidget = new CustomStateWidget(this);
+        customStateWidget->setConf(stateMachineConf);
+        stackedWidget->addWidget(customStateWidget);
+    }
+}
+
+void CustomStateTabWidget::saveConfToXML() {
+    // 先清空stateMachines下的所有stateMachine
+    this->stateMachinesConf->DeleteChildren();
+
+    for (int row = 0; row < listWidget->currentRow(); ++row) {
+        // 插入一个stateMachine节点
+        auto stateMachineElement = stateMachinesConf->InsertEndChild(stateMachinesConf->GetDocument()->NewElement("stateMachine"))->ToElement();
+        stateMachineElement->SetAttribute("name", listWidget->item(row)->text().toStdString().c_str());
+        // 让stackedWidget中的widget继续更新stateMachine节点
+        dynamic_cast<CustomStateWidget*>(stackedWidget->widget(row))->saveConfToXML(stateMachineElement);
+    }
 }
 
 void CustomStateTabWidget::addCustomTab() {
@@ -30,6 +46,7 @@ void CustomStateTabWidget::addCustomTab() {
     stackedWidget->addWidget(stateWidget);
 
     listWidget->setCurrentRow(listWidget->count() - 1);
+    emit sendStatusMessage("添加" + listWidget->currentItem()->text());
 }
 
 void CustomStateTabWidget::saveCurrentTab() {

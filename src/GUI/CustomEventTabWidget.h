@@ -24,11 +24,18 @@ class CustomEventTabWidget : public CustomSubTabWidget {
      * @param parent
      */
     explicit CustomEventTabWidget(QWidget *parent = nullptr);
-    void setConf(XMLElement *conf) override ;
+    void setConf(XMLElement *eventsConf) override ;
+    void saveConfToXML() override ;
 
   protected slots:
     void addCustomTab() override ;
     void saveCurrentTab() override ;
+
+  private:
+    /**
+    * 当前页的配置
+    */
+    XMLElement *eventsConf;
 };
 
 
