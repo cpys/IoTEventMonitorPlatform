@@ -30,9 +30,9 @@ class CustomRunWidget : public QWidget {
     explicit CustomRunWidget(QWidget *parent = nullptr);
     /**
      * 根据conf来配置当前页面
-     * @param conf
+     * @param runConf
      */
-    void setConf(XMLElement *conf);
+    void setConf(XMLElement *runConf);
     /**
      * 将当前页面配置更新到XMLElement*中
      */
@@ -88,6 +88,11 @@ class CustomRunWidget : public QWidget {
 
     // 启动与展示
     QPushButton *runButton = nullptr;
+
+    /**
+     * 记录该页配置的节点
+     */
+    XMLElement *runConf;
 
     /**
      * 此两项分别来自前面事件配置页

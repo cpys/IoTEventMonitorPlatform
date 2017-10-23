@@ -74,12 +74,30 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->setSpacing(0);
 }
 
-void CustomRunWidget::setConf(XMLElement *conf) {
-    // TODO
+void CustomRunWidget::setConf(XMLElement *runConf) {
+    vmIpEdit->setIp(runConf->Attribute("vmIP"));
+    externalIpEdit->setIp(runConf->Attribute("externalIP"));
+
+    pseudoTerminalEdit->setText(runConf->Attribute("pseudoTerminal"));
+    serialPortEdit->setText(runConf->Attribute("serialPort"));
+
+    vmNameEdit->setText(runConf->Attribute("vmName"));
+    vmPidEdit->setText(runConf->Attribute("vmPID"));
+
+    hostIpEdit->setIp(runConf->Attribute("hostIP"));
 }
 
 void CustomRunWidget::saveConfToXML() {
-    // TODO
+    runConf->SetAttribute("vmIP", vmIpEdit->getIp().c_str());
+    runConf->SetAttribute("externalIP", externalIpEdit->getIp().c_str());
+
+    runConf->SetAttribute("pseudoTerminal", pseudoTerminalEdit->text().toStdString().c_str());
+    runConf->SetAttribute("serialPort", serialPortEdit->text().toStdString().c_str());
+
+    runConf->SetAttribute("vmName", vmNameEdit->text().toStdString().c_str());
+    runConf->SetAttribute("vmPID", vmPidEdit->text().toStdString().c_str());
+
+    runConf->SetAttribute("hostIP", hostIpEdit->getIp().c_str());
 }
 
 void CustomRunWidget::setEventList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {

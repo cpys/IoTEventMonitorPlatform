@@ -10,7 +10,7 @@
         <stateMachine name="状态机1">
         </stateMachine>
     </stateMachines>
-    <run event="事件1" stateMachine="状态机1" vmIP="10.108.166.205" externIp="10.205.41.40" kvmPseudoTerminal="psty1"
+    <run event="事件1" stateMachine="状态机1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1"
          serialPort="pty1" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1">
     </run>
 </xml>
