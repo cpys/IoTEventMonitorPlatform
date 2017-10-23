@@ -71,15 +71,11 @@ class CustomMainTabWidget : public QTabWidget{
      */
     void readConf();
     /**
-     * 解析配置文件
-     * @return 解析结果
+     * 解析配置文件判断xml的name是否合法
+     * 如果events等标签缺少则进行补齐
+     * @return 是否合法
      */
-    bool parseConf(const char *confStr);
-    /**
-     * 写入配置到文件中
-     * @param confStr 配置字符串
-     */
-    void writeConf(const char *confStr);
+    bool parseConf();
 
   private slots:
     void recvStatusMessage(const QString& message);
