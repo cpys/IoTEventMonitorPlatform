@@ -13,6 +13,8 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
 #include "ConstStyle.h"
+#include <tinyxml2.h>
+using namespace tinyxml2;
 
 /**
  * 事件窗口与状态机窗口TabWidget共同部分的重写
@@ -22,6 +24,11 @@ class CustomSubTabWidget : public QWidget {
 
   public:
     explicit CustomSubTabWidget(QWidget *parent = nullptr);
+    /**
+     * 输入配置并使配置在页面上生效，交由具体的页面执行
+     * @param conf
+     */
+    virtual void setConf(XMLElement *conf) = 0;
 
   signals:
     void sendStatusMessage(const QString&);
@@ -49,6 +56,10 @@ class CustomSubTabWidget : public QWidget {
     QPushButton *saveButton;
     QPushButton *deleteButton;
     QPushButton *addButton;
+    /**
+     * 当前页的配置
+     */
+    XMLElement *conf;
 
   protected slots:
     /**

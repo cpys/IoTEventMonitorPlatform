@@ -18,6 +18,10 @@ CustomEventTabWidget::CustomEventTabWidget(QWidget *parent) : CustomSubTabWidget
     QObject::connect(eventWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
 }
 
+void CustomEventTabWidget::setConf(XMLElement *conf) {
+    // TODO
+}
+
 void CustomEventTabWidget::addCustomTab() {
     listWidget->addItem(("事件" + std::to_string(listWidget->count() + 1)).c_str());
 

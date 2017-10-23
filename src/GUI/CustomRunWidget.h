@@ -14,6 +14,8 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QLabel>
 #include "CustomIpEdit.h"
+#include <tinyxml2.h>
+using namespace tinyxml2;
 
 /**
  * 运行展示窗口Widget的重写
@@ -23,6 +25,11 @@ class CustomRunWidget : public QWidget {
 
   public:
     explicit CustomRunWidget(QWidget *parent = nullptr);
+    /**
+     * 根据conf来配置当前页面
+     * @param conf
+     */
+    void setConf(XMLElement *conf);
 
   signals:
     void sendStatusMessage(const QString&);

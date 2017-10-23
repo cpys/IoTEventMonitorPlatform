@@ -24,11 +24,10 @@ class CustomEventTabWidget : public CustomSubTabWidget {
      * @param parent
      */
     explicit CustomEventTabWidget(QWidget *parent = nullptr);
-
-  protected:
-    void addCustomTab() override ;
+    void setConf(XMLElement *conf) override ;
 
   protected slots:
+    void addCustomTab() override ;
     void saveCurrentTab() override ;
 };
 

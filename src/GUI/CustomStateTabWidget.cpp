@@ -19,6 +19,10 @@ CustomStateTabWidget::CustomStateTabWidget(QWidget *parent) : CustomSubTabWidget
     QObject::connect(viewXMLButton, SIGNAL(clicked()), this, SLOT(viewCurrentXML()));
 }
 
+void CustomStateTabWidget::setConf(XMLElement *conf) {
+    // TODO
+}
+
 void CustomStateTabWidget::addCustomTab() {
     listWidget->addItem(("状态机" + std::to_string(listWidget->count() + 1)).c_str());
 

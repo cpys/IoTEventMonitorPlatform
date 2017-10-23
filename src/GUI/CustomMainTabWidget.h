@@ -12,7 +12,6 @@
 #include "CustomRunWidget.h"
 #include "ConstStyle.h"
 #include <tinyxml2.h>
-#include <fstream>
 using namespace tinyxml2;
 
 /**
@@ -49,11 +48,11 @@ class CustomMainTabWidget : public QTabWidget{
      * 记录当前width，用于在重绘事件中判断是否要重绘
      */
     int currentWidth = 0;
-
     /**
     * 重绘标签，使得标签铺满TabWidget
     */
     void changeTabStyle();
+
     /**
      * GUI界面的记忆配置读取存放于此
      */
@@ -71,6 +70,11 @@ class CustomMainTabWidget : public QTabWidget{
      * @return 解析结果
      */
     bool parseConf(const char *confStr);
+    /**
+     * 写入配置到文件中
+     * @param confStr 配置字符串
+     */
+    void writeConf(const std::string& confStr);
 
   private slots:
     void recvStatusMessage(const QString& message);

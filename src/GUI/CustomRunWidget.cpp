@@ -69,3 +69,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
 }
+
+void CustomRunWidget::setConf(XMLElement *conf) {
+    // TODO
+}
+
