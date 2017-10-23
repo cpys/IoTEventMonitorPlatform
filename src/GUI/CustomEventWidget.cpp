@@ -28,9 +28,9 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->setRowStretch(1, 6);
     gridLayout->setRowStretch(2, 2);
 
-    upperOutLayer->setText("<?xml>\n<schema xmlns:tns=\"...\", xmlns=\"...\",targetNamespace=\"...\">");
-    middleLayer->setText("<name>value</name>\n...");
-    bottomOutLayer->setText("</schema>\n</xml>");
+    upperOutLayer->setText("<xml>");
+    middleLayer->setText("<name>value</name>");
+    bottomOutLayer->setText("</xml>");
     upperIndicator->setText("<- 锁定外层");
     middleIndicator->setText("<- 浮动内层");
     bottomIndicator->setText("<- 锁定外层");

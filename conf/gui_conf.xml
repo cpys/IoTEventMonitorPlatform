@@ -1,13 +1,26 @@
 <xml projectName="IoTEventMonitorPlatform">
     <events>
-        <event name="模板1">
-            <head>&lt;xml&gt;</head>
+        <event name="事件1">
+            <head>&lt;xml&gt;1</head>
+            <body>&lt;name&gt;value&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
+        <event name="事件2">
+            <head>&lt;xml&gt;2</head>
+            <body>&lt;name&gt;value&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
+        <event name="事件3">
+            <head>&lt;xml&gt;3</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
     </events>
     <stateMachines>
         <stateMachine name="状态机1"/>
+        <stateMachine name="状态机2"/>
+        <stateMachine name="状态机3"/>
+        <stateMachine name="状态机4"/>
     </stateMachines>
     <run event="事件1" stateMachine="状态机1" vmIP="10.108.166.205" externIp="10.205.41.40" kvmPseudoTerminal="psty1" serialPort="pty1" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1"/>
 </xml>
