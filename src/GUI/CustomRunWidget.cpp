@@ -8,63 +8,67 @@
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout = new QGridLayout(this);
 
-    eventComboBox = new QComboBox(this);
-    stateComboBox = new QComboBox(this);
     eventLabel = new QLabel("事件选择", this);
     stateLabel = new QLabel("状态机选择", this);
+    eventComboBox = new QComboBox(this);
+    stateComboBox = new QComboBox(this);
 
     eventTextBrowser = new QTextBrowser(this);
     stateGraphicsView = new QGraphicsView(this);
     eventTextBrowser->setText("事件模板预览");
     eventTextBrowser->setAlignment(Qt::AlignCenter);
 
-    vmIpEdit = new CustomIpEdit(this);
-    hostIpEdit = new CustomIpEdit(this);
-    externalIpEdit = new CustomIpEdit(this);
-    vmIpLabel = new QLabel("虚拟机ip", this);
-    hostIpLabel = new QLabel("宿主机ip", this);
-    externalIpLabel = new QLabel("外部设备ip", this);
-
-    pseudoTerminalEdit = new QLineEdit(this);
-    serialPortEdit = new QLineEdit(this);
-    pseudoTerminalLabel = new QLabel("KVM伪终端名称", this);
-    serialPortLabel = new QLabel("宿主机串口名称", this);
-
-    vmNameEdit = new QLineEdit(this);
-    vmPidEdit = new QLineEdit(this);
-    vmNameLabel = new QLabel("虚拟机名称", this);
-    vmPidLabel = new QLabel("虚拟机进程pid", this);
-
-    runButton = new QPushButton("启动", this);
     eventTraceTextBrowser = new QTextBrowser(this);
 
-    gridLayout->addWidget(eventComboBox, 0, 0);
-    gridLayout->addWidget(stateComboBox, 1, 0);
-    gridLayout->addWidget(eventLabel, 0, 1);
-    gridLayout->addWidget(stateLabel, 1, 1);
+    vmIpLabel = new QLabel("虚拟机ip", this);
+    externalIpLabel = new QLabel("外部设备ip", this);
+    vmIpEdit = new CustomIpEdit(this);
+    externalIpEdit = new CustomIpEdit(this);
 
-    gridLayout->addWidget(eventTextBrowser, 2, 0, 1, 2);
-    gridLayout->addWidget(stateGraphicsView, 0, 2, 4, 4);
+    pseudoTerminalLabel = new QLabel("KVM伪终端名称", this);
+    serialPortLabel = new QLabel("宿主机串口名称", this);
+    pseudoTerminalEdit = new QLineEdit(this);
+    serialPortEdit = new QLineEdit(this);
 
-    gridLayout->addWidget(vmIpEdit, 3, 0);
-    gridLayout->addWidget(hostIpEdit, 4, 0);
-    gridLayout->addWidget(externalIpEdit, 5, 0);
-    gridLayout->addWidget(vmIpLabel, 3, 1);
-    gridLayout->addWidget(hostIpLabel, 4, 1);
-    gridLayout->addWidget(externalIpLabel, 5, 1);
+    vmNameLabel = new QLabel("虚拟机名称", this);
+    vmPidLabel = new QLabel("虚拟机进程pid", this);
+    vmNameEdit = new QLineEdit(this);
+    vmPidEdit = new QLineEdit(this);
 
-    gridLayout->addWidget(pseudoTerminalEdit, 4, 2);
-    gridLayout->addWidget(serialPortEdit, 5, 2);
-    gridLayout->addWidget(pseudoTerminalLabel, 4, 3);
-    gridLayout->addWidget(serialPortLabel, 5, 3);
+    hostIpLabel = new QLabel("宿主机ip", this);
+    hostIpEdit = new CustomIpEdit(this);
 
-    gridLayout->addWidget(vmNameEdit, 4, 4);
-    gridLayout->addWidget(vmPidEdit, 5, 4);
-    gridLayout->addWidget(vmNameLabel, 4, 5);
-    gridLayout->addWidget(vmPidLabel, 5, 5);
+    runButton = new QPushButton("启动", this);
 
-    gridLayout->addWidget(runButton, 0, 6);
-    gridLayout->addWidget(eventTraceTextBrowser, 1, 6, 5, 1);
+    gridLayout->addWidget(eventLabel, 0, 0);
+    gridLayout->addWidget(eventComboBox, 0, 1);
+    gridLayout->addWidget(stateLabel, 0, 2);
+    gridLayout->addWidget(stateComboBox, 0, 3);
+
+    gridLayout->addWidget(eventTextBrowser, 1, 0, 1, 4);
+    gridLayout->addWidget(stateGraphicsView, 2, 0, 1, 4);
+
+    gridLayout->addWidget(eventTraceTextBrowser, 0, 4, 3, 4);
+
+    gridLayout->addWidget(vmIpLabel, 3, 0);
+    gridLayout->addWidget(externalIpLabel, 4, 0);
+    gridLayout->addWidget(vmIpEdit, 3, 1);
+    gridLayout->addWidget(externalIpEdit, 4, 1);
+
+    gridLayout->addWidget(pseudoTerminalLabel, 3, 2);
+    gridLayout->addWidget(serialPortLabel, 4, 2);
+    gridLayout->addWidget(pseudoTerminalEdit, 3, 3);
+    gridLayout->addWidget(serialPortEdit, 4, 3);
+
+    gridLayout->addWidget(vmNameLabel, 3, 4);
+    gridLayout->addWidget(vmPidLabel, 4, 4);
+    gridLayout->addWidget(vmNameEdit, 3, 5);
+    gridLayout->addWidget(vmPidEdit, 4, 5);
+
+    gridLayout->addWidget(hostIpLabel, 3, 6);
+    gridLayout->addWidget(hostIpEdit, 3, 7);
+
+    gridLayout->addWidget(runButton, 4, 6, 1, 2);
 
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
@@ -76,6 +80,36 @@ void CustomRunWidget::setConf(XMLElement *conf) {
 
 void CustomRunWidget::saveConfToXML() {
     // TODO
+}
+
+void CustomRunWidget::setEventList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {
+    this->eventListWidget = listWidget;
+    this->eventStackedWidget = stackedWidget;
+}
+
+void CustomRunWidget::setStateList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {
+    this->stateListWidget = listWidget;
+    this->stateStackedWidget = stackedWidget;
+}
+
+void CustomRunWidget::updateEventList() {
+    // TODO reread
+    eventComboBox->clear();
+
+    auto item = eventListWidget->item(0);
+    for (int row = 0; row < eventListWidget->count(); ++row, item = eventListWidget->item(row)) {
+        eventComboBox->addItem(item->text());
+    }
+}
+
+void CustomRunWidget::updateStateList() {
+    // TODO reread
+    stateComboBox->clear();
+
+    auto item = stateListWidget->item(0);
+    for (int row = 0; row < stateListWidget->count(); ++row, item = stateListWidget->item(row)) {
+        stateComboBox->addItem(item->text());
+    }
 }
 
 

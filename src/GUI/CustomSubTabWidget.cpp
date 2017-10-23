@@ -30,6 +30,14 @@ CustomSubTabWidget::CustomSubTabWidget(QWidget *parent) : QWidget(parent) {
     this->changeTabStyle();
 }
 
+const QListWidget *CustomSubTabWidget::getListWidget() {
+    return listWidget;
+}
+
+const QStackedWidget *CustomSubTabWidget::getStackedWidget() {
+    return stackedWidget;
+}
+
 void CustomSubTabWidget::recvStatusMessage(const QString &message) {
     emit sendStatusMessage(message);
 }
@@ -46,6 +54,9 @@ void CustomSubTabWidget::deleteCurrentTab() {
     QWidget *currentStackedWidget = stackedWidget->widget(currentIndex);
     stackedWidget->removeWidget(currentStackedWidget);
     delete currentStackedWidget;
+
+    // 发射页面变更信号
+    emit listChanged();
 }
 
 void CustomSubTabWidget::changeTabStyle() {

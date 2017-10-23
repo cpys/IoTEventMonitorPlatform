@@ -22,6 +22,8 @@ void CustomEventTabWidget::setConf(XMLElement *eventsConf) {
         customEventWidget->setConf(eventConf);
         stackedWidget->addWidget(customEventWidget);
     }
+    // 发射页面变更信号
+    emit listChanged();
 }
 
 void CustomEventTabWidget::saveConfToXML() {
@@ -45,6 +47,9 @@ void CustomEventTabWidget::addCustomTab() {
 
     listWidget->setCurrentRow(listWidget->count() - 1);
     emit sendStatusMessage("添加" + listWidget->currentItem()->text());
+
+    // 发射页面变更信号
+    emit listChanged();
 }
 
 void CustomEventTabWidget::saveCurrentTab() {

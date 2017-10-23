@@ -34,8 +34,15 @@ class CustomSubTabWidget : public QWidget {
      */
     virtual void saveConfToXML() = 0;
 
+    const QListWidget *getListWidget();
+    const QStackedWidget *getStackedWidget();
+
   signals:
     void sendStatusMessage(const QString&);
+    /**
+     * 当页面列表发生变化时发射此信号
+     */
+    void listChanged();
 
   protected:
     /**

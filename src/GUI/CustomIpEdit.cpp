@@ -13,16 +13,33 @@ CustomIpEdit::CustomIpEdit(QWidget *parent) : QWidget(parent) {
         pointLabel = new QLabel(".", this);
     }
 
+    // TODO 对ip框加入输入校验器
+//    for (auto& ipEdit : ipEdits) {
+//        ipEdit->setValidator(new QValidator());
+//    }
+
     for (int i = 0; i < 3; ++i) {
         hBoxLayout->addWidget(ipEdits[i]);
         hBoxLayout->addWidget(pointLabels[i]);
     }
     hBoxLayout->addWidget(ipEdits.back());
     this->changeStyle();
+}
 
-//    hBoxLayout->addWidget(new QLineEdit("0", this));
-//    hBoxLayout->addWidget(new QLabel(".", this));
-//    hBoxLayout->addWidget(new QLineEdit("0", this));
+
+void CustomIpEdit::setIp(const string &ip) {
+    QString ipStr(ip.c_str());
+    QStringList ipStrList = ipStr.split(".");
+    for (int i = 0; i < 4; ++i) {
+        ipEdits[i]->setText(std::to_string(ipStrList[i].toInt()).c_str());
+    }
+}
+
+string CustomIpEdit::getIp() {
+    return ipEdits[0]->text().toStdString() +
+           "." + ipEdits[1]->text().toStdString() +
+                 "." + ipEdits[2]->text().toStdString() +
+                       "." + ipEdits[3]->text().toStdString();
 }
 
 void CustomIpEdit::changeStyle() {
@@ -31,9 +48,6 @@ void CustomIpEdit::changeStyle() {
     hBoxLayout->setSpacing(0);
 
     for (auto& ipEdit : ipEdits) {
-//        ipEdit->setMinimumWidth(10);
-//        ipEdit->setMaximumWidth(20);
-//        ipEdit->setFixedWidth(10);
         ipEdit->setContentsMargins(0, 0, 0, 0);
     }
     for (auto& pointLabel : pointLabels) {

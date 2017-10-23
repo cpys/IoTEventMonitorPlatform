@@ -18,14 +18,22 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     this->addTab(stateTabWidget, "事件状态机定义");
     this->addTab(runWidget, "运行展示");
 
+    QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(runWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+
+    // 先让运行页包含配置页列表
+    runWidget->setEventList(eventTabWidget->getListWidget(), eventTabWidget->getStackedWidget());
+    runWidget->setStateList(stateTabWidget->getListWidget(), stateTabWidget->getStackedWidget());
+
+    // 配置页有变化时通知并传递到运行页
+    QObject::connect(eventTabWidget, SIGNAL(listChanged()), runWidget, SLOT(updateEventList()));
+    QObject::connect(stateTabWidget, SIGNAL(listChanged()), runWidget, SLOT(updateStateList()));
+
     readConf();
     eventTabWidget->setConf(eventsConf);
     stateTabWidget->setConf(stateMachinesConf);
     runWidget->setConf(runConf);
-
-    QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
-    QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
-    QObject::connect(runWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
 }
 
 void CustomMainTabWidget::saveConf() {
