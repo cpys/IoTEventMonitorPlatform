@@ -33,11 +33,6 @@ void CustomMainTabWidget::saveConf() {
     stateTabWidget->saveConfToXML();
     runWidget->saveConfToXML();
 
-//    // TODO Value function may be wrong
-//    char *GUIStr = nullptr;
-//    GUIConf.SaveFile(GUIStr);
-//    this->writeConf(GUIStr);
-
     GUIConf.SaveFile(GUI_CONF_FILE);
 }
 

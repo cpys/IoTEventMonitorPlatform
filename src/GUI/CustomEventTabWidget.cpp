@@ -28,7 +28,7 @@ void CustomEventTabWidget::saveConfToXML() {
     // 先清空events下的所有event
     this->eventsConf->DeleteChildren();
 
-    for (int row = 0; row < listWidget->currentRow(); ++row) {
+    for (int row = 0; row < listWidget->count(); ++row) {
         // 插入一个event节点
         auto eventElement = eventsConf->InsertEndChild(eventsConf->GetDocument()->NewElement("event"))->ToElement();
         eventElement->SetAttribute("name", listWidget->item(row)->text().toStdString().c_str());

@@ -30,7 +30,7 @@ void CustomStateTabWidget::saveConfToXML() {
     // 先清空stateMachines下的所有stateMachine
     this->stateMachinesConf->DeleteChildren();
 
-    for (int row = 0; row < listWidget->currentRow(); ++row) {
+    for (int row = 0; row < listWidget->count(); ++row) {
         // 插入一个stateMachine节点
         auto stateMachineElement = stateMachinesConf->InsertEndChild(stateMachinesConf->GetDocument()->NewElement("stateMachine"))->ToElement();
         stateMachineElement->SetAttribute("name", listWidget->item(row)->text().toStdString().c_str());
