@@ -33,6 +33,8 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     readConf();
     eventTabWidget->setConf(eventsConf);
     stateTabWidget->setConf(stateMachinesConf);
+    // 配置页更新完成后手动更新一次运行页的下拉框
+    runWidget->updateWidget();
     runWidget->setConf(runConf);
 }
 

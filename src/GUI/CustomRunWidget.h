@@ -14,6 +14,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QLabel>
 #include "CustomIpEdit.h"
+#include "CustomProcessThread.h"
 #include <tinyxml2.h>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QListWidget>
@@ -108,15 +109,31 @@ class CustomRunWidget : public QWidget {
      */
     const QListWidget *stateListWidget;
     const QStackedWidget *stateStackedWidget;
-
-  private:
+    /**
+     * 后台处理线程，用于与远程host建立连接，收发事件
+     */
+    CustomProcessThread *processThread;
     /**
      * 更新下拉列表和其对应的显示框
      */
     void updateEventList();
     void updateStateList();
+    /**
+     * 启动远程服务
+     */
+    void run();
+    /**
+     * 停止远程服务
+     */
+    void stop();
+    /**
+     * 改变页面所有可编辑控件的状态
+     * @param isEnabled
+     */
+    void changeWidgetState(bool isEnabled);
 
   private slots:
+    void recvStatusMessage(const QString& message);
     /**
      * 根据下拉框中选中的事件更新显示对应事件
      * @param index
@@ -127,7 +144,15 @@ class CustomRunWidget : public QWidget {
      * @param index
      */
     void showSelectState(int index);
-
+    /**
+     * 运行按钮事件，根据按钮显示文本来判断当前状态
+     * 调用run或stop方法
+    */
+    void runButtonClicked();
+    /**
+     * 后台线程结束事件，进行页面内恢复工作
+     */
+    void threadFinished();
 };
 
 

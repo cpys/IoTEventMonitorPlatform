@@ -42,6 +42,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 
     runButton = new QPushButton("启动", this);
 
+    processThread = new CustomProcessThread();
+
     gridLayout->addWidget(eventLabel, 0, 0);
     gridLayout->addWidget(eventComboBox, 0, 1);
     gridLayout->addWidget(stateLabel, 0, 2);
@@ -75,11 +77,22 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
 
+    // 让下拉框与显示框对应
     QObject::connect(eventComboBox, SIGNAL(activated(int)), this, SLOT(showSelectEvent(int)));
+    QObject::connect(stateComboBox, SIGNAL(activated(int)), this, SLOT(showSelectState(int)));
+
+    // 启动按钮
+    QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
+
+    QObject::connect(processThread, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(processThread, SIGNAL(finished()), this, SLOT(threadFinished()));
 }
 
 void CustomRunWidget::setConf(XMLElement *runConf) {
     this->runConf = runConf;
+
+    eventComboBox->setCurrentIndex(eventComboBox->findText(runConf->Attribute("event")));
+    stateComboBox->setCurrentIndex(stateComboBox->findText(runConf->Attribute("stateMachine")));
 
     vmIpEdit->setIp(runConf->Attribute("vmIP"));
     externalIpEdit->setIp(runConf->Attribute("externalIP"));
@@ -94,6 +107,9 @@ void CustomRunWidget::setConf(XMLElement *runConf) {
 }
 
 void CustomRunWidget::saveConfToXML() {
+    runConf->SetAttribute("event", eventComboBox->currentText().toStdString().c_str());
+    runConf->SetAttribute("state", stateComboBox->currentText().toStdString().c_str());
+
     runConf->SetAttribute("vmIP", vmIpEdit->getIp().c_str());
     runConf->SetAttribute("externalIP", externalIpEdit->getIp().c_str());
 
@@ -165,6 +181,51 @@ void CustomRunWidget::updateStateList() {
     }
 }
 
+void CustomRunWidget::run() {
+    // 开始执行后更改各组件状态
+    changeWidgetState(false);
+    runButton->setText("停止");
+
+    // 启动处理线程
+    sendStatusMessage("正在启动...");
+    processThread->setHostIp(hostIpEdit->getIp());
+    processThread->start();
+}
+
+void CustomRunWidget::stop() {
+    // 结束处理线程
+    processThread->stop();
+    sendStatusMessage("正在停止...");
+    // 此处暂定为盲等后台线程结束
+    while (processThread->isRunning()) ;
+    sendStatusMessage("事件接收处理已停止");
+}
+
+void CustomRunWidget::changeWidgetState(bool isEnabled) {
+    eventComboBox->setEnabled(isEnabled);
+    stateComboBox->setEnabled(isEnabled);
+    vmIpEdit->setEnabled(isEnabled);
+    externalIpEdit->setEnabled(isEnabled);
+    pseudoTerminalEdit->setEnabled(isEnabled);
+    serialPortEdit->setEnabled(isEnabled);
+    vmNameEdit->setEnabled(isEnabled);
+    vmPidEdit->setEnabled(isEnabled);
+    hostIpEdit->setEnabled(isEnabled);
+}
+
+void CustomRunWidget::runButtonClicked() {
+    // 判断按钮状态调用不同的函数
+    if (runButton->text() == "启动") {
+        run();
+    } else {
+        stop();
+    }
+}
+
+void CustomRunWidget::recvStatusMessage(const QString &message) {
+    emit sendStatusMessage(message);
+}
+
 void CustomRunWidget::showSelectEvent(int index) {
     auto eventWidget = dynamic_cast<CustomEventWidget*>(eventStackedWidget->widget(index));
     eventTextBrowser->setText(eventWidget->text().c_str());
@@ -174,5 +235,10 @@ void CustomRunWidget::showSelectState(int index) {
     // TODO show selected state
 }
 
+void CustomRunWidget::threadFinished() {
+    // 结束执行后更改各组件状态
+    changeWidgetState(true);
+    runButton->setText("启动");
+}
 
 
