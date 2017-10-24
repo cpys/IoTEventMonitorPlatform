@@ -29,7 +29,6 @@ class CustomEventTabWidget : public CustomSubTabWidget {
 
   protected slots:
     void addCustomTab() override ;
-    void saveCurrentTab() override ;
 
   private:
     /**

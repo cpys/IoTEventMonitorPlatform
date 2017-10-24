@@ -5,6 +5,7 @@
 #include <QtWidgets/QFormLayout>
 #include <iostream>
 #include "CustomRunWidget.h"
+#include "CustomEventWidget.h"
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout = new QGridLayout(this);
@@ -73,6 +74,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
+
+    QObject::connect(eventComboBox, SIGNAL(activated(int)), this, SLOT(showSelectEvent(int)));
 }
 
 void CustomRunWidget::setConf(XMLElement *runConf) {
@@ -113,24 +116,62 @@ void CustomRunWidget::setStateList(const QListWidget *listWidget, const QStacked
     this->stateStackedWidget = stackedWidget;
 }
 
-void CustomRunWidget::updateEventList() {
-    // TODO reread
-    eventComboBox->clear();
+void CustomRunWidget::updateWidget() {
+    updateEventList();
+    updateStateList();
+}
 
+void CustomRunWidget::updateEventList() {
+    // 暂存当前选择
+    QString currentText = eventComboBox->currentText();
+
+    // 清空后重新更新
+    eventComboBox->clear();
     auto item = eventListWidget->item(0);
     for (int row = 0; row < eventListWidget->count(); ++row, item = eventListWidget->item(row)) {
         eventComboBox->addItem(item->text());
     }
+
+    int lastIndex = eventComboBox->findText(currentText);
+    if (lastIndex < 0) {
+        eventComboBox->setCurrentIndex(0);
+        showSelectEvent(0);
+    }
+    else {
+        eventComboBox->setCurrentIndex(lastIndex);
+        showSelectEvent(lastIndex);
+    }
 }
 
 void CustomRunWidget::updateStateList() {
-    // TODO reread
-    stateComboBox->clear();
+    // 暂存当前选择
+    QString currentText = eventComboBox->currentText();
 
+    // 清空后重新更新
+    stateComboBox->clear();
     auto item = stateListWidget->item(0);
     for (int row = 0; row < stateListWidget->count(); ++row, item = stateListWidget->item(row)) {
         stateComboBox->addItem(item->text());
     }
+
+    int lastIndex = stateComboBox->findText(currentText);
+    if (lastIndex < 0) {
+        stateComboBox->setCurrentIndex(0);
+        showSelectState(0);
+    }
+    else {
+        stateComboBox->setCurrentIndex(lastIndex);
+        showSelectState(lastIndex);
+    }
+}
+
+void CustomRunWidget::showSelectEvent(int index) {
+    auto eventWidget = dynamic_cast<CustomEventWidget*>(eventStackedWidget->widget(index));
+    eventTextBrowser->setText(eventWidget->text().c_str());
+}
+
+void CustomRunWidget::showSelectState(int index) {
+    // TODO show selected state
 }
 
 

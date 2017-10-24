@@ -26,10 +26,10 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     runWidget->setEventList(eventTabWidget->getListWidget(), eventTabWidget->getStackedWidget());
     runWidget->setStateList(stateTabWidget->getListWidget(), stateTabWidget->getStackedWidget());
 
-    // 配置页有变化时通知并传递到运行页
-    QObject::connect(eventTabWidget, SIGNAL(listChanged()), runWidget, SLOT(updateEventList()));
-    QObject::connect(stateTabWidget, SIGNAL(listChanged()), runWidget, SLOT(updateStateList()));
+    // 激活运行页标签时调用runTabClicked主动获取配置页信息
+    QObject::connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(runTabClicked(int)));
 
+    // 读取配置文件并更改页面内容
     readConf();
     eventTabWidget->setConf(eventsConf);
     stateTabWidget->setConf(stateMachinesConf);
@@ -103,4 +103,9 @@ bool CustomMainTabWidget::parseConf() {
 
 void CustomMainTabWidget::recvStatusMessage(const QString &message) {
     emit sendStatusMessage(message);
+}
+
+void CustomMainTabWidget::runTabClicked(int index) {
+    if (index != 2) return;
+    runWidget->updateWidget();
 }

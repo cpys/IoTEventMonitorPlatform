@@ -28,6 +28,11 @@ class CustomEventWidget : public QWidget {
      * @param eventElement
      */
     void saveConfToXML(XMLElement *eventElement);
+    /**
+     * 返回当前页面事件完整拼接内容
+     * @return
+     */
+    std::string text();
 
   signals:
     void sendStatusMessage(const QString&);

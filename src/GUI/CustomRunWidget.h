@@ -44,6 +44,10 @@ class CustomRunWidget : public QWidget {
      */
     void setEventList(const QListWidget *listWidget, const QStackedWidget *stackedWidget);
     void setStateList(const QListWidget *listWidget, const QStackedWidget *stackedWidget);
+    /**
+     * 更新此页面信息
+     */
+    void updateWidget();
 
   signals:
     void sendStatusMessage(const QString&);
@@ -105,9 +109,24 @@ class CustomRunWidget : public QWidget {
     const QListWidget *stateListWidget;
     const QStackedWidget *stateStackedWidget;
 
-  private slots:
+  private:
+    /**
+     * 更新下拉列表和其对应的显示框
+     */
     void updateEventList();
     void updateStateList();
+
+  private slots:
+    /**
+     * 根据下拉框中选中的事件更新显示对应事件
+     * @param index
+     */
+    void showSelectEvent(int index);
+    /**
+     * 根据下拉框中选中的状态机更新显示对应状态机
+     * @param index
+     */
+    void showSelectState(int index);
 
 };
 

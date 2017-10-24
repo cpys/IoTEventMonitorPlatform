@@ -79,6 +79,12 @@ class CustomMainTabWidget : public QTabWidget{
 
   private slots:
     void recvStatusMessage(const QString& message);
+    /**
+     * 点击标签页时激活此槽，判断runWidget是否被激活
+     * 是则更新runWidget
+     * @param index
+     */
+    void runTabClicked(int index);
 };
 
 

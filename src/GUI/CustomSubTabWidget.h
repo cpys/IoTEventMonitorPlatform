@@ -39,10 +39,6 @@ class CustomSubTabWidget : public QWidget {
 
   signals:
     void sendStatusMessage(const QString&);
-    /**
-     * 当页面列表发生变化时发射此信号
-     */
-    void listChanged();
 
   protected:
     /**
@@ -62,9 +58,8 @@ class CustomSubTabWidget : public QWidget {
      */
     QVBoxLayout *leftVBoxLayout;
     /**
-     * 公有的保存和增加/删除按钮
+     * 公有的增加/删除按钮
      */
-    QPushButton *saveButton;
     QPushButton *deleteButton;
     QPushButton *addButton;
 
@@ -82,10 +77,6 @@ class CustomSubTabWidget : public QWidget {
      * 删除当前选项卡
      */
     void deleteCurrentTab();
-    /**
-     * 保存当前选项卡中的内容，交由子类具体实现
-     */
-    virtual void saveCurrentTab() = 0;
 
   private:
     /**

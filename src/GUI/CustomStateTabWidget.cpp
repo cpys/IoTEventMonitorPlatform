@@ -24,9 +24,7 @@ void CustomStateTabWidget::setConf(XMLElement *stateMachinesConf) {
         customStateWidget->setConf(stateMachineConf);
         stackedWidget->addWidget(customStateWidget);
     }
-
-    // 发射页面变更信号
-    emit listChanged();
+    listWidget->setCurrentRow(0);
 }
 
 void CustomStateTabWidget::saveConfToXML() {
@@ -50,13 +48,6 @@ void CustomStateTabWidget::addCustomTab() {
 
     listWidget->setCurrentRow(listWidget->count() - 1);
     emit sendStatusMessage("添加" + listWidget->currentItem()->text());
-
-    // 发射页面变更信号
-    emit listChanged();
-}
-
-void CustomStateTabWidget::saveCurrentTab() {
-    // TODO save state machine
 }
 
 void CustomStateTabWidget::viewCurrentXML() {

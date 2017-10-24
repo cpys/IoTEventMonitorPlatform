@@ -1,31 +1,11 @@
 <xml projectName="IoTEventMonitorPlatform">
     <events>
         <event name="事件1">
-            <head>&lt;xml&gt;1</head>
+            <head>&lt;xml&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
         <event name="事件2">
-            <head>&lt;xml&gt;2</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件3">
-            <head>&lt;xml&gt;3</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件4">
-            <head>&lt;xml&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件5">
-            <head>&lt;xml&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件6">
             <head>&lt;xml&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
@@ -33,11 +13,6 @@
     </events>
     <stateMachines>
         <stateMachine name="状态机1"/>
-        <stateMachine name="状态机2"/>
-        <stateMachine name="状态机3"/>
-        <stateMachine name="状态机4"/>
-        <stateMachine name="状态机5"/>
-        <stateMachine name="状态机6"/>
     </stateMachines>
-    <run event="事件1" stateMachine="状态机1" vmIP="101.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1"/>
+    <run event="事件1" stateMachine="状态机1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1"/>
 </xml>
