@@ -39,5 +39,5 @@
         <stateMachine name="状态机5"/>
         <stateMachine name="状态机6"/>
     </stateMachines>
-    <run event="事件1" stateMachine="状态机1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1"/>
+    <run event="事件1" stateMachine="状态机1" vmIP="101.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1"/>
 </xml>

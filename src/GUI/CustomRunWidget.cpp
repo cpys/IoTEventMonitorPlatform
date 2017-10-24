@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QFormLayout>
+#include <iostream>
 #include "CustomRunWidget.h"
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
@@ -75,6 +76,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 }
 
 void CustomRunWidget::setConf(XMLElement *runConf) {
+    this->runConf = runConf;
+
     vmIpEdit->setIp(runConf->Attribute("vmIP"));
     externalIpEdit->setIp(runConf->Attribute("externalIP"));
 
