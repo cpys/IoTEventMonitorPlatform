@@ -43,6 +43,7 @@ class CustomStateWidget : public QWidget {
     QGraphicsView *graphBoardView;
     QGraphicsScene *graphBoardScene;
     CustomCircleGraph *circleItem;
+    QGraphicsPixmapItem *circlePixmapItem;
 };
 
 

@@ -11,13 +11,18 @@ CustomStateWidget::CustomStateWidget(QWidget *parent) : QWidget(parent) {
     graphBoardView = new QGraphicsView(this);
     graphBoardScene = new QGraphicsScene();
     circleItem = new CustomCircleGraph;
+    circlePixmapItem = new QGraphicsPixmapItem(QPixmap("circle.png"));
+
+    circlePixmapItem->setFlags(QGraphicsItem::ItemIsMovable);
+//    circlePixmapItem->setFlags(QGraphicsItem::ItemIsSelectable);
 
     vBoxLayout->addWidget(canvasView, 8);
     vBoxLayout->addWidget(graphBoardView, 2);
     vBoxLayout->setContentsMargins(0, 0, 0, 0);
     vBoxLayout->setSpacing(0);
 
-    graphBoardScene->addItem(circleItem);
+//    graphBoardScene->addItem(circleItem);
+    graphBoardScene->addItem(circlePixmapItem);
 
     canvasView->setScene(canvasScene);
     graphBoardView->setScene(graphBoardScene);

@@ -5,7 +5,8 @@
 #include "CustomCircleGraph.h"
 
 CustomCircleGraph::CustomCircleGraph(QObject *parent) : QObject(parent) {
-
+    this->setFlags(QGraphicsItem::ItemIsMovable);
+    this->setFlags(QGraphicsItem::ItemIsSelectable);
 }
 
 QRectF CustomCircleGraph::boundingRect() const {
