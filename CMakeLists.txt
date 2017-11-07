@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 
 # 查找 QT的库
 #set(CMAKE_PREFIX_PATH D:\\Qt\\5.9.1\\mingw53_32)
-#set(Qt5Widgets_DIR D:\\Qt\\5.9.1\\mingw53_32\\lib\\cmake\\Qt5Widgets)
+set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
 find_package(Qt5Widgets)
 
 # 依赖库
