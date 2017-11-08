@@ -15,9 +15,12 @@
 #include <QtWidgets/QLabel>
 #include "CustomIpEdit.h"
 #include "CustomProcessThread.h"
+#include "CustomStateWidget.h"
+#include "CustomEventWidget.h"
 #include <tinyxml2.h>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QListWidget>
+#include <EventManager.h>
 
 using namespace tinyxml2;
 
@@ -87,10 +90,6 @@ class CustomRunWidget : public QWidget {
     QLineEdit *vmNameEdit = nullptr;
     QLineEdit *vmPidEdit = nullptr;
 
-    // 远程的宿主机ip配置
-    QLabel *hostIpLabel = nullptr;
-    CustomIpEdit *hostIpEdit = nullptr;
-
     // 启动与展示
     QPushButton *runButton = nullptr;
 
@@ -105,25 +104,29 @@ class CustomRunWidget : public QWidget {
     const QListWidget *eventListWidget;
     const QStackedWidget *eventStackedWidget;
     /**
+     * 当前选中的事件页
+     */
+    const CustomEventWidget *currentEventWidget;
+    /**
      * 此两项分别来自前面状态机配置页
      */
     const QListWidget *stateListWidget;
     const QStackedWidget *stateStackedWidget;
     /**
-     * 后台处理线程，用于与远程host建立连接，收发事件
+     * 后台处理线程，用来与各个客户端连接并验证事件
      */
-    CustomProcessThread *processThread;
+    EventManager *eventManager;
     /**
      * 更新下拉列表和其对应的显示框
      */
     void updateEventList();
     void updateStateList();
     /**
-     * 启动远程服务
+     * 启动后台处理线程
      */
     void run();
     /**
-     * 停止远程服务
+     * 停止后台处理线程
      */
     void stop();
     /**

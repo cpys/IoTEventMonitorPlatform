@@ -1,7 +1,7 @@
 <xml projectName="IoTEventMonitorPlatform">
     <events>
         <event name="事件1">
-            <head>&lt;xml&gt;</head>
+            <head>&lt;xml name="event1"&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>

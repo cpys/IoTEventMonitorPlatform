@@ -7,6 +7,7 @@
 
 #include <QThread>
 #include <string>
+#include "NetfilterClient.h"
 using std::string;
 
 class CustomProcessThread : public QThread {
@@ -14,7 +15,6 @@ class CustomProcessThread : public QThread {
 
   public:
     void stop();
-    void setHostIp(const string &hostIp);
 
   signals:
     void sendStatusMessage(const QString&);
@@ -24,15 +24,7 @@ class CustomProcessThread : public QThread {
 
   private:
     bool threadStop = false;
-    /**
-     * 远程宿主机的ip
-     */
-    string hostIp;
-    /**
-     * 连接远程宿主机
-     * @return
-     */
-    bool connectToHost();
+    NetfilterClient *netfilterClient = nullptr;
 };
 
 

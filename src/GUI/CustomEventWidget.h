@@ -32,7 +32,10 @@ class CustomEventWidget : public QWidget {
      * 返回当前页面事件完整拼接内容
      * @return
      */
-    std::string text();
+    std::string getFullText() const;
+    std::string getHeadText() const;
+    std::string getBodyText() const;
+    std::string getTailText() const;
 
   signals:
     void sendStatusMessage(const QString&);

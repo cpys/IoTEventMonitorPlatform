@@ -58,10 +58,20 @@ void CustomEventWidget::saveConfToXML(XMLElement *eventElement) {
     tail->SetText(bottomOutLayer->toPlainText().toStdString().c_str());
 }
 
-std::string CustomEventWidget::text() {
-    return upperOutLayer->toPlainText().toStdString() +
-           "\n" + middleLayer->toPlainText().toStdString() +
-                  "\n" + bottomOutLayer->toPlainText().toStdString();
+std::string CustomEventWidget::getFullText() const {
+    return getHeadText() + "\n" + getBodyText() + "\n" + getTailText();
+}
+
+std::string CustomEventWidget::getHeadText() const {
+    return upperOutLayer->toPlainText().toStdString();
+}
+
+std::string CustomEventWidget::getBodyText() const {
+    return middleLayer->toPlainText().toStdString();
+}
+
+std::string CustomEventWidget::getTailText() const {
+    return bottomOutLayer->toPlainText().toStdString();
 }
 
 

@@ -37,12 +37,9 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     vmNameEdit = new QLineEdit(this);
     vmPidEdit = new QLineEdit(this);
 
-    hostIpLabel = new QLabel("宿主机ip", this);
-    hostIpEdit = new CustomIpEdit(this);
-
     runButton = new QPushButton("启动", this);
 
-    processThread = new CustomProcessThread();
+    eventManager = new EventManager();
 
     gridLayout->addWidget(eventLabel, 0, 0);
     gridLayout->addWidget(eventComboBox, 0, 1);
@@ -52,27 +49,24 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->addWidget(eventTextBrowser, 1, 0, 1, 4);
     gridLayout->addWidget(stateGraphicsView, 2, 0, 1, 4);
 
-    gridLayout->addWidget(eventTraceTextBrowser, 0, 4, 3, 4);
+    gridLayout->addWidget(eventTraceTextBrowser, 0, 4, 3, 5);
 
     gridLayout->addWidget(vmIpLabel, 3, 0);
     gridLayout->addWidget(externalIpLabel, 4, 0);
-    gridLayout->addWidget(vmIpEdit, 3, 1);
-    gridLayout->addWidget(externalIpEdit, 4, 1);
+    gridLayout->addWidget(vmIpEdit, 3, 1, 1, 3);
+    gridLayout->addWidget(externalIpEdit, 4, 1, 1, 3);
 
-    gridLayout->addWidget(pseudoTerminalLabel, 3, 2);
-    gridLayout->addWidget(serialPortLabel, 4, 2);
-    gridLayout->addWidget(pseudoTerminalEdit, 3, 3);
-    gridLayout->addWidget(serialPortEdit, 4, 3);
+    gridLayout->addWidget(pseudoTerminalLabel, 3, 4);
+    gridLayout->addWidget(serialPortLabel, 4, 4);
+    gridLayout->addWidget(pseudoTerminalEdit, 3, 5);
+    gridLayout->addWidget(serialPortEdit, 4, 5);
 
-    gridLayout->addWidget(vmNameLabel, 3, 4);
-    gridLayout->addWidget(vmPidLabel, 4, 4);
-    gridLayout->addWidget(vmNameEdit, 3, 5);
-    gridLayout->addWidget(vmPidEdit, 4, 5);
+    gridLayout->addWidget(vmNameLabel, 3, 6);
+    gridLayout->addWidget(vmPidLabel, 4, 6);
+    gridLayout->addWidget(vmNameEdit, 3, 7);
+    gridLayout->addWidget(vmPidEdit, 4, 7);
 
-    gridLayout->addWidget(hostIpLabel, 3, 6);
-    gridLayout->addWidget(hostIpEdit, 3, 7);
-
-    gridLayout->addWidget(runButton, 4, 6, 1, 2);
+    gridLayout->addWidget(runButton, 3, 8, 2, 1);
 
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
@@ -84,8 +78,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     // 启动按钮
     QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
 
-    QObject::connect(processThread, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
-    QObject::connect(processThread, SIGNAL(finished()), this, SLOT(threadFinished()));
+    QObject::connect(eventManager, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+    QObject::connect(eventManager, SIGNAL(finished()), this, SLOT(threadFinished()));
 }
 
 void CustomRunWidget::setConf(XMLElement *runConf) {
@@ -102,8 +96,6 @@ void CustomRunWidget::setConf(XMLElement *runConf) {
 
     vmNameEdit->setText(runConf->Attribute("vmName"));
     vmPidEdit->setText(runConf->Attribute("vmPID"));
-
-    hostIpEdit->setIp(runConf->Attribute("hostIP"));
 }
 
 void CustomRunWidget::saveConfToXML() {
@@ -118,8 +110,6 @@ void CustomRunWidget::saveConfToXML() {
 
     runConf->SetAttribute("vmName", vmNameEdit->text().toStdString().c_str());
     runConf->SetAttribute("vmPID", vmPidEdit->text().toStdString().c_str());
-
-    runConf->SetAttribute("hostIP", hostIpEdit->getIp().c_str());
 }
 
 void CustomRunWidget::setEventList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {
@@ -188,16 +178,16 @@ void CustomRunWidget::run() {
 
     // 启动处理线程
     sendStatusMessage("正在启动...");
-    processThread->setHostIp(hostIpEdit->getIp());
-    processThread->start();
+    eventManager->setEventConf(currentEventWidget->getHeadText(), currentEventWidget->getBodyText(), currentEventWidget->getTailText());
+    eventManager->setNetfilterConf(this->vmIpEdit->getIp(), this->externalIpEdit->getIp());
+    eventManager->start();
 }
 
 void CustomRunWidget::stop() {
     // 结束处理线程
-    processThread->stop();
+    eventManager->stop();
     sendStatusMessage("正在停止...");
-    // 此处暂定为盲等后台线程结束
-    while (processThread->isRunning()) ;
+    eventManager->wait();
     sendStatusMessage("事件接收处理已停止");
 }
 
@@ -210,7 +200,6 @@ void CustomRunWidget::changeWidgetState(bool isEnabled) {
     serialPortEdit->setEnabled(isEnabled);
     vmNameEdit->setEnabled(isEnabled);
     vmPidEdit->setEnabled(isEnabled);
-    hostIpEdit->setEnabled(isEnabled);
 }
 
 void CustomRunWidget::runButtonClicked() {
@@ -227,8 +216,8 @@ void CustomRunWidget::recvStatusMessage(const QString &message) {
 }
 
 void CustomRunWidget::showSelectEvent(int index) {
-    auto eventWidget = dynamic_cast<CustomEventWidget*>(eventStackedWidget->widget(index));
-    eventTextBrowser->setText(eventWidget->text().c_str());
+    currentEventWidget = dynamic_cast<CustomEventWidget*>(eventStackedWidget->widget(index));
+    eventTextBrowser->setText(currentEventWidget->getFullText().c_str());
 }
 
 void CustomRunWidget::showSelectState(int index) {
