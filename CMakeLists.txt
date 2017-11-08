@@ -15,7 +15,7 @@ find_package(Qt5Widgets)
 #link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
 
 # 依赖头文件
-include_directories(src/GUI/headers)
+include_directories(src/GUI)
 include_directories(src/manager)
 include_directories(src/netfilterClient)
 include_directories(src/tinyxml2)

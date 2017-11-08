@@ -32,6 +32,7 @@ class CustomRunWidget : public QWidget {
 
   public:
     explicit CustomRunWidget(QWidget *parent = nullptr);
+    ~CustomRunWidget();
     /**
      * 根据conf来配置当前页面
      * @param runConf

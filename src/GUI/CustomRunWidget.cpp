@@ -6,6 +6,8 @@
 #include <iostream>
 #include "CustomRunWidget.h"
 #include "CustomEventWidget.h"
+using std::cout;
+using std::endl;
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout = new QGridLayout(this);
@@ -39,7 +41,7 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 
     runButton = new QPushButton("启动", this);
 
-    eventManager = new EventManager();
+    eventManager = new EventManager(this);
 
     gridLayout->addWidget(eventLabel, 0, 0);
     gridLayout->addWidget(eventComboBox, 0, 1);
@@ -80,6 +82,10 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 
     QObject::connect(eventManager, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(eventManager, SIGNAL(finished()), this, SLOT(threadFinished()));
+}
+
+CustomRunWidget::~CustomRunWidget() {
+    cout << "deconstruct customRunWidget!" << endl;
 }
 
 void CustomRunWidget::setConf(XMLElement *runConf) {

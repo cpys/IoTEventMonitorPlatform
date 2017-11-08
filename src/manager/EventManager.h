@@ -20,8 +20,8 @@ class EventManager : public QThread {
   Q_OBJECT
 
   public:
-    EventManager();
-    ~EventManager();
+    explicit EventManager(QObject *parent = nullptr);
+    ~EventManager() override ;
     void setEventConf(const string &eventHeadText, const string &eventBodyText, const string &eventTailText);
     void setNetfilterConf(const string &vmIp, const string &externalIp);
 
