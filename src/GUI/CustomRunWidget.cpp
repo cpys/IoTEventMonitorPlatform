@@ -3,11 +3,8 @@
 //
 
 #include <QtWidgets/QFormLayout>
-#include <iostream>
 #include "CustomRunWidget.h"
 #include "CustomEventWidget.h"
-using std::cout;
-using std::endl;
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout = new QGridLayout(this);
@@ -80,12 +77,11 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     // 启动按钮
     QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
 
+    // 日志展示，连接子线程函数
+    QObject::connect(eventManager, SIGNAL(sendLogMessage(const QString&)), this, SLOT(showLogMessage(const QString&)));
+
     QObject::connect(eventManager, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(eventManager, SIGNAL(finished()), this, SLOT(threadFinished()));
-}
-
-CustomRunWidget::~CustomRunWidget() {
-    cout << "deconstruct customRunWidget!" << endl;
 }
 
 void CustomRunWidget::setConf(XMLElement *runConf) {
@@ -234,6 +230,10 @@ void CustomRunWidget::threadFinished() {
     // 结束执行后更改各组件状态
     changeWidgetState(true);
     runButton->setText("启动");
+}
+
+void CustomRunWidget::showLogMessage(const QString &message) {
+    this->eventTraceTextBrowser->insertPlainText(message + "\n");
 }
 
 

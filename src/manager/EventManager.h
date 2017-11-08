@@ -29,6 +29,7 @@ class EventManager : public QThread {
 
   signals:
     void sendStatusMessage(const QString&);
+    void sendLogMessage(const QString&);
 
   protected:
     void run() override ;
@@ -43,6 +44,9 @@ class EventManager : public QThread {
     string vmIp;
     string externalIp;
     NetfilterClient *netfilterClient = nullptr;
+
+  private slots:
+    void recvLogMessage(const QString &message);
 };
 
 

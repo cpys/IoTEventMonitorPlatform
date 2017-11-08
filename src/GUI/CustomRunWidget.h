@@ -32,7 +32,6 @@ class CustomRunWidget : public QWidget {
 
   public:
     explicit CustomRunWidget(QWidget *parent = nullptr);
-    ~CustomRunWidget();
     /**
      * 根据conf来配置当前页面
      * @param runConf
@@ -153,6 +152,8 @@ class CustomRunWidget : public QWidget {
      * 调用run或stop方法
     */
     void runButtonClicked();
+
+    void showLogMessage(const QString &message);
     /**
      * 后台线程结束事件，进行页面内恢复工作
      */

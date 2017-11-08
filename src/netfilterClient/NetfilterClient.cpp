@@ -2,39 +2,35 @@
 // Created by yingzi on 2017/11/7.
 //
 
-#include <iostream>
 #include "NetfilterClient.h"
-using std::cout;
-using std::endl;
 
 NetfilterClient::NetfilterClient(QObject *parent) : QThread(parent) {
 
 }
 
 NetfilterClient::~NetfilterClient() {
-    cout << "deconstruct netfilter client!" << endl;
     stop();
     wait();
     remove();
 }
 
 bool NetfilterClient::install() {
-    cout << "install netfilter!" << endl;
+    emit sendLogMessage("install netfilter!");
     return true;
 }
 
 void NetfilterClient::remove() {
-    cout << "remove netfilter!" << endl;
+    emit sendLogMessage("remove netfilter!");
 }
 
 void NetfilterClient::run() {
     threadStop = false;
 
     while (!threadStop) {
-        cout << "netfilter client is running!" << endl;
+        emit sendLogMessage("netfilter client is running!");
         sleep(1);
     }
-    cout << "netfilter client is stop!" << endl;
+    emit sendLogMessage("netfilter client is stop!");
 }
 
 void NetfilterClient::stop() {

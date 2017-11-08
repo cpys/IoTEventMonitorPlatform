@@ -14,6 +14,8 @@ using std::string;
  * 从netfilter获取事件
  */
 class NetfilterClient : public QThread {
+  Q_OBJECT
+
   public:
     explicit NetfilterClient(QObject *parent = nullptr);
     ~NetfilterClient() override ;
@@ -24,6 +26,9 @@ class NetfilterClient : public QThread {
     bool install();
     void remove();
     void stop();
+
+  signals:
+    void sendLogMessage(const QString&);
 
   protected:
     void run() override ;

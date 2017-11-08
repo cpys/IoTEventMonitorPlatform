@@ -3,7 +3,6 @@
 //
 
 #include "CustomMainWindow.h"
-#include "conf.h"
 
 CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
     centralWidget = new CustomMainTabWidget(this);

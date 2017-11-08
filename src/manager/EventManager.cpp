@@ -2,17 +2,14 @@
 // Created by yingzi on 2017/11/8.
 //
 
-#include <iostream>
 #include "EventManager.h"
-using std::cout;
-using std::endl;
 
 EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient(this);
+    QObject::connect(netfilterClient, SIGNAL(sendLogMessage(const QString&)), this, SLOT(recvLogMessage(const QString&)));
 }
 
 EventManager::~EventManager() {
-    cout << "deconstruct eventmanager!" << endl;
     stop();
     wait();
     delete(netfilterClient);
@@ -35,13 +32,14 @@ void EventManager::stop() {
 }
 
 void EventManager::run() {
+    sendLogMessage("start eventManager!");
     threadStop = false;
 
     // 先启动netfilterClient
     netfilterClient->setEventMatchText(eventHeadText, eventTailText);
     netfilterClient->setEventMatchIp(vmIp, externalIp);
     if (!netfilterClient->install()) {
-        sendStatusMessage("安装netfilter失败！");
+        sendLogMessage("install netfilter failed!");
         return;
     }
     netfilterClient->start();
@@ -50,7 +48,7 @@ void EventManager::run() {
         // 轮询各个客户端
         if (netfilterClient->hasEvent()) {
             netfilterClient->getEvent();
-            // TODO deal eventlist
+            // TODO
             continue;
         }
         // 判断串口有没有事件
@@ -58,4 +56,10 @@ void EventManager::run() {
     }
     netfilterClient->stop();
     netfilterClient->wait();
+    netfilterClient->remove();
+    sendLogMessage("end eventManager!");
+}
+
+void EventManager::recvLogMessage(const QString &message) {
+    emit sendLogMessage(message);
 }
