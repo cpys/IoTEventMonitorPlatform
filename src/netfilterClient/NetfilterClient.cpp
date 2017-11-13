@@ -2,15 +2,16 @@
 // Created by yingzi on 2017/11/7.
 //
 
+#include <iostream>
 #include "NetfilterClient.h"
+using namespace std;
 
-NetfilterClient::NetfilterClient(QObject *parent) : QThread(parent) {
+NetfilterClient::NetfilterClient(QObject *parent) : QObject(parent) {
     netlink = new Netlink();
 }
 
 NetfilterClient::~NetfilterClient() {
     stop();
-    wait();
     remove();
     delete(netlink);
 }
@@ -24,27 +25,47 @@ void NetfilterClient::remove() {
 //    emit sendLogMessage("remove netfilter!");
 }
 
-void NetfilterClient::run() {
-    threadStop = false;
-    hasEventFlag = false;
+//void NetfilterClient::run() {
+////    emit sendLogMessage("start netfilter client!");
+//    threadStop = false;
+//    hasEventFlag = false;
+//
+//    if (!netlink->init()) {
+//        emit sendLogMessage("初始化netlink失败！");
+//    }
+//    else {
+//        emit sendLogMessage("初始化netlink成功!");
+//        while (!threadStop) {
+//            mtx.lock();
+//            hasEventFlag = netlink->hasMessage();
+//            if (hasEventFlag) {
+//                event = netlink->getMessage();
+//            }
+//        }
+//    }
+//    netlink->closeConnection();
+////    emit sendLogMessage("end netfilter client!");
+//}
 
+void NetfilterClient::start() {
     if (!netlink->init()) {
-        emit sendLogMessage("init netlink failed!");
+        emit sendLogMessage("初始化netlink失败！");
     }
     else {
-        while (!threadStop) {
-//        emit sendLogMessage("netfilter client is running!");
-//        sleep(1);
-            event = netlink->getMessage();
-            hasEventFlag = true;
-        }
+        emit sendLogMessage("初始化netlink成功!");
+//        while (!threadStop) {
+//            hasEventFlag = netlink->hasMessage();
+//            if (hasEventFlag) {
+//                event = netlink->getMessage();
+//            }
+//        }
     }
-    netlink->closeConnection();
-    emit sendLogMessage("netfilter client is stop!");
+//    netlink->closeConnection();
 }
 
 void NetfilterClient::stop() {
-    threadStop = true;
+//    threadStop = true;
+    netlink->closeConnection();
 }
 
 void NetfilterClient::setEventMatchText(const string &eventHeadText, const string &eventTailText) {
@@ -58,10 +79,12 @@ void NetfilterClient::setEventMatchIp(const string &vmIp, const string &external
 }
 
 bool NetfilterClient::hasEvent() {
+    return netlink->hasMessage();
     return hasEventFlag;
 }
 
 string NetfilterClient::getEvent() {
+    return netlink->getMessage();
     hasEventFlag = false;
     return event;
 }

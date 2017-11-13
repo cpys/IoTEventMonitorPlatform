@@ -15,6 +15,7 @@ class Netlink {
     ~Netlink();
     bool init();
     void closeConnection();
+    bool hasMessage();
     string getMessage();
 
   private:
@@ -57,6 +58,18 @@ class Netlink {
      * 客户端套接字
      */
     int socketClient;
+    /**
+     * 用于select的客户端套接字集合
+     */
+    fd_set fs_read;
+    /**
+     * 判断select集合是否有可读的
+     */
+    int fs_sel;
+    /**
+     * 等待超时时间
+     */
+    timeval tv;
     /**
      * 内核目标地址数据结构
      */

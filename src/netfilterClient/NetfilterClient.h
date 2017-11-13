@@ -15,25 +15,26 @@ using std::string;
  * 提供对netfilter的配置安装与卸载
  * 从netfilter获取事件
  */
-class NetfilterClient : public QThread {
+class NetfilterClient : QObject {
   Q_OBJECT
 
   public:
     explicit NetfilterClient(QObject *parent = nullptr);
-    ~NetfilterClient() override ;
+    ~NetfilterClient() ;
     void setEventMatchText(const string &eventHeadText, const string &eventTailText);
     void setEventMatchIp(const string &vmIp, const string &externalIp);
     bool hasEvent();
     string getEvent();
     bool install();
     void remove();
+    void start();
     void stop();
 
   signals:
     void sendLogMessage(const QString&);
 
-  protected:
-    void run() override ;
+//  protected:
+//    void run() override ;
 
   private:
     bool threadStop = false;

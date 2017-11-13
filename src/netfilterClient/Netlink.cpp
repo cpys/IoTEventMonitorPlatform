@@ -9,9 +9,9 @@
 #include "Netlink.h"
 using std::cout;
 using std::endl;
+using std::cerr;
 
 Netlink::~Netlink() {
-    cout << "deconstruct netlink!" << endl;
     closeConnection();
 }
 
@@ -49,12 +49,13 @@ bool Netlink::init() {
 
     // 发送netlink消息到内核
     if (sendto(socketClient, &message, message.nlmsg_len, 0, (struct sockaddr *) &destAddr, sizeof(destAddr)) < 0) {
-        printf("send connect message to kernel failed!\n");
         return false;
     }
-    else{
-        printf("send connect message to kernel success!\n");
-    }
+
+    tv.tv_sec = 5;
+//    tv.tv_usec = 1000;
+
+
     return true;
 }
 
@@ -64,10 +65,28 @@ void Netlink::closeConnection() {
 
 string Netlink::getMessage()  {
     static int destAddrLen = sizeof(struct sockaddr_nl);
-    if (recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen) < 0) {
-        printf("recv message from kernel failed!\n");
+
+//    fs_sel = select(socketClient + 1, &fs_read, NULL, NULL, &tv);
+//    if (fs_sel <= 0) {
+//        return "none";
+//    }
+
+    int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
+    if (ret < 0) {
+        cerr << "recv message from kernel failed!" << endl;
         return "";
-    } else {
+    }
+    else {
+        cout << "recv message: " << string(recvMessage.data) << endl;
         return string(recvMessage.data);
     }
+}
+
+bool Netlink::hasMessage() {
+    FD_ZERO(&fs_read);
+    FD_SET(socketClient, &fs_read);
+    fs_sel = select(socketClient + 1, &fs_read, NULL, NULL, &tv);
+    cout << "fs_sel:" << fs_sel << endl;
+//    usleep(100000);
+    return fs_sel > 0;
 }
