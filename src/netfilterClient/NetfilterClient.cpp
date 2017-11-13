@@ -5,31 +5,41 @@
 #include "NetfilterClient.h"
 
 NetfilterClient::NetfilterClient(QObject *parent) : QThread(parent) {
-
+    netlink = new Netlink();
 }
 
 NetfilterClient::~NetfilterClient() {
     stop();
     wait();
     remove();
+    delete(netlink);
 }
 
 bool NetfilterClient::install() {
-    emit sendLogMessage("install netfilter!");
+//    emit sendLogMessage("install netfilter!");
     return true;
 }
 
 void NetfilterClient::remove() {
-    emit sendLogMessage("remove netfilter!");
+//    emit sendLogMessage("remove netfilter!");
 }
 
 void NetfilterClient::run() {
     threadStop = false;
+    hasEventFlag = false;
 
-    while (!threadStop) {
-        emit sendLogMessage("netfilter client is running!");
-        sleep(1);
+    if (!netlink->init()) {
+        emit sendLogMessage("init netlink failed!");
     }
+    else {
+        while (!threadStop) {
+//        emit sendLogMessage("netfilter client is running!");
+//        sleep(1);
+            event = netlink->getMessage();
+            hasEventFlag = true;
+        }
+    }
+    netlink->closeConnection();
     emit sendLogMessage("netfilter client is stop!");
 }
 
@@ -48,9 +58,10 @@ void NetfilterClient::setEventMatchIp(const string &vmIp, const string &external
 }
 
 bool NetfilterClient::hasEvent() {
-    return false;
+    return hasEventFlag;
 }
 
-void NetfilterClient::getEvent() {
-
+string NetfilterClient::getEvent() {
+    hasEventFlag = false;
+    return event;
 }

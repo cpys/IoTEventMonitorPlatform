@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_AUTOMOC ON)
 
 # 查找 QT的库
-#set(CMAKE_PREFIX_PATH D:\\Qt\\5.9.1\\mingw53_32)
-set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
+#set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
+set(Qt5Widgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5Widgets)
 find_package(Qt5Widgets)
 
 # 依赖库
@@ -21,7 +21,7 @@ include_directories(src/netfilterClient)
 include_directories(src/tinyxml2)
 
 # 代码文件
-set(SRC_MAIN src/main.cpp)
+set(SRC_MAIN src/main.cpp src/netfilterClient/Netlink.cpp src/netfilterClient/Netlink.h)
 aux_source_directory(src/GUI SRC_GUI)
 aux_source_directory(src/manager SRC_MANAGER)
 aux_source_directory(src/netfilterClient SRC_NETFILTER_CLIENT)

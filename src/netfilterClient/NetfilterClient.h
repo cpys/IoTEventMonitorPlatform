@@ -7,6 +7,8 @@
 
 #include <QtCore/QThread>
 #include <string>
+#include "Netlink.h"
+
 using std::string;
 
 /**
@@ -22,7 +24,7 @@ class NetfilterClient : public QThread {
     void setEventMatchText(const string &eventHeadText, const string &eventTailText);
     void setEventMatchIp(const string &vmIp, const string &externalIp);
     bool hasEvent();
-    void getEvent();
+    string getEvent();
     bool install();
     void remove();
     void stop();
@@ -36,12 +38,15 @@ class NetfilterClient : public QThread {
   private:
     bool threadStop = false;
 
-    QAtomicInt hasEventFlag;
+    bool hasEventFlag;
 
     string eventHeadText;
     string eventTailText;
     string vmIp;
     string externalIp;
+
+    Netlink *netlink;
+    string event;
 };
 
 
