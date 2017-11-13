@@ -6,7 +6,6 @@
 
 EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient(this);
-//    QObject::connect(netfilterClient, SIGNAL(sendLogMessage(const QString&)), this, SLOT(recvLogMessage(const QString&)));
 }
 
 EventManager::~EventManager() {
@@ -55,7 +54,6 @@ void EventManager::run() {
     }
 
     netfilterClient->stop();
-//    netfilterClient->wait();
     netfilterClient->remove();
 }
 

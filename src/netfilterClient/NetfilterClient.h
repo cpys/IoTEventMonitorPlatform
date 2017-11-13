@@ -33,9 +33,6 @@ class NetfilterClient : QObject {
   signals:
     void sendLogMessage(const QString&);
 
-//  protected:
-//    void run() override ;
-
   private:
     bool threadStop = false;
 

@@ -25,46 +25,16 @@ void NetfilterClient::remove() {
 //    emit sendLogMessage("remove netfilter!");
 }
 
-//void NetfilterClient::run() {
-////    emit sendLogMessage("start netfilter client!");
-//    threadStop = false;
-//    hasEventFlag = false;
-//
-//    if (!netlink->init()) {
-//        emit sendLogMessage("初始化netlink失败！");
-//    }
-//    else {
-//        emit sendLogMessage("初始化netlink成功!");
-//        while (!threadStop) {
-//            mtx.lock();
-//            hasEventFlag = netlink->hasMessage();
-//            if (hasEventFlag) {
-//                event = netlink->getMessage();
-//            }
-//        }
-//    }
-//    netlink->closeConnection();
-////    emit sendLogMessage("end netfilter client!");
-//}
-
 void NetfilterClient::start() {
     if (!netlink->init()) {
         emit sendLogMessage("初始化netlink失败！");
     }
     else {
         emit sendLogMessage("初始化netlink成功!");
-//        while (!threadStop) {
-//            hasEventFlag = netlink->hasMessage();
-//            if (hasEventFlag) {
-//                event = netlink->getMessage();
-//            }
-//        }
     }
-//    netlink->closeConnection();
 }
 
 void NetfilterClient::stop() {
-//    threadStop = true;
     netlink->closeConnection();
 }
 
@@ -80,11 +50,8 @@ void NetfilterClient::setEventMatchIp(const string &vmIp, const string &external
 
 bool NetfilterClient::hasEvent() {
     return netlink->hasMessage();
-    return hasEventFlag;
 }
 
 string NetfilterClient::getEvent() {
     return netlink->getMessage();
-    hasEventFlag = false;
-    return event;
 }

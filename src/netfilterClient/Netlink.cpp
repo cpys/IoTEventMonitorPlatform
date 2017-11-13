@@ -52,7 +52,8 @@ bool Netlink::init() {
         return false;
     }
 
-    tv.tv_sec = 5;
+    tv.tv_sec = 3;
+    tv.tv_usec = 0;
 //    tv.tv_usec = 1000;
 
 
@@ -65,11 +66,6 @@ void Netlink::closeConnection() {
 
 string Netlink::getMessage()  {
     static int destAddrLen = sizeof(struct sockaddr_nl);
-
-//    fs_sel = select(socketClient + 1, &fs_read, NULL, NULL, &tv);
-//    if (fs_sel <= 0) {
-//        return "none";
-//    }
 
     int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
     if (ret < 0) {
@@ -85,8 +81,7 @@ string Netlink::getMessage()  {
 bool Netlink::hasMessage() {
     FD_ZERO(&fs_read);
     FD_SET(socketClient, &fs_read);
+    tv = {3, 0};
     fs_sel = select(socketClient + 1, &fs_read, NULL, NULL, &tv);
-    cout << "fs_sel:" << fs_sel << endl;
-//    usleep(100000);
     return fs_sel > 0;
 }
