@@ -234,6 +234,7 @@ void CustomRunWidget::threadFinished() {
 
 void CustomRunWidget::showLogMessage(const QString &message) {
     this->eventTraceTextBrowser->insertPlainText(message + "\n");
+    this->eventTraceTextBrowser->moveCursor(QTextCursor::End);
 }
 
 
