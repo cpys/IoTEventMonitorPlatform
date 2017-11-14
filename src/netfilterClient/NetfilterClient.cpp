@@ -6,7 +6,7 @@
 #include "NetfilterClient.h"
 using namespace std;
 
-NetfilterClient::NetfilterClient(QObject *parent) : QObject(parent) {
+NetfilterClient::NetfilterClient() {
     netlink = new Netlink();
 }
 
@@ -17,12 +17,11 @@ NetfilterClient::~NetfilterClient() {
 }
 
 bool NetfilterClient::install() {
-//    emit sendLogMessage("install netfilter!");
     return true;
 }
 
 void NetfilterClient::remove() {
-//    emit sendLogMessage("remove netfilter!");
+
 }
 
 bool NetfilterClient::start() {

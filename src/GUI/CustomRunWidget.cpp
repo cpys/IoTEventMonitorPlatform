@@ -182,6 +182,7 @@ void CustomRunWidget::run() {
     sendStatusMessage("正在启动...");
     eventManager->setEventConf(currentEventWidget->getHeadText(), currentEventWidget->getBodyText(), currentEventWidget->getTailText());
     eventManager->setNetfilterConf(this->vmIpEdit->getIp(), this->externalIpEdit->getIp());
+    eventManager->setSerialPortConf(this->pseudoTerminalEdit->text().toStdString(), this->serialPortEdit->text().toStdString());
     eventManager->start();
 }
 

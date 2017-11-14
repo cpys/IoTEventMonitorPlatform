@@ -56,7 +56,10 @@ bool Netlink::init() {
 }
 
 void Netlink::closeConnection() {
-    close(socketClient);
+    if (socketClient != -1) {
+        close(socketClient);
+        socketClient = -1;
+    }
 }
 
 string Netlink::getMessage()  {

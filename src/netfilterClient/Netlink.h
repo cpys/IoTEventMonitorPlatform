@@ -42,13 +42,13 @@ class Netlink {
     /**
      * 消息最大长度
      */
-    static const int MAXMSG = 100000;
+    static const int MAX_MSG = 100000;
     /**
      * 通信消息结构
      */
     struct NetlinkMessage {
         struct nlmsghdr hdr;
-        char data[MAXMSG];
+        char data[MAX_MSG];
     };
     /**
      * 消息缓冲区
@@ -57,7 +57,7 @@ class Netlink {
     /**
      * 客户端套接字
      */
-    int socketClient;
+    int socketClient = -1;
     /**
      * 用于select的客户端套接字集合
      */

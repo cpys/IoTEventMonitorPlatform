@@ -8,6 +8,8 @@
 #include <QtCore/QThread>
 #include <NetfilterClient.h>
 #include <string>
+#include <SerialPortClient.h>
+
 using std::string;
 
 /**
@@ -24,6 +26,7 @@ class EventManager : public QThread {
     ~EventManager() override ;
     void setEventConf(const string &eventHeadText, const string &eventBodyText, const string &eventTailText);
     void setNetfilterConf(const string &vmIp, const string &externalIp);
+    void setSerialPortConf(const string &pseudoTerminal, const string &serialPort);
 
     void stop();
 
@@ -44,6 +47,11 @@ class EventManager : public QThread {
     string vmIp;
     string externalIp;
     NetfilterClient *netfilterClient = nullptr;
+
+    string pseudoTerminal;
+    string serialPort;
+    SerialPortClient *internalClient;
+    SerialPortClient *externalClient;
 };
 
 

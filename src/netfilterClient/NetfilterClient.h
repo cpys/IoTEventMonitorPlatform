@@ -15,11 +15,9 @@ using std::string;
  * 提供对netfilter的配置安装与卸载
  * 从netfilter获取事件
  */
-class NetfilterClient : QObject {
-  Q_OBJECT
-
+class NetfilterClient {
   public:
-    explicit NetfilterClient(QObject *parent = nullptr);
+    NetfilterClient();
     ~NetfilterClient() ;
     void setEventMatchText(const string &eventHeadText, const string &eventTailText);
     void setEventMatchIp(const string &vmIp, const string &externalIp);

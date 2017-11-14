@@ -18,6 +18,7 @@ find_package(Qt5Widgets)
 include_directories(src/GUI)
 include_directories(src/manager)
 include_directories(src/netfilterClient)
+include_directories(src/serialPortClient)
 include_directories(src/tinyxml2)
 
 # 代码文件
@@ -25,10 +26,11 @@ set(SRC_MAIN src/main.cpp src/netfilterClient/Netlink.cpp src/netfilterClient/Ne
 aux_source_directory(src/GUI SRC_GUI)
 aux_source_directory(src/manager SRC_MANAGER)
 aux_source_directory(src/netfilterClient SRC_NETFILTER_CLIENT)
+aux_source_directory(src/serialPortClient SRC_SERIAL_PORT_CLIENT)
 aux_source_directory(src/tinyxml2 SRC_TINY_XML)
 aux_source_directory(src/verification SRC_VERIFICATION)
 
-add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_MANAGER} ${SRC_NETFILTER_CLIENT} ${SRC_TINY_XML} ${SRC_VERIFICATION})
+add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_MANAGER} ${SRC_NETFILTER_CLIENT} ${SRC_SERIAL_PORT_CLIENT} ${SRC_TINY_XML} ${SRC_VERIFICATION})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
 
