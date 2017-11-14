@@ -44,9 +44,6 @@ class EventManager : public QThread {
     string vmIp;
     string externalIp;
     NetfilterClient *netfilterClient = nullptr;
-
-  private slots:
-    void recvLogMessage(const QString &message);
 };
 
 

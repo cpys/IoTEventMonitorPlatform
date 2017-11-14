@@ -40,23 +40,22 @@ void EventManager::run() {
         sendLogMessage("install netfilter failed!");
         return;
     }
-    netfilterClient->start();
+    if (!netfilterClient->start()) {
+        emit sendLogMessage("netfilter客户端初始化失败!");
+    }
+    else {
+        while (!threadStop) {
+            // 轮询各个客户端
+            if (netfilterClient->hasEvent()) {
+                string event = netfilterClient->getEvent();
+                emit sendLogMessage(QString::fromStdString(event));
+            }
 
-    while (!threadStop) {
-        // 轮询各个客户端
-        if (netfilterClient->hasEvent()) {
-            string event = netfilterClient->getEvent();
-            emit sendLogMessage(QString::fromStdString(event));
+            // 判断串口有没有事件
+            // 判断内存有没有事件
         }
-
-        // 判断串口有没有事件
-        // 判断内存有没有事件
     }
 
     netfilterClient->stop();
     netfilterClient->remove();
-}
-
-void EventManager::recvLogMessage(const QString &message) {
-    emit sendLogMessage(message);
 }

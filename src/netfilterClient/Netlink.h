@@ -69,7 +69,8 @@ class Netlink {
     /**
      * 等待超时时间
      */
-    timeval tv;
+    static constexpr timeval defaultTv = {1, 0};
+    timeval tv = defaultTv;
     /**
      * 内核目标地址数据结构
      */

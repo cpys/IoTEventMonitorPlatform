@@ -27,7 +27,7 @@ class NetfilterClient : QObject {
     string getEvent();
     bool install();
     void remove();
-    void start();
+    bool start();
     void stop();
 
   signals:

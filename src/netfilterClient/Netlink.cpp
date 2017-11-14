@@ -52,11 +52,6 @@ bool Netlink::init() {
         return false;
     }
 
-    tv.tv_sec = 3;
-    tv.tv_usec = 0;
-//    tv.tv_usec = 1000;
-
-
     return true;
 }
 
@@ -73,7 +68,6 @@ string Netlink::getMessage()  {
         return "";
     }
     else {
-        cout << "recv message: " << string(recvMessage.data) << endl;
         return string(recvMessage.data);
     }
 }
@@ -81,7 +75,7 @@ string Netlink::getMessage()  {
 bool Netlink::hasMessage() {
     FD_ZERO(&fs_read);
     FD_SET(socketClient, &fs_read);
-    tv = {3, 0};
+    tv = defaultTv;
     fs_sel = select(socketClient + 1, &fs_read, NULL, NULL, &tv);
     return fs_sel > 0;
 }
