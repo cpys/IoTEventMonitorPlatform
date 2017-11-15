@@ -39,6 +39,8 @@ void EventManager::stop() {
 void EventManager::run() {
     threadStop = false;
 
+    // 先初始化模型
+
     // 先启动netfilterClient
     netfilterClient->setEventMatchText(eventHeadText, eventTailText);
     netfilterClient->setEventMatchIp(vmIp, externalIp);
