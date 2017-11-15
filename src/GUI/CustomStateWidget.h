@@ -11,6 +11,7 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QHBoxLayout>
+#include <QWebEngineView>
 #include "CustomCircleGraph.h"
 #include <tinyxml2.h>
 using namespace tinyxml2;
@@ -35,15 +36,18 @@ class CustomStateWidget : public QWidget {
     void sendStatusMessage(const QString&);
 
   private:
-    QHBoxLayout *vBoxLayout;
+//    QHBoxLayout *vBoxLayout;
+//
+//    QGraphicsView *canvasView;
+//    QGraphicsScene *canvasScene;
+//
+//    QGraphicsView *graphBoardView;
+//    QGraphicsScene *graphBoardScene;
+//    CustomCircleGraph *circleItem;
+//    QGraphicsPixmapItem *circlePixmapItem;
 
-    QGraphicsView *canvasView;
-    QGraphicsScene *canvasScene;
-
-    QGraphicsView *graphBoardView;
-    QGraphicsScene *graphBoardScene;
-    CustomCircleGraph *circleItem;
-    QGraphicsPixmapItem *circlePixmapItem;
+    QGridLayout *gridLayout;
+    QWebEngineView *webView;
 };
 
 

@@ -71,7 +71,7 @@ string SerialPortClient::getMessage() {
 bool SerialPortClient::openPort() {
     fd = open(port.c_str(), O_RDWR|O_NOCTTY|O_NDELAY);
     if (fd < 0){
-        cerr << "Can't Open Serial Port" << port << endl;
+        cerr << "Can't Open Serial Port " << port << endl;
         return false;
     }
     if(fcntl(fd, F_SETFL, 0) < 0){

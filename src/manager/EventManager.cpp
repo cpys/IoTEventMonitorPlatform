@@ -57,6 +57,7 @@ void EventManager::run() {
     internalClient->setPort(pseudoTerminal);
     externalClient->setPort(serialPort);
     if (!internalClient->init() || !externalClient->init()) {
+        emit sendLogMessage("串口转发器初始化失败！");
         internalClient->closePort();
         externalClient->closePort();
         return;
