@@ -23,12 +23,7 @@ class StateParser {
      * 构建模型，解析xml并初始化该模型
      * @return
      */
-    bool parseState();
-    /**
-     * 返回构建的模型
-     * @return
-     */
-    Module *getModule();
+    bool parseStateXML();
     /**
      * 验证一个字符串格式的事件，返回验证结果
      * 根据事件既定的事件格式解析
@@ -41,6 +36,35 @@ class StateParser {
   private:
     string stateXML;
     Module *module;
+
+    /**
+     * 解析变量声明的原始格式字符串，提取出变量和其类型
+     * 添加到模型中
+     * @param varDecl
+     * @return
+     */
+    bool parseVarDecl(const char *varDecl);
+    /**
+     * 解析状态结点上的原始格式字符串，提取出节点编号和表达式
+     * 添加到模型中
+     * @param state
+     * @return
+     */
+    bool parseState(const char *state);
+    /**
+     * 解析转移上的原始格式字符串，提取出转移名称和表达式
+     * 添加到模型中
+     * @param tran
+     * @return
+     */
+    bool parseTran(const char *tran, const char *source, const char *target);
+    /**
+     * 解析验证原始字符串，提取表达式
+     * 添加到模型中
+     * @param spec
+     * @return
+     */
+    bool parseSpec(const char *spec);
 };
 
 
