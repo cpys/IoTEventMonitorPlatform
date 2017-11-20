@@ -135,7 +135,7 @@ bool StateParser::parseState(const char *state) {
     stateStr.replace("</div>", "<div>");
 
     auto strList = stateStr.split("<div>").toStdList();
-    if (strList.size() <= 0) {
+    if (strList.empty()) {
         return false;
     }
     vector<string> statConstraints;
@@ -155,11 +155,37 @@ bool StateParser::parseState(const char *state) {
 }
 
 bool StateParser::parseTran(const char *tran, const char *source, const char *target) {
-    // TODO
+    QString tranStr(tran);
+    tranStr.replace("&amp;", "&");
+    tranStr.replace("&lt;", "<");
+    tranStr.replace("&gt;", ">");
+    tranStr.replace("</div>", "<div>");
+
+    auto strList = tranStr.split("<div>").toStdList();
+    if (strList.empty()) {
+        return false;
+    }
+    vector<string> tranConstraints;
+
+    bool isFirstLine = true;
+    for (auto &str : strList) {
+        if (isFirstLine) {
+            isFirstLine = false;
+            continue;
+        }
+        if (str.isEmpty()) continue;
+        tranConstraints.push_back(str.trimmed().toStdString());
+    }
+
+    module->addTran(strList.front().toStdString(), std::stoi(source), std::stoi(target), tranConstraints);
     return true;
 }
 
 bool StateParser::parseSpec(const char *spec) {
-    // TODO
-    return false;
+    QString specStr(spec);
+    specStr.replace("&lt;", "<");
+    specStr.replace("&gt;", ">");
+
+    module->addSpec({specStr.toStdString()});
+    return true;
 }
