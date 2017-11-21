@@ -22,14 +22,13 @@ class NetfilterClient {
     void setEventMatchText(const string &eventHeadText, const string &eventTailText);
     void setEventMatchIp(const string &vmIp, const string &externalIp);
     bool hasEvent();
-    string getEvent();
+    const string & getEvent();
+    bool passEvent();
+    bool interceptEvent();
     bool install();
     void remove();
     bool start();
     void stop();
-
-  signals:
-    void sendLogMessage(const QString&);
 
   private:
     bool threadStop = false;

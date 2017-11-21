@@ -90,11 +90,15 @@ void EventManager::run() {
             emit sendLogMessage(QString::fromStdString("网络事件：" + event));
             if (stateParser->validateEvent(event)) {
                 emit sendLogMessage("验证通过");
-//                netfilterClient->passEvent();
+                if (!netfilterClient->passEvent()) {
+                    emit sendLogMessage("通过指令发送失败！");
+                }
             }
             else {
                 emit sendLogMessage("验证拦截");
-//                netfilterClient->interceptEvent();
+                if (!netfilterClient->interceptEvent()) {
+                    emit sendLogMessage("拦截指令发送失败！");
+                }
             }
         }
 

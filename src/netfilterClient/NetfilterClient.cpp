@@ -46,6 +46,14 @@ bool NetfilterClient::hasEvent() {
     return netlink->hasMessage();
 }
 
-string NetfilterClient::getEvent() {
+const string & NetfilterClient::getEvent() {
     return netlink->getMessage();
+}
+
+bool NetfilterClient::passEvent() {
+    return netlink->sendAcceptMessage();
+}
+
+bool NetfilterClient::interceptEvent() {
+    return netlink->sendDropMessage();
 }

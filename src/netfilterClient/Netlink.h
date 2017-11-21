@@ -16,7 +16,9 @@ class Netlink {
     bool init();
     void closeConnection();
     bool hasMessage();
-    string getMessage();
+    const string & getMessage();
+    bool sendAcceptMessage();
+    bool sendDropMessage();
 
   private:
     /**
@@ -32,13 +34,17 @@ class Netlink {
      */
     static const int NETLINK_TEST_DISCONNECT = 0x11;
     /**
-     * 自定义的netlink客户端发送的指令
-     */
-    static const int NETLINK_TEST_COMMAND = 0x12;
-    /**
      * 自定义的netlink内核回复的消息类型
      */
-    static const int NETLINK_TEST_REPLY = 0x13;
+    static const int NETLINK_TEST_REPLY = 0x12;
+    /**
+     * 自定义的netlink发送的通过指令
+     */
+    static const int NETLINK_TEST_ACCEPT = 0x13;
+    /**
+     * 自定义的netlink发送的丢弃指令
+     */
+    static const int NETLINK_TEST_DISCARD = 0x14;
     /**
      * 消息最大长度
      */
