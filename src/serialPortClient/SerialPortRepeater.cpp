@@ -90,6 +90,17 @@ bool SerialPortRepeater::searchEvent(string &messageQueue, SerialPortClient *oth
             messageQueue = "";
         }
     }
+    else {
+        // 如果头部没找到，视为非事件转发，注意保留队列头部长度 - 1个字节
+        if (messageQueue.size() >= eventHeadText.size()) {
+            otherPort->sendMessage(messageQueue.substr(0, messageQueue.size() - eventHeadText.size() + 1));
+            messageQueue = messageQueue.substr(messageQueue.size() - eventHeadText.size() + 1);
+        }
+        else {
+            otherPort->sendMessage(messageQueue.substr(0, 1));
+            messageQueue = messageQueue.substr(1);
+        }
+    }
     return false;
 }
 
