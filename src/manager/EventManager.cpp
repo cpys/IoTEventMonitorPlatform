@@ -82,6 +82,8 @@ void EventManager::run() {
         emit sendLogMessage("串口转发器初始化失败！");
         internalClient->closePort();
         externalClient->closePort();
+        netfilterClient->stop();
+        netfilterClient->remove();
         return;
     }
 
