@@ -78,10 +78,12 @@ bool SerialPortClient::openPort() {
         cerr << "fcntl failed!" << endl;
         return false;
     }
+/*
     if(0 == isatty(STDIN_FILENO)){
         cerr << port << " is not a terminal device" << endl;
         return false;
     }
+*/
     return true;
 }
 
