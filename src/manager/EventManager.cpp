@@ -8,12 +8,17 @@ EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient();
     internalClient = new SerialPortClient();
     externalClient = new SerialPortClient();
+
+    stateParser = new StateParser();
 }
 
 EventManager::~EventManager() {
     stop();
     wait();
     delete(netfilterClient);
+    delete(internalClient);
+    delete(externalClient);
+    delete(stateParser);
 }
 
 void EventManager::setEventConf(const string &eventHeadText, const string &eventBodyText, const string &eventTailText) {
@@ -40,12 +45,27 @@ void EventManager::run() {
     threadStop = false;
 
     // 先初始化模型
+    stateFile.open(stateFilePath, ifstream::in);
+    if (!stateFile.is_open()) {
+        emit sendLogMessage(("不存在状态机文件:" + stateFilePath).c_str());
+        return;
+    }
+    string file, line;
+    while (!stateFile.eof()) {
+        getline(stateFile, line);
+        file += line;
+    }
+    stateParser->setStateXML(file);
+    if (!stateParser->parseStateXML()) {
+        emit sendLogMessage(("状态机文件 " + stateFilePath + " 无法正常解析").c_str());
+    }
+    stateFile.close();
 
-    // 先启动netfilterClient
+    // 再启动netfilterClient
     netfilterClient->setEventMatchText(eventHeadText, eventTailText);
     netfilterClient->setEventMatchIp(vmIp, externalIp);
     if (!netfilterClient->install()) {
-        sendLogMessage("install netfilter failed!");
+        emit sendLogMessage("install netfilter failed!");
         return;
     }
     if (!netfilterClient->start()) {
@@ -93,4 +113,8 @@ void EventManager::run() {
     // 再关闭serialPortClient
     internalClient->closePort();
     externalClient->closePort();
+}
+
+void EventManager::setStateConf(const string &stateFilePath) {
+    this->stateFilePath = stateFilePath;
 }

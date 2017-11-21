@@ -8,9 +8,12 @@
 #include <QtCore/QThread>
 #include <NetfilterClient.h>
 #include <string>
+#include <fstream>
 #include <SerialPortClient.h>
+#include "StateParser.h"
 
 using std::string;
+using std::ifstream;
 
 /**
  * 1. 管理各个事件获取客户端
@@ -27,6 +30,7 @@ class EventManager : public QThread {
     void setEventConf(const string &eventHeadText, const string &eventBodyText, const string &eventTailText);
     void setNetfilterConf(const string &vmIp, const string &externalIp);
     void setSerialPortConf(const string &pseudoTerminal, const string &serialPort);
+    void setStateConf(const string &stateFilePath);
 
     void stop();
 
@@ -52,6 +56,11 @@ class EventManager : public QThread {
     string serialPort;
     SerialPortClient *internalClient;
     SerialPortClient *externalClient;
+
+    string stateFilePath;
+    ifstream stateFile;
+
+    StateParser *stateParser;
 };
 
 

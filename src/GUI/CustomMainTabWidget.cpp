@@ -11,20 +11,20 @@
 
 CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     eventTabWidget = new CustomEventTabWidget(this);
-    stateTabWidget = new CustomStateTabWidget(this);
+//    stateTabWidget = new CustomStateTabWidget(this);
     runWidget = new CustomRunWidget(this);
 
     this->addTab(eventTabWidget, "事件模板定义");
-    this->addTab(stateTabWidget, "事件状态机定义");
+//    this->addTab(stateTabWidget, "事件状态机定义");
     this->addTab(runWidget, "运行展示");
 
     QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
-    QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
+//    QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
     QObject::connect(runWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
 
     // 先让运行页包含配置页列表
     runWidget->setEventList(eventTabWidget->getListWidget(), eventTabWidget->getStackedWidget());
-    runWidget->setStateList(stateTabWidget->getListWidget(), stateTabWidget->getStackedWidget());
+//    runWidget->setStateList(stateTabWidget->getListWidget(), stateTabWidget->getStackedWidget());
 
     // 激活运行页标签时调用runTabClicked主动获取配置页信息
     QObject::connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(runTabClicked(int)));
@@ -32,7 +32,7 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     // 读取配置文件并更改页面内容
     readConf();
     eventTabWidget->setConf(eventsConf);
-    stateTabWidget->setConf(stateMachinesConf);
+//    stateTabWidget->setConf(stateMachinesConf);
     // 配置页更新完成后手动更新一次运行页的下拉框
     runWidget->updateWidget();
     runWidget->setConf(runConf);
@@ -40,7 +40,7 @@ CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
 
 void CustomMainTabWidget::saveConf() {
     eventTabWidget->saveConfToXML();
-    stateTabWidget->saveConfToXML();
+//    stateTabWidget->saveConfToXML();
     runWidget->saveConfToXML();
 
     GUIConf.SaveFile(GUI_CONF_FILE);
@@ -64,7 +64,7 @@ void CustomMainTabWidget::changeTabStyle() {
                                         "border: none;"
                                         "}"
                                         "QTabBar::tab {"
-                                        "min-width: " + std::to_string(currentWidth / 3) + "px;"
+                                        "min-width: " + std::to_string(currentWidth / 2) + "px;"
                                         "height: " + std::to_string(MAIN_TAB_HEIGHT) + "px;"
                                         "}"
                         ).c_str());

@@ -47,7 +47,7 @@ class CustomMainTabWidget : public QTabWidget{
      * 中央tabWidget只包含三个widget
      */
     CustomSubTabWidget *eventTabWidget;
-    CustomSubTabWidget *stateTabWidget;
+//    CustomSubTabWidget *stateTabWidget;
     CustomRunWidget *runWidget;
     /**
      * 记录当前width，用于在重绘事件中判断是否要重绘

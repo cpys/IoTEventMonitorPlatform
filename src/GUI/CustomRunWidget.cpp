@@ -7,15 +7,17 @@
 #include "CustomEventWidget.h"
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
-    gridLayout = new QGridLayout(this);
+    hBoxLayout = new QHBoxLayout(this);
+    gridLayout = new QGridLayout();
 
     eventLabel = new QLabel("事件选择", this);
     stateLabel = new QLabel("状态机选择", this);
     eventComboBox = new QComboBox(this);
-    stateComboBox = new QComboBox(this);
+//    stateComboBox = new QComboBox(this);
+    stateEdit = new QLineEdit(this);
 
     eventTextBrowser = new QTextBrowser(this);
-    stateGraphicsView = new QGraphicsView(this);
+//    stateGraphicsView = new QGraphicsView(this);
     eventTextBrowser->setText("事件模板预览");
     eventTextBrowser->setAlignment(Qt::AlignCenter);
 
@@ -31,48 +33,65 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     pseudoTerminalEdit = new QLineEdit(this);
     serialPortEdit = new QLineEdit(this);
 
-    vmNameLabel = new QLabel("虚拟机名称", this);
-    vmPidLabel = new QLabel("虚拟机进程pid", this);
-    vmNameEdit = new QLineEdit(this);
-    vmPidEdit = new QLineEdit(this);
+//    vmNameLabel = new QLabel("虚拟机名称", this);
+//    vmPidLabel = new QLabel("虚拟机进程pid", this);
+//    vmNameEdit = new QLineEdit(this);
+//    vmPidEdit = new QLineEdit(this);
 
     runButton = new QPushButton("启动", this);
 
     eventManager = new EventManager(this);
 
+    hBoxLayout->addLayout(gridLayout, 2);
+    hBoxLayout->addWidget(eventTraceTextBrowser, 8);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    hBoxLayout->setSpacing(0);
+
     gridLayout->addWidget(eventLabel, 0, 0);
     gridLayout->addWidget(eventComboBox, 0, 1);
-    gridLayout->addWidget(stateLabel, 0, 2);
-    gridLayout->addWidget(stateComboBox, 0, 3);
 
-    gridLayout->addWidget(eventTextBrowser, 1, 0, 1, 4);
-    gridLayout->addWidget(stateGraphicsView, 2, 0, 1, 4);
+//    gridLayout->addWidget(stateLabel, 0, 2);
+////    gridLayout->addWidget(stateComboBox, 0, 3);
+//    gridLayout->addWidget(stateEdit, 0, 3);
 
-    gridLayout->addWidget(eventTraceTextBrowser, 0, 4, 3, 5);
+    gridLayout->addWidget(eventTextBrowser, 1, 0, 1, 3);
+//    gridLayout->addWidget(stateGraphicsView, 2, 0, 1, 4);
 
-    gridLayout->addWidget(vmIpLabel, 3, 0);
-    gridLayout->addWidget(externalIpLabel, 4, 0);
-    gridLayout->addWidget(vmIpEdit, 3, 1, 1, 3);
-    gridLayout->addWidget(externalIpEdit, 4, 1, 1, 3);
 
-    gridLayout->addWidget(pseudoTerminalLabel, 3, 4);
-    gridLayout->addWidget(serialPortLabel, 4, 4);
-    gridLayout->addWidget(pseudoTerminalEdit, 3, 5);
-    gridLayout->addWidget(serialPortEdit, 4, 5);
+    gridLayout->addWidget(vmIpLabel, 2, 0);
+    gridLayout->addWidget(vmIpEdit, 2, 1);
 
-    gridLayout->addWidget(vmNameLabel, 3, 6);
-    gridLayout->addWidget(vmPidLabel, 4, 6);
-    gridLayout->addWidget(vmNameEdit, 3, 7);
-    gridLayout->addWidget(vmPidEdit, 4, 7);
+    gridLayout->addWidget(externalIpLabel, 3, 0);
+    gridLayout->addWidget(externalIpEdit, 3, 1);
 
-    gridLayout->addWidget(runButton, 3, 8, 2, 1);
+    gridLayout->addWidget(pseudoTerminalLabel, 4, 0);
+    gridLayout->addWidget(pseudoTerminalEdit, 4, 1);
+
+    gridLayout->addWidget(serialPortLabel, 5, 0);
+    gridLayout->addWidget(serialPortEdit, 5, 1);
+
+    gridLayout->addWidget(stateLabel, 6, 0);
+    gridLayout->addWidget(stateEdit, 6, 1);
+
+    gridLayout->addWidget(runButton, 7, 0, 1, 2);
+
+
+//    gridLayout->addWidget(vmNameLabel, 3, 6);
+//    gridLayout->addWidget(vmPidLabel, 4, 6);
+//    gridLayout->addWidget(vmNameEdit, 3, 7);
+//    gridLayout->addWidget(vmPidEdit, 4, 7);
+
+//    gridLayout->addWidget(eventTraceTextBrowser, 0, 3, 8, 1);
 
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
 
+    stateEdit->setMaxLength(50);
+
+
     // 让下拉框与显示框对应
     QObject::connect(eventComboBox, SIGNAL(activated(int)), this, SLOT(showSelectEvent(int)));
-    QObject::connect(stateComboBox, SIGNAL(activated(int)), this, SLOT(showSelectState(int)));
+//    QObject::connect(stateComboBox, SIGNAL(activated(int)), this, SLOT(showSelectState(int)));
 
     // 启动按钮
     QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
@@ -88,7 +107,7 @@ void CustomRunWidget::setConf(XMLElement *runConf) {
     this->runConf = runConf;
 
     eventComboBox->setCurrentIndex(eventComboBox->findText(runConf->Attribute("event")));
-    stateComboBox->setCurrentIndex(stateComboBox->findText(runConf->Attribute("stateMachine")));
+//    stateComboBox->setCurrentIndex(stateComboBox->findText(runConf->Attribute("stateMachine")));
 
     vmIpEdit->setIp(runConf->Attribute("vmIP"));
     externalIpEdit->setIp(runConf->Attribute("externalIP"));
@@ -96,13 +115,15 @@ void CustomRunWidget::setConf(XMLElement *runConf) {
     pseudoTerminalEdit->setText(runConf->Attribute("pseudoTerminal"));
     serialPortEdit->setText(runConf->Attribute("serialPort"));
 
-    vmNameEdit->setText(runConf->Attribute("vmName"));
-    vmPidEdit->setText(runConf->Attribute("vmPID"));
+    stateEdit->setText(runConf->Attribute("stateMachine"));
+
+//    vmNameEdit->setText(runConf->Attribute("vmName"));
+//    vmPidEdit->setText(runConf->Attribute("vmPID"));
 }
 
 void CustomRunWidget::saveConfToXML() {
     runConf->SetAttribute("event", eventComboBox->currentText().toStdString().c_str());
-    runConf->SetAttribute("state", stateComboBox->currentText().toStdString().c_str());
+//    runConf->SetAttribute("state", stateComboBox->currentText().toStdString().c_str());
 
     runConf->SetAttribute("vmIP", vmIpEdit->getIp().c_str());
     runConf->SetAttribute("externalIP", externalIpEdit->getIp().c_str());
@@ -110,8 +131,10 @@ void CustomRunWidget::saveConfToXML() {
     runConf->SetAttribute("pseudoTerminal", pseudoTerminalEdit->text().toStdString().c_str());
     runConf->SetAttribute("serialPort", serialPortEdit->text().toStdString().c_str());
 
-    runConf->SetAttribute("vmName", vmNameEdit->text().toStdString().c_str());
-    runConf->SetAttribute("vmPID", vmPidEdit->text().toStdString().c_str());
+    runConf->SetAttribute("stateMachine", stateEdit->text().toStdString().c_str());
+
+//    runConf->SetAttribute("vmName", vmNameEdit->text().toStdString().c_str());
+//    runConf->SetAttribute("vmPID", vmPidEdit->text().toStdString().c_str());
 }
 
 void CustomRunWidget::setEventList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {
@@ -119,14 +142,14 @@ void CustomRunWidget::setEventList(const QListWidget *listWidget, const QStacked
     this->eventStackedWidget = stackedWidget;
 }
 
-void CustomRunWidget::setStateList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {
-    this->stateListWidget = listWidget;
-    this->stateStackedWidget = stackedWidget;
-}
+//void CustomRunWidget::setStateList(const QListWidget *listWidget, const QStackedWidget *stackedWidget) {
+//    this->stateListWidget = listWidget;
+//    this->stateStackedWidget = stackedWidget;
+//}
 
 void CustomRunWidget::updateWidget() {
     updateEventList();
-    updateStateList();
+//    updateStateList();
 }
 
 void CustomRunWidget::updateEventList() {
@@ -151,27 +174,27 @@ void CustomRunWidget::updateEventList() {
     }
 }
 
-void CustomRunWidget::updateStateList() {
-    // 暂存当前选择
-    QString currentText = eventComboBox->currentText();
-
-    // 清空后重新更新
-    stateComboBox->clear();
-    auto item = stateListWidget->item(0);
-    for (int row = 0; row < stateListWidget->count(); ++row, item = stateListWidget->item(row)) {
-        stateComboBox->addItem(item->text());
-    }
-
-    int lastIndex = stateComboBox->findText(currentText);
-    if (lastIndex < 0) {
-        stateComboBox->setCurrentIndex(0);
-        showSelectState(0);
-    }
-    else {
-        stateComboBox->setCurrentIndex(lastIndex);
-        showSelectState(lastIndex);
-    }
-}
+//void CustomRunWidget::updateStateList() {
+//    // 暂存当前选择
+//    QString currentText = eventComboBox->currentText();
+//
+//    // 清空后重新更新
+//    stateComboBox->clear();
+//    auto item = stateListWidget->item(0);
+//    for (int row = 0; row < stateListWidget->count(); ++row, item = stateListWidget->item(row)) {
+//        stateComboBox->addItem(item->text());
+//    }
+//
+//    int lastIndex = stateComboBox->findText(currentText);
+//    if (lastIndex < 0) {
+//        stateComboBox->setCurrentIndex(0);
+//        showSelectState(0);
+//    }
+//    else {
+//        stateComboBox->setCurrentIndex(lastIndex);
+//        showSelectState(lastIndex);
+//    }
+//}
 
 void CustomRunWidget::run() {
     // 开始执行后更改各组件状态
@@ -183,6 +206,7 @@ void CustomRunWidget::run() {
     eventManager->setEventConf(currentEventWidget->getHeadText(), currentEventWidget->getBodyText(), currentEventWidget->getTailText());
     eventManager->setNetfilterConf(this->vmIpEdit->getIp(), this->externalIpEdit->getIp());
     eventManager->setSerialPortConf(this->pseudoTerminalEdit->text().toStdString(), this->serialPortEdit->text().toStdString());
+    eventManager->setStateConf(this->stateEdit->text().toStdString());
     eventManager->start();
 }
 
@@ -196,13 +220,14 @@ void CustomRunWidget::stop() {
 
 void CustomRunWidget::changeWidgetState(bool isEnabled) {
     eventComboBox->setEnabled(isEnabled);
-    stateComboBox->setEnabled(isEnabled);
+//    stateComboBox->setEnabled(isEnabled);
+    stateEdit->setEnabled(isEnabled);
     vmIpEdit->setEnabled(isEnabled);
     externalIpEdit->setEnabled(isEnabled);
     pseudoTerminalEdit->setEnabled(isEnabled);
     serialPortEdit->setEnabled(isEnabled);
-    vmNameEdit->setEnabled(isEnabled);
-    vmPidEdit->setEnabled(isEnabled);
+//    vmNameEdit->setEnabled(isEnabled);
+//    vmPidEdit->setEnabled(isEnabled);
 }
 
 void CustomRunWidget::runButtonClicked() {

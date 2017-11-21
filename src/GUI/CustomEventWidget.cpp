@@ -31,11 +31,11 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     upperOutLayer->setText("<xml>");
     middleLayer->setText("<name>value</name>");
     bottomOutLayer->setText("</xml>");
-    upperIndicator->setText("<- 锁定外层");
-    middleIndicator->setText("<- 浮动内层");
-    bottomIndicator->setText("<- 锁定外层");
+    upperIndicator->setText("事件匹配头部");
+    middleIndicator->setText("事件非匹配主体");
+    bottomIndicator->setText("事件匹配尾部");
 
-    upperIndicator->setAlignment(Qt::AlignCenter|Qt::AlignBottom|Qt::AlignHCenter);
+//    upperIndicator->setAlignment(Qt::AlignCenter|Qt::AlignBottom|Qt::AlignHCenter);
 }
 
 void CustomEventWidget::setConf(XMLElement *eventConf) {

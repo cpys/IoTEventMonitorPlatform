@@ -35,7 +35,11 @@ class StateParser {
 
   private:
     string stateXML;
-    Module *module;
+    Module *module = nullptr;
+    /**
+     * mxCell的id与节点实际id的映射
+     */
+    map<int, int> idMap;
 
     /**
      * 解析变量声明的原始格式字符串，提取出变量和其类型
@@ -48,13 +52,16 @@ class StateParser {
      * 解析状态结点上的原始格式字符串，提取出节点编号和表达式
      * 添加到模型中
      * @param state
+     * @param stateGraphId 表示图的xml中节点mxcell的id
      * @return
      */
-    bool parseState(const char *state);
+    bool parseState(const char *state, const char *stateGraphId);
     /**
      * 解析转移上的原始格式字符串，提取出转移名称和表达式
      * 添加到模型中
      * @param tran
+     * @param source
+     * @param target
      * @return
      */
     bool parseTran(const char *tran, const char *source, const char *target);

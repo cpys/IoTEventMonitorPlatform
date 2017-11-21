@@ -1,23 +1,14 @@
 <xml projectName="IoTEventMonitorPlatform">
     <events>
         <event name="事件1">
-            <head>&lt;xml name="event1"&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件2">
-            <head>&lt;xml&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件3">
-            <head>&lt;xml&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
+            <head>&lt;xml type="event"</head>
+            <body> name="event1"&gt;
+&lt;varName&gt;value&lt;/varName&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
     </events>
     <stateMachines>
         <stateMachine name="状态机1"/>
     </stateMachines>
-    <run event="事件2" stateMachine="状态机1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="/dev/pts/2" serialPort="/dev/ttyUSB0" vmName="ubuntu" vmPID="1533" hostIP="127.0.0.1" state="状态机1"/>
+    <run event="事件1" stateMachine="/home/chenkuan/rvsDFA5-1.xml" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1"/>
 </xml>

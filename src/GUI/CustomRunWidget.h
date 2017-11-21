@@ -47,7 +47,7 @@ class CustomRunWidget : public QWidget {
      * @param stackedWidget
      */
     void setEventList(const QListWidget *listWidget, const QStackedWidget *stackedWidget);
-    void setStateList(const QListWidget *listWidget, const QStackedWidget *stackedWidget);
+//    void setStateList(const QListWidget *listWidget, const QStackedWidget *stackedWidget);
     /**
      * 更新此页面信息
      */
@@ -57,17 +57,19 @@ class CustomRunWidget : public QWidget {
     void sendStatusMessage(const QString&);
 
   private:
+    QHBoxLayout *hBoxLayout = nullptr;
     QGridLayout *gridLayout = nullptr;
 
     // 事件与状态机选择下拉框
     QLabel *eventLabel = nullptr;
     QLabel *stateLabel = nullptr;
     QComboBox *eventComboBox = nullptr;
-    QComboBox *stateComboBox = nullptr;
+//    QComboBox *stateComboBox = nullptr;
+    QLineEdit *stateEdit = nullptr;
 
     // 事件与状态机预览
     QTextBrowser *eventTextBrowser = nullptr;
-    QGraphicsView *stateGraphicsView = nullptr;
+//    QGraphicsView *stateGraphicsView = nullptr;
 
     // 事件跟踪展示
     QTextBrowser *eventTraceTextBrowser = nullptr;
@@ -84,11 +86,11 @@ class CustomRunWidget : public QWidget {
     QLineEdit *pseudoTerminalEdit = nullptr;
     QLineEdit *serialPortEdit = nullptr;
 
-    // 虚拟机内存进程监控配置
-    QLabel *vmNameLabel = nullptr;
-    QLabel *vmPidLabel = nullptr;
-    QLineEdit *vmNameEdit = nullptr;
-    QLineEdit *vmPidEdit = nullptr;
+//    // 虚拟机内存进程监控配置
+//    QLabel *vmNameLabel = nullptr;
+//    QLabel *vmPidLabel = nullptr;
+//    QLineEdit *vmNameEdit = nullptr;
+//    QLineEdit *vmPidEdit = nullptr;
 
     // 启动与展示
     QPushButton *runButton = nullptr;
@@ -107,11 +109,11 @@ class CustomRunWidget : public QWidget {
      * 当前选中的事件页
      */
     const CustomEventWidget *currentEventWidget;
-    /**
-     * 此两项分别来自前面状态机配置页
-     */
-    const QListWidget *stateListWidget;
-    const QStackedWidget *stateStackedWidget;
+//    /**
+//     * 此两项分别来自前面状态机配置页
+//     */
+//    const QListWidget *stateListWidget;
+//    const QStackedWidget *stateStackedWidget;
     /**
      * 后台处理线程，用来与各个客户端连接并验证事件
      */
@@ -120,7 +122,7 @@ class CustomRunWidget : public QWidget {
      * 更新下拉列表和其对应的显示框
      */
     void updateEventList();
-    void updateStateList();
+//    void updateStateList();
     /**
      * 启动后台处理线程
      */
