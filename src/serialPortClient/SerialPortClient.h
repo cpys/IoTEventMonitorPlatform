@@ -12,13 +12,36 @@ class SerialPortClient {
   public:
     SerialPortClient() = default;
     ~SerialPortClient();
+    /**
+     * 设置事件匹配头尾
+     * @param eventHeadText
+     * @param eventTailText
+     */
     void setPort(const string &port);
     bool init();  // 设置串口、打开串口
     void closePort();
 
+    /**
+     * 查看串口上是否收到字节流
+     * @return
+     */
     bool hasMessage();
-    string getMessage();    // 收消息
-    bool sendMessage(const string& message); // 发消息
+    /**
+     * 从串口上获取字节流追加到缓存的字符队列后面
+     * @return
+     */
+    void getMessage();
+    /**
+     * 获取字符流队列的引用
+     * @return
+     */
+    string &getMessageQueue();
+    /**
+     * 往串口上发字节流消息
+     * @param message
+     * @return
+     */
+    bool sendMessage(const string& message);
 
   private:
     /**
@@ -75,6 +98,11 @@ class SerialPortClient {
      */
     static constexpr timeval defaultTv = {0, 1000};
     timeval tv = defaultTv;
+
+    /**
+     * 缓存的字符队列
+     */
+    string messageQueue;
 
     /**
      * 打开串口

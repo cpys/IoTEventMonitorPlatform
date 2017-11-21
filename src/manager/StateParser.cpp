@@ -100,14 +100,14 @@ bool StateParser::validateEvent(const string &event) {
     XMLError xmlError = xmlDocument.Parse(event.c_str());
     if (xmlError != XML_SUCCESS) {
         cerr << "event \"" << event << "\" is not xml!" << endl;
-        return true;
+        return false;
     }
 
     XMLElement *eventRoot = xmlDocument.FirstChildElement();
     auto eventName = eventRoot->Attribute("name");
     if (eventName == nullptr) {
         cerr << "缺少事件名称!" << endl;
-        return true;
+        return false;
     }
 
     map<string, string> vars;

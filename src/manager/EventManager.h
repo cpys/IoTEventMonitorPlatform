@@ -10,6 +10,7 @@
 #include <string>
 #include <fstream>
 #include <SerialPortClient.h>
+#include <SerialPortRepeater.h>
 #include "StateParser.h"
 
 using std::string;
@@ -54,8 +55,7 @@ class EventManager : public QThread {
 
     string pseudoTerminal;
     string serialPort;
-    SerialPortClient *internalClient;
-    SerialPortClient *externalClient;
+    SerialPortRepeater *serialPortRepeater;
 
     string stateFilePath;
     ifstream stateFile;

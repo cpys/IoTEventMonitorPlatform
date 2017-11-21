@@ -6,9 +6,7 @@
 
 EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient();
-    internalClient = new SerialPortClient();
-    externalClient = new SerialPortClient();
-
+    serialPortRepeater = new SerialPortRepeater();
     stateParser = new StateParser();
 }
 
@@ -16,8 +14,7 @@ EventManager::~EventManager() {
     stop();
     wait();
     delete(netfilterClient);
-    delete(internalClient);
-    delete(externalClient);
+    delete(serialPortRepeater);
     delete(stateParser);
 }
 
@@ -76,12 +73,11 @@ void EventManager::run() {
     }
 
     // 再启动serialPortClient
-    internalClient->setPort(pseudoTerminal);
-    externalClient->setPort(serialPort);
-    if (!internalClient->init() || !externalClient->init()) {
+    serialPortRepeater->setEventMatchText(eventHeadText, eventTailText);
+    serialPortRepeater->setPorts(pseudoTerminal, serialPort);
+    if (!serialPortRepeater->init()) {
         emit sendLogMessage("串口转发器初始化失败！");
-        internalClient->closePort();
-        externalClient->closePort();
+        serialPortRepeater->closePorts();
         netfilterClient->stop();
         netfilterClient->remove();
         return;
@@ -92,18 +88,28 @@ void EventManager::run() {
         if (netfilterClient->hasEvent()) {
             string event = netfilterClient->getEvent();
             emit sendLogMessage(QString::fromStdString("网络事件：" + event));
+            if (stateParser->validateEvent(event)) {
+                emit sendLogMessage("验证通过");
+//                netfilterClient->passEvent();
+            }
+            else {
+                emit sendLogMessage("验证拦截");
+//                netfilterClient->interceptEvent();
+            }
         }
 
         // 判断串口有没有事件
-        if (internalClient->hasMessage()) {
-            string event = internalClient->getMessage();
-            emit sendLogMessage(QString::fromStdString("串口事件，虚拟机-->外部设备：" + event));
-            externalClient->sendMessage(event);
-        }
-        if (externalClient->hasMessage()) {
-            string event = externalClient->getMessage();
-            emit sendLogMessage(QString::fromStdString("串口事件，外部设备-->虚拟机：" + event));
-            internalClient->sendMessage(event);
+        if (serialPortRepeater->hasEvent()) {
+            string event = serialPortRepeater->getEvent();
+            emit sendLogMessage(QString::fromStdString("串口事件：" + event));
+            if (stateParser->validateEvent(event)) {
+                emit sendLogMessage("验证通过");
+                serialPortRepeater->passEvent();
+            }
+            else {
+                emit sendLogMessage("验证拦截");
+                serialPortRepeater->interceptEvent();
+            }
         }
         // 判断内存有没有事件
     }
@@ -113,8 +119,7 @@ void EventManager::run() {
     netfilterClient->remove();
 
     // 再关闭serialPortClient
-    internalClient->closePort();
-    externalClient->closePort();
+    serialPortRepeater->closePorts();
 }
 
 void EventManager::setStateConf(const string &stateFilePath) {

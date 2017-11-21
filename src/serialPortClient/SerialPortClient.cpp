@@ -55,7 +55,7 @@ bool SerialPortClient::hasMessage() {
     return fs_sel > 0;
 }
 
-string SerialPortClient::getMessage() {
+void SerialPortClient::getMessage() {
     int len = 0;
     do {
         len += read(fd, buffer + len, MAX_MSG - len);
@@ -65,7 +65,7 @@ string SerialPortClient::getMessage() {
     }
     while (hasMessage());
 
-    return string(std::begin(buffer), std::begin(buffer) + len);
+    messageQueue += string(std::begin(buffer), std::begin(buffer) + len);
 }
 
 bool SerialPortClient::openPort() {
@@ -200,5 +200,9 @@ bool SerialPortClient::sendMessage(const string &message) {
         tcflush(fd, TCOFLUSH);
         return false;
     }
+}
+
+string &SerialPortClient::getMessageQueue() {
+    return messageQueue;
 }
 
