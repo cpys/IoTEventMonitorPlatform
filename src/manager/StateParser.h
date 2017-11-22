@@ -32,6 +32,11 @@ class StateParser {
      * @return
      */
     bool validateEvent(const string &event);
+    /**
+     * 获取事件是否是关键事件
+     * @return
+     */
+    bool getIsEventImportant();
 
   private:
     string stateXML;
@@ -40,6 +45,10 @@ class StateParser {
      * mxCell的id与节点实际id的映射
      */
     map<int, int> idMap;
+    /**
+     * 事件是否是关键事件
+     */
+    bool isEventImportant;
 
     /**
      * 解析变量声明的原始格式字符串，提取出变量和其类型

@@ -109,6 +109,13 @@ bool StateParser::validateEvent(const string &event) {
         cerr << "缺少事件名称!" << endl;
         return false;
     }
+    auto eventImportant = eventRoot->Attribute("important");
+    if (eventName == nullptr || strcmp("1", eventImportant) != 0) {
+        isEventImportant = false;
+    }
+    else {
+        isEventImportant = true;
+    }
 
     map<string, string> vars;
     for (auto varLabel = eventRoot->FirstChildElement(); varLabel != nullptr; varLabel = varLabel->NextSiblingElement()) {
@@ -232,4 +239,8 @@ bool StateParser::parseSpec(const char *spec) {
     cout << "添加验证:" << specStr.toStdString() << endl;
     module->addSpec({specStr.toStdString()});
     return true;
+}
+
+bool StateParser::getIsEventImportant() {
+    return isEventImportant;
 }

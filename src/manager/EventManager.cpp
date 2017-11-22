@@ -94,11 +94,16 @@ void EventManager::run() {
                     emit sendLogMessage("通过指令发送失败！");
                 }
             }
-            else {
+            else if (stateParser->getIsEventImportant()){
+                // 只有关键事件才进行拦截
                 emit sendLogMessage("验证拦截");
                 if (!netfilterClient->interceptEvent()) {
                     emit sendLogMessage("拦截指令发送失败！");
                 }
+            }
+            else {
+                // 非关键事件只进行报警
+                emit sendLogMessage("事件验证失败");
             }
         }
 
@@ -110,9 +115,14 @@ void EventManager::run() {
                 emit sendLogMessage("验证通过");
                 serialPortRepeater->passEvent();
             }
-            else {
+            else if (stateParser->getIsEventImportant()){
+                // 只有关键事件才进行拦截
                 emit sendLogMessage("验证拦截");
                 serialPortRepeater->interceptEvent();
+            }
+            else {
+                // 非关键事件只进行报警
+                emit sendLogMessage("事件验证失败");
             }
         }
         // 判断内存有没有事件

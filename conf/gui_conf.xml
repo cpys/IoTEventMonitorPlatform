@@ -2,7 +2,7 @@
     <events>
         <event name="事件1">
             <head>&lt;xml type="event"</head>
-            <body> name="event1"&gt;
+            <body> name="event1" important="1"&gt;
 &lt;varName&gt;value&lt;/varName&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
