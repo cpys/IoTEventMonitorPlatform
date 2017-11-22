@@ -123,6 +123,7 @@ void EventManager::run() {
             else {
                 // 非关键事件只进行报警
                 emit sendLogMessage("事件验证失败");
+                serialPortRepeater->passEvent();
             }
         }
         // 判断内存有没有事件
