@@ -252,3 +252,26 @@ bool StateParser::parseSpec(const char *spec) {
 bool StateParser::getIsEventImportant() {
     return isEventImportant;
 }
+
+bool StateParser::justGetIsEventImportant(const string &event) {
+    XMLDocument xmlDocument;
+    XMLError xmlError = xmlDocument.Parse(event.c_str());
+    if (xmlError != XML_SUCCESS) {
+        cerr << "event \"" << event << "\" is not xml!" << endl;
+        return false;
+    }
+
+    XMLElement *eventRoot = xmlDocument.FirstChildElement();
+    auto eventName = eventRoot->Attribute("name");
+    if (eventName == nullptr) {
+        cerr << "缺少事件名称!" << endl;
+        return false;
+    }
+    auto eventImportant = eventRoot->Attribute("important");
+    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}

@@ -37,6 +37,11 @@ class StateParser {
      * @return
      */
     bool getIsEventImportant();
+    /**
+     * 不验证事件，只判断是否为关键事件，仅供测试使用
+     * @return
+     */
+    bool justGetIsEventImportant(const string &event);
 
   private:
     string stateXML;
