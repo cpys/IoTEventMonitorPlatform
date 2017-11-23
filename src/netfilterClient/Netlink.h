@@ -16,7 +16,7 @@ class Netlink {
     bool init();
     void closeConnection();
     bool hasMessage();
-    const string & getMessage();
+    string getMessage();
     bool sendAcceptMessage();
     bool sendDropMessage();
 

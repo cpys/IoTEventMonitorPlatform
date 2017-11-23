@@ -96,6 +96,9 @@ bool StateParser::parseStateXML() {
 }
 
 bool StateParser::validateEvent(const string &event) {
+    clock_t startTime, endTime;
+    startTime = clock();
+
     XMLDocument xmlDocument;
     XMLError xmlError = xmlDocument.Parse(event.c_str());
     if (xmlError != XML_SUCCESS) {
@@ -110,7 +113,7 @@ bool StateParser::validateEvent(const string &event) {
         return false;
     }
     auto eventImportant = eventRoot->Attribute("important");
-    if (eventName == nullptr || strcmp("1", eventImportant) != 0) {
+    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
         isEventImportant = false;
     }
     else {
@@ -122,7 +125,12 @@ bool StateParser::validateEvent(const string &event) {
         vars[string(varLabel->Value())] = string(varLabel->GetText());
     }
 
-    return module->addEvent(string(eventName), vars);
+    bool result = module->addEvent(string(eventName), vars);
+
+    endTime = clock();
+    cout << "validate event time:" << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+
+    return result;
 }
 
 bool StateParser::parseVarDecl(const char *varDecl) {

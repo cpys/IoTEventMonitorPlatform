@@ -73,10 +73,11 @@ void Netlink::closeConnection() {
     }
 }
 
-const string & Netlink::getMessage()  {
+string Netlink::getMessage()  {
     static int destAddrLen = sizeof(struct sockaddr_nl);
 
     int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
+
     if (ret < 0) {
         cerr << "recv message from kernel failed!" << endl;
         return "";
