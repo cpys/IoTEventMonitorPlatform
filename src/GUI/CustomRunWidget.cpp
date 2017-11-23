@@ -39,6 +39,7 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 //    vmPidEdit = new QLineEdit(this);
 
     runButton = new QPushButton("启动", this);
+    clearButton = new QPushButton("清屏", this);
 
     eventManager = new EventManager(this);
 
@@ -74,6 +75,7 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->addWidget(stateEdit, 6, 1);
 
     gridLayout->addWidget(runButton, 7, 0, 1, 2);
+    gridLayout->addWidget(clearButton, 8, 0, 1, 2);
 
 
 //    gridLayout->addWidget(vmNameLabel, 3, 6);
@@ -95,6 +97,9 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 
     // 启动按钮
     QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
+
+    // 清除按钮
+    QObject::connect(clearButton, SIGNAL(clicked()), eventTraceTextBrowser, SLOT(clear()));
 
     // 日志展示，连接子线程函数
     QObject::connect(eventManager, SIGNAL(sendLogMessage(const QString&)), this, SLOT(showLogMessage(const QString&)));

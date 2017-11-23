@@ -94,6 +94,8 @@ class CustomRunWidget : public QWidget {
 
     // 启动与展示
     QPushButton *runButton = nullptr;
+    // 清除按钮
+    QPushButton *clearButton = nullptr;
 
     /**
      * 记录该页配置的节点
