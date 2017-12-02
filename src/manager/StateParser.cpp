@@ -2,7 +2,7 @@
 // Created by chenkuan on 17-11-15.
 //
 
-#include <DFAModule.h>
+#include <Module.h>
 #include <tinyxml2.h>
 #include <iostream>
 #include <QtCore/QString>
@@ -22,7 +22,7 @@ void StateParser::setStateXML(const string &stateXML) {
 }
 
 bool StateParser::parseStateXML() {
-    module = new DFAModule();
+    module = new Module();
 
     XMLDocument xmlDocument;
     XMLError xmlError = xmlDocument.Parse(stateXML.c_str());
@@ -65,7 +65,12 @@ bool StateParser::parseStateXML() {
     for (auto mxCell = root->FirstChildElement("mxCell"); mxCell != nullptr; mxCell = mxCell->NextSiblingElement("mxCell")) {
         auto style = mxCell->Attribute("style");
         if (style != nullptr && strncmp("ellipse", style, 7) == 0) {
-            if (!parseState(mxCell->Attribute("value"), mxCell->Attribute("id"))) {
+            if (strncmp("ellipse;shape=doubleEllipse", style, 27) == 0) {
+                if (!parseState(mxCell->Attribute("value"), mxCell->Attribute("id"), true)) {
+                    return false;
+                }
+            }
+            else if (!parseState(mxCell->Attribute("value"), mxCell->Attribute("id"), false)) {
                 return false;
             }
         }
@@ -75,8 +80,9 @@ bool StateParser::parseStateXML() {
     for (auto mxCell = root->FirstChildElement("mxCell"); mxCell != nullptr; mxCell = mxCell->NextSiblingElement("mxCell")) {
         auto edgeAttribute = mxCell->Attribute("edge");
         auto source = mxCell->Attribute("source");
+        // 如果没有该属性是不是返回空指针
         auto target = mxCell->Attribute("target");
-        if (edgeAttribute != nullptr && strcmp("1", edgeAttribute) == 0 && source != nullptr && target != nullptr) {
+        if (edgeAttribute != nullptr && strcmp("1", edgeAttribute) == 0 && target != nullptr) {
             if (!parseTran(mxCell->Attribute("value"), source, target)) {
                 return false;
             }
@@ -128,7 +134,7 @@ bool StateParser::validateEvent(const string &event) {
     bool result = module->addEvent(string(eventName), vars);
 
     endTime = clock();
-    cout << "validate event time:" << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
+    cout << "验证事件总耗时 " << (double)(endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
 
     return result;
 }
@@ -146,7 +152,7 @@ bool StateParser::parseVarDecl(const char *varDecl) {
     return true;
 }
 
-bool StateParser::parseState(const char *state, const char *stateGraphId) {
+bool StateParser::parseState(const char *state, const char *stateGraphId, bool isEndState) {
     QString stateStr(state);
     stateStr.replace("&amp;", "&");
     stateStr.replace("&lt;", "<");
@@ -186,35 +192,28 @@ bool StateParser::parseState(const char *state, const char *stateGraphId) {
         cout << stateConstraint << ",";
     }
     cout << endl;
-    module->addState(stateId, stateConstraints);
+    if (isEndState) {
+        module->addEndState(stateId, stateConstraints);
+    }
+    else {
+        module->addState(stateId, stateConstraints);
+    }
     return true;
 }
 
 bool StateParser::parseTran(const char *tran, const char *source, const char *target) {
-    QString tranStr(tran);
-    tranStr.replace("&amp;", "&");
-    tranStr.replace("&lt;", "<");
-    tranStr.replace("&gt;", ">");
-    tranStr.replace("</div>", "<div>");
-    tranStr.replace("<br>", "<div>");
-
-    auto strList = tranStr.split("<div>").toStdList();
-    if (strList.empty()) {
+    if (idMap.find(stoi(string(target))) == idMap.end()) {
+        cerr << "没有目的节点" << target << endl;
         return false;
     }
-    vector<string> tranConstraints;
+    int targetId = idMap[stoi(string(target))];
 
-    bool isFirstLine = true;
-    for (auto &str : strList) {
-        if (isFirstLine) {
-            isFirstLine = false;
-            continue;
-        }
-        if (str.isEmpty()) continue;
-        tranConstraints.push_back(str.trimmed().toStdString());
+    if (source == nullptr) {
+        module->setStartState(targetId);
+        return true;
     }
 
-    string tranName = strList.front().toStdString();
+    string tranName = tran;
     if (tranName.empty()) {
         cerr << "tranName is empty" << endl;
         return false;
@@ -224,18 +223,9 @@ bool StateParser::parseTran(const char *tran, const char *source, const char *ta
         return false;
     }
     int sourceId = idMap[stoi(string(source))];
-    if (idMap.find(stoi(string(target))) == idMap.end()) {
-        cerr << "没有目的节点" << target << endl;
-        return false;
-    }
-    int targetId = idMap[stoi(string(target))];
 
-    cout << "添加转移：" << tranName << " " << sourceId << "-->" << targetId << ":";
-    for (auto tranConstraint : tranConstraints) {
-        cout << tranConstraint << ",";
-    }
-    cout << endl;
-    module->addTran(tranName, sourceId, targetId, tranConstraints);
+    cout << "添加转移：" << tranName << " " << sourceId << "-->" << targetId << endl;
+    module->addTran(tranName, sourceId, targetId);
     return true;
 }
 

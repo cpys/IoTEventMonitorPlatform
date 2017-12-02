@@ -69,7 +69,7 @@ class StateParser {
      * @param stateGraphId 表示图的xml中节点mxcell的id
      * @return
      */
-    bool parseState(const char *state, const char *stateGraphId);
+    bool parseState(const char *state, const char *stateGraphId, bool isEndState);
     /**
      * 解析转移上的原始格式字符串，提取出转移名称和表达式
      * 添加到模型中
