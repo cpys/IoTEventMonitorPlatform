@@ -176,12 +176,8 @@ bool StateParser::parseState(const char *state, const char *stateGraphId, bool i
         stateConstraints.push_back(str.trimmed().toStdString());
     }
 
-    if (stateConstraints.size() <= 1) {
-        return false;
-    }
-
     if (strList.front().isEmpty()) {
-        cerr << "state name is empty" << endl;
+        cerr << "state num is empty" << endl;
         return false;
     }
     int stateId = std::stoi(strList.front().toStdString());
