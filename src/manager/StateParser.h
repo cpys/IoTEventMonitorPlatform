@@ -6,12 +6,13 @@
 #define IOTEVENTMONITORPLATFORM_STATEPARSER_H
 
 #include <string>
-#include <Module.h>
+#include <fstream>
+#include <Model.h>
 using std::string;
 
 class StateParser {
   public:
-    StateParser() = default;
+    StateParser();
     ~StateParser();
 
     /**
@@ -27,7 +28,7 @@ class StateParser {
     /**
      * 验证一个字符串格式的事件，返回验证结果
      * 根据事件既定的事件格式解析
-     * 调用module的API进行验证
+     * 调用model的API进行验证
      * @param event
      * @return
      */
@@ -45,7 +46,7 @@ class StateParser {
 
   private:
     string stateXML;
-    Module *module = nullptr;
+    Model *model = nullptr;
     /**
      * mxCell的id与节点实际id的映射
      */
@@ -86,6 +87,8 @@ class StateParser {
      * @return
      */
     bool parseSpec(const char *spec);
+
+    std::ofstream ofile;
 };
 
 

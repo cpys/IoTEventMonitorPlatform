@@ -23,10 +23,10 @@ using z3::context;
 using z3::solver;
 using Z3Expr = z3::expr;
 
-class Module {
+class Model {
   public:
-    Module();
-    ~Module();
+    Model();
+    ~Model();
 
     /**
      * 添加变量声明
@@ -90,7 +90,7 @@ class Module {
      * 指定当前节点为起始节点
      * @return 初始化结果
      */
-    bool initModule();
+    bool initModel();
 
   private:
     /**

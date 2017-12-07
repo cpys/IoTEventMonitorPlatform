@@ -4,18 +4,18 @@
 
 #include <iostream>
 #include <stack>
-#include "Module.h"
+#include "Model.h"
 
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::stack;
 
-Module::Module() : slv(ctx) {
+Model::Model() : slv(ctx) {
 
 }
 
-Module::~Module() {
+Model::~Model() {
     for (auto &kv : states) {
         delete (kv.second);
     }
@@ -24,21 +24,21 @@ Module::~Module() {
     }
 }
 
-void Module::addVarDecl(const string &varType, const string &varName) {
+void Model::addVarDecl(const string &varType, const string &varName) {
     this->varsDecl[varName] = varType;
 }
 
-void Module::addStartState(int stateNum, const vector<string> &stateExprStrList) {
+void Model::addStartState(int stateNum, const vector<string> &stateExprStrList) {
     this->addState(stateNum, stateExprStrList);
     this->setStartState(stateNum);
 }
 
-void Module::addEndState(int stateNum, const vector<string> &stateExprStrList) {
+void Model::addEndState(int stateNum, const vector<string> &stateExprStrList) {
     this->addState(stateNum, stateExprStrList);
     this->setEndState(stateNum);
 }
 
-void Module::addState(int stateNum, const vector<string> &stateExprStrList) {
+void Model::addState(int stateNum, const vector<string> &stateExprStrList) {
     State *oldState = this->states[stateNum];
     if (oldState == nullptr) {
         oldState = new State();
@@ -59,7 +59,7 @@ void Module::addState(int stateNum, const vector<string> &stateExprStrList) {
     this->states[stateNum] = newState;
 }
 
-void Module::setStartState(int stateNum) {
+void Model::setStartState(int stateNum) {
     State *state = this->states[stateNum];
     if (state == nullptr) {
         cerr << "未找到节点" << stateNum << endl;
@@ -76,7 +76,7 @@ void Module::setStartState(int stateNum) {
     cout << "节点" << startState->getStateNum() << "成为了起始节点" << endl;
 }
 
-void Module::setEndState(int stateNum) {
+void Model::setEndState(int stateNum) {
     State *state = this->states[stateNum];
     if (state == nullptr) {
         cerr << "未找到节点" << stateNum << endl;
@@ -93,7 +93,7 @@ void Module::setEndState(int stateNum) {
     cout << "节点" << endState->getStateNum() << "成为了终止节点" << endl;
 }
 
-void Module::addTran(const string &tranName, int sourceStateNum, int destStateNum) {
+void Model::addTran(const string &tranName, int sourceStateNum, int destStateNum) {
     // 如果源节点和目标节点尚不存在，则先创建相应状态节点
     State *sourceState = this->states[sourceStateNum];
     if (sourceState == nullptr) {
@@ -116,28 +116,28 @@ void Module::addTran(const string &tranName, int sourceStateNum, int destStateNu
     this->trans.push_back(tran);
 }
 
-void Module::addSpec(const string &specStr) {
+void Model::addSpec(const string &specStr) {
     // 生成Z3表达式添加进模型
     const Z3Expr z3Expr = this->extractZ3Expr(specStr, "");
     specZ3ExprVector.push_back(z3Expr);
 }
 
-bool Module::addEvent(const string &eventName, const map<string, string> &varValueMap) {
+bool Model::addEvent(const string &eventName, const map<string, string> &varValueMap) {
     clock_t startTime, endTime;
 
     startTime = clock();
 
-    cout << "当前节点为节点" << currentState->getStateNum() << "，开始尝试转移" << endl;
+//    cout << "当前节点为节点" << currentState->getStateNum() << "，开始尝试转移" << endl;
 
     // 如果当前是起始节点，则需要添加起始节点的表达式和SPEC表达式
     if (currentState == startState) {
         for (auto &z3Expr : startState->getZ3ExprList()) {
             this->slv.add(z3Expr);
-            cout << "添加起始节点的表达式" << z3Expr << endl;
+//            cout << "添加起始节点的表达式" << z3Expr << endl;
         }
         for (auto &spec : specZ3ExprVector) {
             this->slv.add(spec);
-            cout << "添加轨迹验证表达式" << spec << endl;
+//            cout << "添加轨迹验证表达式" << spec << endl;
         }
         // 始终保留起始节点的表达式和SPEC表达式，后续添加的表达式在到达终止节点继续转移时弹出
         this->slv.push();
@@ -156,7 +156,7 @@ bool Module::addEvent(const string &eventName, const map<string, string> &varVal
         // 重新初始化状态轨迹
         this->stateTrace.clear();
         this->stateTrace.push_back(startState);
-        cout << "从终止节点" << endState->getStateNum() << "调整至起始节点" << startState->getStateNum() << "开始转移" << endl;
+        cout << "  从终止节点" << endState->getStateNum() << "调整至起始节点" << startState->getStateNum() << "开始转移" << endl;
     }
 
     // 初始化当前尝试失败的节点集合
@@ -192,25 +192,25 @@ bool Module::addEvent(const string &eventName, const map<string, string> &varVal
     }
 
     if (result) {
-        cout << "事件" << eventName << "导致节点" << currentState->getStateNum() << "转移到节点" << nextState->getStateNum()
+        cout << "  事件" << eventName << "导致节点" << currentState->getStateNum() << "转移到节点" << nextState->getStateNum()
              << endl;
         currentState = const_cast<State *>(nextState);
         this->stateTrace.push_back(currentState);
 
         endTime = clock();
-        cout << "事件转移用时 " << (double) (endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
+//        cout << "事件转移用时 " << (double) (endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
         return true;
     } else {
-        cout << "事件" << eventName << "无法转移" << endl;
+        cout << "  事件" << eventName << "无法转移" << endl;
 
         endTime = clock();
-        cout << "事件转移用时 " << (double) (endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
+//        cout << "事件转移用时 " << (double) (endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
 
         return false;
     }
 }
 
-bool Module::initModule() {
+bool Model::initModel() {
     int num = 0;
     for (auto &kv : states) {
         if (kv.second->isEmpty()) {
@@ -236,7 +236,7 @@ bool Module::initModule() {
     return true;
 }
 
-const Z3Expr Module::extractZ3Expr(const string &exprStr, const string &serialNum) {
+const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum) {
     // 借用运算符栈和运算数栈实现表达式的解析
     stack<string> operatorStack;
     // expr栈用来记录中间表达式结果
@@ -386,7 +386,7 @@ const Z3Expr Module::extractZ3Expr(const string &exprStr, const string &serialNu
     return exprStack.top();
 }
 
-const Z3Expr Module::generateVarExp(const string &varName) {
+const Z3Expr Model::generateVarExp(const string &varName) {
     auto digitIndex = varName.size();
     for (auto digitBegin = varName.rbegin(); digitBegin != varName.rend(); ++digitBegin, --digitIndex) {
         if (!isdigit(*digitBegin)) {
@@ -423,17 +423,17 @@ const Z3Expr Module::generateVarExp(const string &varName) {
     }
 }
 
-const Z3Expr Module::generateNumExp(const string &operand) {
+const Z3Expr Model::generateNumExp(const string &operand) {
     if (operand.find('.') != string::npos) return this->ctx.real_val(operand.c_str());
     else return this->ctx.int_val(operand.c_str());
 }
 
-bool Module::isOperator(char c) {
+bool Model::isOperator(char c) {
     static string operatorStr = "+-*/<>!=";
     return operatorStr.find(c) != string::npos;
 }
 
-bool Module::compareOperator(const string &operator1, const string &operator2) {
+bool Model::compareOperator(const string &operator1, const string &operator2) {
     map<string, int> operatorPriority = {
             {"$",  0},
             {"==", 1},
@@ -458,7 +458,7 @@ bool Module::compareOperator(const string &operator1, const string &operator2) {
     return operatorPriority[operator1] > operatorPriority[operator2];
 }
 
-const Z3Expr Module::calcExpr(const Z3Expr &expr1, const string &currentOperator, const Z3Expr &expr2) {
+const Z3Expr Model::calcExpr(const Z3Expr &expr1, const string &currentOperator, const Z3Expr &expr2) {
     if (currentOperator == "==") return expr1 == expr2;
     if (currentOperator == "!=") return expr1 != expr2;
     if (currentOperator == "<") return expr1 < expr2;
@@ -474,17 +474,17 @@ const Z3Expr Module::calcExpr(const Z3Expr &expr1, const string &currentOperator
     return expr1;
 }
 
-bool Module::verify(const State *nextState, const map<string, string> &varValueMap) {
+bool Model::verify(const State *nextState, const map<string, string> &varValueMap) {
     int nextStateNum = nextState->getStateNum();
 
-    cout << "尝试转移到节点" << nextStateNum << endl;
+//    cout << "尝试转移到节点" << nextStateNum << endl;
 
     slv.push();
     // 先添加下一状态中的全部Z3表达式
     const vector<Z3Expr> &stateZ3ExprList = nextState->getZ3ExprList();
     for (auto &z3Expr : stateZ3ExprList) {
         slv.add(z3Expr);
-        cout << "添加节点" << nextStateNum << "中的表达式" << z3Expr << endl;
+//        cout << "添加节点" << nextStateNum << "中的表达式" << z3Expr << endl;
     }
 
     // 再将事件上的变量全部构造成Z3表达式添加进去
@@ -499,7 +499,7 @@ bool Module::verify(const State *nextState, const map<string, string> &varValueM
 //            slv.add(this->ctx.int_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.int_val(varValue.second.c_str()));
             Z3Expr z3Expr = this->ctx.int_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.int_val(varValue.second.c_str());
             slv.add(z3Expr);
-            cout << "添加事件上变量值构成的表达式" << z3Expr << endl;
+//            cout << "添加事件上变量值构成的表达式" << z3Expr << endl;
         } else if (varType == "double") {
             slv.add(this->ctx.real_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.real_val(varValue.second.c_str()));
         } else if (varType == "bool") {
@@ -508,10 +508,10 @@ bool Module::verify(const State *nextState, const map<string, string> &varValueM
     }
 
     if (slv.check() == z3::sat) {
-        cout << "尝试转移到节点" << nextStateNum << "成功" << endl;
+//        cout << "尝试转移到节点" << nextStateNum << "成功" << endl;
         return true;
     } else {
-        cout << "尝试转移到节点" << nextStateNum << "失败" << endl;
+//        cout << "尝试转移到节点" << nextStateNum << "失败" << endl;
         slv.pop();
         currentFailedStates.insert(nextState);
         return false;

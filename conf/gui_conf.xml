@@ -6,9 +6,14 @@
 &lt;varName&gt;value&lt;/varName&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
+        <event name="事件2">
+            <head>&lt;xml&gt;</head>
+            <body>&lt;name&gt;value&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
     </events>
     <stateMachines>
         <stateMachine name="状态机1"/>
     </stateMachines>
-    <run event="事件1" stateMachine="/home/chenkuan/nat/system-test/simple-model.xml" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="/dev/pts/2" serialPort="/dev/ttyUSB0"/>
+    <run event="事件1" stateMachine="/home/chenkuan/nat/system-test/comp-model.xml" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="/dev/pts/3" serialPort="/dev/ttyUSB0"/>
 </xml>

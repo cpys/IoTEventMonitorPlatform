@@ -85,57 +85,107 @@ void EventManager::run() {
         return;
     }
 
+    //uint eventNum = 0;
     while (!threadStop) {
         // 轮询各个客户端
 //        cout << "netfilter client has event?" << endl;
         if (netfilterClient->hasEvent()) {
 //            cout << "netfilter client has event, let's get event" << endl;
             string event = netfilterClient->getEvent();
-            cout << "get netfilter event " << event << endl;
+            cout << "采集到网络事件：" << event << endl;
+//            cout << "get netfilter event " << event << endl;
+            //cout << "采集到网络事件 " << event << ",事件总数为" << ++eventNum << endl;
+            //++eventNum;
+            //usleep(1500);
+            //netfilterClient->passEvent();
 //            if (stateParser->justGetIsEventImportant(event)) {
 //                emit sendLogMessage(QString::fromStdString("网络事件：" + event));
 //            }
 //            netfilterClient->passEvent();
-            if (stateParser->validateEvent(event)) {
-                emit sendLogMessage("验证通过");
-                if (!netfilterClient->passEvent()) {
-                    emit sendLogMessage("通过指令发送失败！");
+            bool result = stateParser->validateEvent(event);
+            if (stateParser->getIsEventImportant()) {
+                emit sendLogMessage(("采集到网络通信关键事件:" + event).c_str());
+                cout << "  该事件为关键事件" << endl;
+                if (result) {
+                    emit sendLogMessage("验证事件后通过此事件");
+                    cout << "  该事件验证通过" << endl;
+                    if (!netfilterClient->passEvent()) {
+                        emit sendLogMessage("通过指令发送失败！");
+                        cerr << "  通过指令发送失败！" << endl;
+                    }
                 }
-            }
-            else if (stateParser->getIsEventImportant()){
-                // 只有关键事件才进行拦截
-                emit sendLogMessage("验证拦截");
-                if (!netfilterClient->interceptEvent()) {
-                    emit sendLogMessage("拦截指令发送失败！");
+                else {
+                    emit sendLogMessage("验证事件后拦截此事件");
+                    cout << "  该事件验证拦截" << endl;
+                    if (!netfilterClient->interceptEvent()) {
+                        emit sendLogMessage("拦截指令发送失败！");
+                        cerr << "  拦截指令发送失败！" << endl;
+                    }
                 }
             }
             else {
-                // 非关键事件只进行报警
-                emit sendLogMessage("事件验证失败");
+                cout << "  该事件为非关键事件" << endl;
+                if (result) {
+                    cout << "  该事件验证通过" << endl;
+                }
+                else {
+                    cout << "  该事件验证未通过" << endl;
+                }
             }
         }
 
         // 判断串口有没有事件
-//        if (serialPortRepeater->hasEvent()) {
-//            string event = serialPortRepeater->getEvent();
-//            emit sendLogMessage(QString::fromStdString("串口事件：" + event));
-//            if (stateParser->validateEvent(event)) {
-//                emit sendLogMessage("验证通过");
-//                serialPortRepeater->passEvent();
-//            }
-//            else if (stateParser->getIsEventImportant()){
-//                // 只有关键事件才进行拦截
-//                emit sendLogMessage("验证拦截");
-//                serialPortRepeater->interceptEvent();
-//            }
-//            else {
-//                // 非关键事件只进行报警
-//                emit sendLogMessage("事件验证失败");
-//                serialPortRepeater->passEvent();
-//            }
-//        }
+        if (serialPortRepeater->hasEvent()) {
+            string event = serialPortRepeater->getEvent();
+            cout << "采集到串口事件：" << event << endl;
+
+            bool result = stateParser->validateEvent(event);
+            if (stateParser->getIsEventImportant()) {
+                emit sendLogMessage(("采集到串口通信关键事件:" + event).c_str());
+                cout << "  该事件为关键事件" << endl;
+                if (result) {
+                    emit sendLogMessage("验证事件后通过此事件");
+                    cout << "  该事件验证通过" << endl;
+                    serialPortRepeater->passEvent();
+                }
+                else {
+                    emit sendLogMessage("验证事件后拦截此事件");
+                    cout << "  该事件验证拦截" << endl;
+                    serialPortRepeater->interceptEvent();
+                }
+            }
+            else {
+                cout << "  该事件为非关键事件" << endl;
+                if (result) {
+                    cout << "  该事件验证通过" << endl;
+                }
+                else {
+                    cout << "  该事件验证未通过" << endl;
+                }
+            }
+
+/*
+            emit sendLogMessage(QString::fromStdString("串口事件：" + event));
+            cout << "采集到串口事件" << event << ",事件总数为" << ++eventNum << endl;
+            if (stateParser->validateEvent(event)) {
+                emit sendLogMessage("验证通过");
+                serialPortRepeater->passEvent();
+            }
+            else if (stateParser->getIsEventImportant()){
+                // 只有关键事件才进行拦截
+                emit sendLogMessage("验证拦截");
+                serialPortRepeater->interceptEvent();
+            }
+            else {
+                // 非关键事件只进行报警
+                emit sendLogMessage("事件验证失败");
+                serialPortRepeater->passEvent();
+            }
+*/
+        }
         // 判断内存有没有事件
     }
+    //cout << "接收到事件总数为" << eventNum << endl;
 
     // 先关闭netfilterClient
     netfilterClient->stop();

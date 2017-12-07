@@ -2,7 +2,6 @@
 // Created by chenkuan on 17-11-15.
 //
 
-#include <Module.h>
 #include <tinyxml2.h>
 #include <iostream>
 #include <QtCore/QString>
@@ -13,8 +12,13 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+StateParser::StateParser() {
+    ofile.open("/home/chenkuan/timelog.txt");
+}
+
 StateParser::~StateParser() {
-    delete module;
+    delete model;
+    ofile.close();
 }
 
 void StateParser::setStateXML(const string &stateXML) {
@@ -22,7 +26,7 @@ void StateParser::setStateXML(const string &stateXML) {
 }
 
 bool StateParser::parseStateXML() {
-    module = new Module();
+    model = new Model();
 
     XMLDocument xmlDocument;
     XMLError xmlError = xmlDocument.Parse(stateXML.c_str());
@@ -89,7 +93,7 @@ bool StateParser::parseStateXML() {
         }
     }
 
-    module->initModule();
+    model->initModel();
 
     // 添加验证
     for (auto userObject = root->FirstChildElement("UserObject"); userObject != nullptr; userObject = userObject->NextSiblingElement("UserObject")) {
@@ -108,7 +112,7 @@ bool StateParser::validateEvent(const string &event) {
     XMLDocument xmlDocument;
     XMLError xmlError = xmlDocument.Parse(event.c_str());
     if (xmlError != XML_SUCCESS) {
-        cerr << "event \"" << event << "\" is not xml!" << endl;
+        cerr << "event \"" << event << "\"  符合XML规范！" << endl;
         return false;
     }
 
@@ -131,23 +135,38 @@ bool StateParser::validateEvent(const string &event) {
         vars[string(varLabel->Value())] = string(varLabel->GetText());
     }
 
-    bool result = module->addEvent(string(eventName), vars);
+    bool result = model->addEvent(string(eventName), vars);
 
     endTime = clock();
-    cout << "验证事件总耗时 " << (double)(endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
+    cout << "  验证事件总耗时 " << (double)(endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
+    ofile << (double)(endTime - startTime) / CLOCKS_PER_SEC * 1000 << endl;
 
     return result;
 }
 
 bool StateParser::parseVarDecl(const char *varDecl) {
-    auto varDeclStrList = QString(varDecl).split("&lt;br&gt;").toStdList();
-    for (auto& varDeclStr : varDeclStrList) {
-        auto varDeclSplitList = varDeclStr.split(":").toStdList();
+    QString varDeclStr(varDecl);
+    varDeclStr.replace("&amp;", "&");
+    varDeclStr.replace("&lt;", "<");
+    varDeclStr.replace("&gt;", ">");
+    varDeclStr.replace("</div>", "<div>");
+    varDeclStr.replace("<br>", "<div>");
+
+    auto varDeclStrList = varDeclStr.split("<div>").toStdList();
+    if (varDeclStrList.empty()) {
+        return false;
+    }
+
+    for (auto& varDecl : varDeclStrList) {
+        if (varDecl.isEmpty()) {
+            continue;
+        }
+        auto varDeclSplitList = varDecl.split(":").toStdList();
         if (varDeclSplitList.size() != 2) {
             return false;
         }
         cout << "添加变量声明：" << varDeclSplitList.back().trimmed().toStdString() << " : " << varDeclSplitList.front().trimmed().toStdString() << endl;
-        module->addVarDecl(varDeclSplitList.back().trimmed().toStdString(), varDeclSplitList.front().trimmed().toStdString());
+        model->addVarDecl(varDeclSplitList.back().trimmed().toStdString(), varDeclSplitList.front().trimmed().toStdString());
     }
     return true;
 }
@@ -167,20 +186,24 @@ bool StateParser::parseState(const char *state, const char *stateGraphId, bool i
     vector<string> stateConstraints;
 
     bool isFirstLine = true;
+    QString stateNumStr;
     for (auto &str : strList) {
-        if (isFirstLine) {
-            isFirstLine = false;
+        if (str.isEmpty()) {
             continue;
         }
-        if (str.isEmpty()) continue;
+        if (isFirstLine) {
+            isFirstLine = false;
+            stateNumStr = str;
+            continue;
+        }
         stateConstraints.push_back(str.trimmed().toStdString());
     }
 
-    if (strList.front().isEmpty()) {
+    if (stateNumStr.isEmpty()) {
         cerr << "state num is empty" << endl;
         return false;
     }
-    int stateId = std::stoi(strList.front().toStdString());
+    int stateId = std::stoi(stateNumStr.toStdString());
     idMap[stoi(string(stateGraphId))] = stateId;
 
     cout << "添加状态" << stateId << ":";
@@ -189,10 +212,10 @@ bool StateParser::parseState(const char *state, const char *stateGraphId, bool i
     }
     cout << endl;
     if (isEndState) {
-        module->addEndState(stateId, stateConstraints);
+        model->addEndState(stateId, stateConstraints);
     }
     else {
-        module->addState(stateId, stateConstraints);
+        model->addState(stateId, stateConstraints);
     }
     return true;
 }
@@ -205,7 +228,7 @@ bool StateParser::parseTran(const char *tran, const char *source, const char *ta
     int targetId = idMap[stoi(string(target))];
 
     if (source == nullptr) {
-        module->setStartState(targetId);
+        model->setStartState(targetId);
         return true;
     }
 
@@ -221,7 +244,7 @@ bool StateParser::parseTran(const char *tran, const char *source, const char *ta
     int sourceId = idMap[stoi(string(source))];
 
     cout << "添加转移：" << tranName << " " << sourceId << "-->" << targetId << endl;
-    module->addTran(tranName, sourceId, targetId);
+    model->addTran(tranName, sourceId, targetId);
     return true;
 }
 
@@ -231,7 +254,7 @@ bool StateParser::parseSpec(const char *spec) {
     specStr.replace("&gt;", ">");
 
     cout << "添加验证:" << specStr.toStdString() << endl;
-    module->addSpec({specStr.toStdString()});
+    model->addSpec({specStr.toStdString()});
     return true;
 }
 
