@@ -14,11 +14,18 @@ using std::endl;
 
 StateParser::StateParser() {
     ofile.open("/home/chenkuan/timelog.txt");
+    if (ofile.is_open()) {
+        cout << "open file timelog.txt" << endl;
+    }
+    else {
+        cout << "open file timelog.txt failed" << endl;
+    }
 }
 
 StateParser::~StateParser() {
     delete model;
     ofile.close();
+    cout << "close file timelog.txt" << endl;
 }
 
 void StateParser::setStateXML(const string &stateXML) {

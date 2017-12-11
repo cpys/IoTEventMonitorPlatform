@@ -85,7 +85,9 @@ void EventManager::run() {
         return;
     }
 
-    //uint eventNum = 0;
+    uint eventNum = 0;
+    uint interceptNum = 0;
+    uint interceptFailedNum = 0;
     while (!threadStop) {
         // 轮询各个客户端
 //        cout << "netfilter client has event?" << endl;
@@ -93,6 +95,7 @@ void EventManager::run() {
 //            cout << "netfilter client has event, let's get event" << endl;
             string event = netfilterClient->getEvent();
             cout << "采集到网络事件：" << event << endl;
+            ++eventNum;
 //            cout << "get netfilter event " << event << endl;
             //cout << "采集到网络事件 " << event << ",事件总数为" << ++eventNum << endl;
             //++eventNum;
@@ -117,9 +120,11 @@ void EventManager::run() {
                 else {
                     emit sendLogMessage("验证事件后拦截此事件");
                     cout << "  该事件验证拦截" << endl;
+                    ++interceptNum;
                     if (!netfilterClient->interceptEvent()) {
                         emit sendLogMessage("拦截指令发送失败！");
                         cerr << "  拦截指令发送失败！" << endl;
+                        ++interceptFailedNum;
                     }
                 }
             }
@@ -185,7 +190,8 @@ void EventManager::run() {
         }
         // 判断内存有没有事件
     }
-    //cout << "接收到事件总数为" << eventNum << endl;
+    cout << "接收到事件总数为" << eventNum << endl;
+    cout << "拦截失败的事件/应该拦截的事件为" << interceptFailedNum << "/" << interceptNum << endl;
 
     // 先关闭netfilterClient
     netfilterClient->stop();
