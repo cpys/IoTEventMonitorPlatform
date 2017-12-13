@@ -69,7 +69,7 @@ void Netlink::closeConnection() {
     }
 }
 
-string Netlink::getMessage()  {
+const char *Netlink::getMessage()  {
     static int destAddrLen = sizeof(struct sockaddr_nl);
 
     int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
@@ -79,7 +79,7 @@ string Netlink::getMessage()  {
         return "";
     }
     else {
-        return string(recvMessage.data);
+        return recvMessage.data;
     }
 }
 

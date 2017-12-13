@@ -95,22 +95,22 @@ bool StateParser::parseStateXML() {
     return true;
 }
 
-bool StateParser::validateEvent(const string &event) {
+bool StateParser::validateEvent(const char *event) {
 #ifdef SHOW_RUN_TIME
     logger->timeBegin();
 #endif
 
     XMLDocument xmlDocument;
-    XMLError xmlError = xmlDocument.Parse(event.c_str());
+    XMLError xmlError = xmlDocument.Parse(event);
     if (xmlError != XML_SUCCESS) {
-        logger->error("event \"%s\"  不符合XML规范！", event.c_str());
+        logger->error("event \"%s\"  不符合XML规范！", event);
         return false;
     }
 
     XMLElement *eventRoot = xmlDocument.FirstChildElement();
     auto eventName = eventRoot->Attribute("name");
     if (eventName == nullptr) {
-        logger->error("event \"%s\"缺少事件名称！", event.c_str());
+        logger->error("event \"%s\"缺少事件名称！", event);
         return false;
     }
     auto eventImportant = eventRoot->Attribute("important");

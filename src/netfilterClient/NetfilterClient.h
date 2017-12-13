@@ -22,7 +22,7 @@ class NetfilterClient {
     void setEventMatchText(const string &eventHeadText, const string &eventTailText);
     void setEventMatchIp(const string &vmIp, const string &externalIp);
     bool hasEvent();
-    string getEvent();
+    const char *getEvent();
     bool passEvent();
     bool interceptEvent();
     bool install();
