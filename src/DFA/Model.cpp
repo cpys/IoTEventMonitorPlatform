@@ -74,18 +74,18 @@ void Model::setStartState(int stateNum) {
 void Model::setEndState(int stateNum) {
     State *state = this->states[stateNum];
     if (state == nullptr) {
-        cerr << "未找到节点" << stateNum << endl;
+        logger->error("未找到节点%d", stateNum);
         return;
     }
     if (hasEndState && state != endState) {
-        cerr << "已经指定过终止节点" << endState->getStateNum() << "，将更新终止节点" << state->getStateNum() << endl;
+        logger->warning("已经指定过终止节点%d，将更新终止节点%d", endState->getStateNum(), state->getStateNum());
         endState->setEndFlag(false);
     } else {
         hasEndState = true;
     }
     endState = state;
     endState->setEndFlag(true);
-    cout << "节点" << endState->getStateNum() << "成为了终止节点" << endl;
+    logger->info("节点%d成为了终止节点", endState->getStateNum());
 }
 
 void Model::addTran(const string &tranName, int sourceStateNum, int destStateNum) {

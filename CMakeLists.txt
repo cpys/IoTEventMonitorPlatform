@@ -8,10 +8,10 @@ set(CMAKE_AUTOMOC ON)
 
 # 查找 QT的库
 set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
-set(Qt5Widgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5Widgets)
+#set(Qt5Widgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5Widgets)
 find_package(Qt5Widgets)
-set(Qt5WebEngineWidgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5WebEngineWidgets)
-find_package(Qt5WebEngineWidgets)
+#set(Qt5WebEngineWidgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5WebEngineWidgets)
+#find_package(Qt5WebEngineWidgets)
 
 # 依赖库
 #link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
@@ -40,7 +40,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
 
 # 链接QT库
 target_link_libraries(IoTEventMonitorPlatform Qt5::Widgets)
-target_link_libraries(IoTEventMonitorPlatform Qt5::WebEngineWidgets)
+#target_link_libraries(IoTEventMonitorPlatform Qt5::WebEngineWidgets)
 
 # 链接Z3
 target_link_libraries(IoTEventMonitorPlatform z3)

@@ -6,7 +6,7 @@
 #define RUNTIME_VERIFICATION_SYSTEM_TRAN_H
 
 #include <string>
-#include <Logger>
+#include <Logger.h>
 class State;
 
 using std::string;
