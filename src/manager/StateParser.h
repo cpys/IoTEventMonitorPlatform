@@ -6,13 +6,14 @@
 #define IOTEVENTMONITORPLATFORM_STATEPARSER_H
 
 #include <string>
-#include <fstream>
 #include <Model.h>
+#include <Logger.h>
+
 using std::string;
 
 class StateParser {
   public:
-    StateParser();
+    StateParser() = default;
     ~StateParser();
 
     /**
@@ -88,7 +89,7 @@ class StateParser {
      */
     bool parseSpec(const char *spec);
 
-    std::ofstream ofile;
+    Logger *logger = Logger::getLogger();
 };
 
 

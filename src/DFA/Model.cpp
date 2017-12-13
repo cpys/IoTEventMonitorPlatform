@@ -2,13 +2,9 @@
 // Created by yingzi on 2017/11/30.
 //
 
-#include <iostream>
 #include <stack>
 #include "Model.h"
-
-using std::cout;
-using std::cerr;
-using std::endl;
+using namespace std;
 using std::stack;
 
 Model::Model() : slv(ctx) {
@@ -43,7 +39,7 @@ void Model::addState(int stateNum, const vector<string> &stateExprStrList) {
     if (oldState == nullptr) {
         oldState = new State();
     } else if (!oldState->isEmpty()) {
-        cerr << "已经添加过编号为" << stateNum << "的节点，将覆盖旧节点" << endl;
+        logger->warning("已经添加过编号为%d的节点，将覆盖旧节点", stateNum);
         oldState->clear();
     }
 
@@ -62,18 +58,18 @@ void Model::addState(int stateNum, const vector<string> &stateExprStrList) {
 void Model::setStartState(int stateNum) {
     State *state = this->states[stateNum];
     if (state == nullptr) {
-        cerr << "未找到节点" << stateNum << endl;
+        logger->error("未找到节点%d", stateNum);
         return;
     }
     if (hasStartState && state != startState) {
-        cerr << "已经指定过起始节点" << startState->getStateNum() << "，将更新起始节点" << state->getStateNum() << endl;
+        logger->warning("已经指定过起始节点%d，将更新起始节点%d", startState->getStateNum(), state->getStateNum());
         startState->setStartFlag(false);
     } else {
         hasStartState = true;
     }
     startState = state;
     startState->setStartFlag(true);
-    cout << "节点" << startState->getStateNum() << "成为了起始节点" << endl;
+    logger->info("节点%d成为了起始节点", startState->getStateNum());
 }
 
 void Model::setEndState(int stateNum) {

@@ -10,7 +10,7 @@
 #include <map>
 #include <set>
 #include <z3++.h>
-#include <ctime>
+#include <Logger.h>
 
 #include "State.h"
 #include "Tran.h"
@@ -147,11 +147,6 @@ class Model {
      * Z3求解器
      */
     solver slv;
-//    /**
-//     * 所有的变量序号对应的Z3表达式
-//     * 变量名称:(变量序号：Z3表达式)
-//     */
-//    map<string, map<int, Z3Expr> > z3VarsNumExpr;
 
     /**
      * 将字符串形式的表达式转成Z3表达式
@@ -201,6 +196,8 @@ class Model {
      * @return 验证结果
      */
     bool verify(const State *nextState, const map<string, string> &varValueMap);
+
+    Logger *logger = Logger::getLogger();
 };
 
 

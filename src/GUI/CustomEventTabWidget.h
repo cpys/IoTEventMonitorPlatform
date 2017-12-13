@@ -9,7 +9,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTabWidget>
 #include "CustomEventWidget.h"
-#include "ConstStyle.h"
+#include "GUIStyle.h"
 #include "CustomSubTabWidget.h"
 
 /**

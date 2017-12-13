@@ -11,7 +11,7 @@
 #include "CustomEventTabWidget.h"
 #include "CustomStateTabWidget.h"
 #include "CustomRunWidget.h"
-#include "ConstStyle.h"
+#include "GUIStyle.h"
 #include <tinyxml2.h>
 using namespace tinyxml2;
 

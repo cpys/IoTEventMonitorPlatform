@@ -12,7 +12,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
-#include "ConstStyle.h"
+#include "GUIStyle.h"
 #include <tinyxml2.h>
 using namespace tinyxml2;
 

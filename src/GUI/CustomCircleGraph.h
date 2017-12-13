@@ -8,7 +8,7 @@
 
 #include <QtWidgets/QGraphicsItem>
 #include <QPainter>
-#include "ConstStyle.h"
+#include "GUIStyle.h"
 
 class CustomCircleGraph : public QObject, public QGraphicsItem {
   Q_OBJECT

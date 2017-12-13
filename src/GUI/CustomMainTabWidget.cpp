@@ -6,7 +6,7 @@
 #include <iostream>
 #include <QtWidgets/QTabBar>
 #include "CustomMainTabWidget.h"
-#include "conf.h"
+#include "GUIConf.h"
 #include <fstream>
 
 CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
