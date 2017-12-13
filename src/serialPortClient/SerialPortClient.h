@@ -6,6 +6,8 @@
 #define RUNTIME_VERIFICATION_SYSTEM_SERIALFORWARD_H
 
 #include <string>
+#include <Logger.h>
+
 using std::string;
 
 class SerialPortClient {
