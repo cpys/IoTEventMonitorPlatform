@@ -114,6 +114,8 @@ class SerialPortClient {
      * @return
      */
     bool setPort();
+
+    Logger *logger = Logger::getLogger();
 };
 
 

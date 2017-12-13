@@ -7,6 +7,7 @@
 
 #include <linux/netlink.h>
 #include <string>
+#include <Logger.h>
 using std::string;
 
 class Netlink {
@@ -81,6 +82,8 @@ class Netlink {
      * 内核目标地址数据结构
      */
     struct sockaddr_nl destAddr;
+
+    Logger *logger = Logger::getLogger();
 };
 
 

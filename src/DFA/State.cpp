@@ -2,9 +2,7 @@
 // Created by yingzi on 2017/11/30.
 //
 
-#include <iostream>
 #include "State.h"
-using namespace std;
 
 void State::setStateNum(int stateNum) {
     this->stateNum = stateNum;

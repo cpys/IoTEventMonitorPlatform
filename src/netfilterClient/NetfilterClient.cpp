@@ -2,9 +2,7 @@
 // Created by yingzi on 2017/11/7.
 //
 
-#include <iostream>
 #include "NetfilterClient.h"
-using namespace std;
 
 NetfilterClient::NetfilterClient() {
     netlink = new Netlink();

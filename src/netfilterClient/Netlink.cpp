@@ -5,11 +5,7 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <unistd.h>
-#include <iostream>
 #include "Netlink.h"
-using std::cout;
-using std::endl;
-using std::cerr;
 
 Netlink::~Netlink() {
     closeConnection();
@@ -79,7 +75,7 @@ string Netlink::getMessage()  {
     int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
 
     if (ret < 0) {
-        cerr << "recv message from kernel failed!" << endl;
+        logger->error("recv message from kernel failed!");
         return "";
     }
     else {

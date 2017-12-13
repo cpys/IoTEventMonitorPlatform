@@ -6,6 +6,7 @@
 #define RUNTIME_VERIFICATION_SYSTEM_TRAN_H
 
 #include <string>
+#include <Logger>
 class State;
 
 using std::string;
@@ -60,6 +61,8 @@ class Tran {
      * 目的状态
      */
     const State *destState = nullptr;
+
+    Logger *logger = Logger::getLogger();
 };
 
 

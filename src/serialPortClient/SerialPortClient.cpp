@@ -3,7 +3,6 @@
 //
 
 #include "SerialPortClient.h"
-#include <iostream>
 #include <string>
 #include <vector>
 #include <iterator>
@@ -14,9 +13,6 @@
 #include <termios.h>
 #include <sys/select.h>
 
-using std::cout;
-using std::endl;
-using std::cerr;
 using std::string;
 using std::vector;
 
@@ -30,11 +26,11 @@ void SerialPortClient::setPort(const string &port) {
 
 bool SerialPortClient::init() {
     if (!openPort()) {
-        cerr << "open " << port << " failed!" << endl;
+        logger->error("打开端口 %s 失败！", port.c_str());
         return false;
     }
     if (!setPort()) {
-        cerr << "set " << port << " failed!" << endl;
+        logger->error("设置端口 %s 失败！", port.c_str());
         return false;
     }
     return true;
@@ -71,11 +67,11 @@ void SerialPortClient::getMessage() {
 bool SerialPortClient::openPort() {
     fd = open(port.c_str(), O_RDWR|O_NOCTTY|O_NDELAY);
     if (fd < 0){
-        cerr << "Can't Open Serial Port " << port << endl;
+        logger->error("无法打开端口 %s！", port.c_str());
         return false;
     }
     if(fcntl(fd, F_SETFL, 0) < 0){
-        cerr << "fcntl failed!" << endl;
+        logger->error("端口 %s fcntl 设置失败！", port.c_str());
         return false;
     }
 /*
@@ -90,7 +86,7 @@ bool SerialPortClient::openPort() {
 bool SerialPortClient::setPort() {
     struct termios options;
     if (tcgetattr(fd, &options) != 0) {
-        cerr << "SetupSerial failed!" << endl;
+        logger->error("获取端口 %s 终端参数失败！", port.c_str());
         return false;
     }
 
@@ -133,7 +129,7 @@ bool SerialPortClient::setPort() {
             options.c_cflag |= CS8;
             break;
         default:
-            cerr << "Unsupported data size" << endl;
+            logger->error("不支持数据大小");
             return false;
     }
 
@@ -160,7 +156,7 @@ bool SerialPortClient::setPort() {
             options.c_cflag &= ~CSTOPB;
             break;
         default:
-            cerr << "Unsupported parity" << endl;
+            logger->error("不支持的校验位");
             return false;
     }
 
@@ -172,7 +168,7 @@ bool SerialPortClient::setPort() {
             options.c_cflag |= CSTOPB;
             break;
         default:
-            cerr << "Unsupported stop bits" << endl;
+            logger->error("不支持的停止位");
             return false;
     }
     options.c_oflag &= ~OPOST;
@@ -183,7 +179,7 @@ bool SerialPortClient::setPort() {
     tcflush(fd,TCIFLUSH);
 
     if (tcsetattr(fd, TCSANOW, &options) != 0) {
-        cerr << "com set error" << endl;
+        logger->error("端口 %s 终端参数设置失败!", port.c_str());
         return false;
     }
     return true;
@@ -192,11 +188,11 @@ bool SerialPortClient::setPort() {
 bool SerialPortClient::sendMessage(const string &message) {
     auto len = write(fd, message.c_str(), message.size());
     if (len == message.size()) {
-//        cout << "success write " << len << " bytes: " << message << endl;
+        logger->debug("成功发送%d字节到端口%s，内容为：%s", len, port.c_str(), message.c_str());
         return true;
     }
     else {
-        cerr << "事件转发不完整，仅发送" << len << "/" << message.size() << " 字节" << endl;
+        logger->error("端口%s发送数据不完整，仅发送%d/%d字节", port.c_str(), len, message.size());
         tcflush(fd, TCOFLUSH);
         return false;
     }

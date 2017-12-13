@@ -4,7 +4,6 @@
 
 #include <stack>
 #include "Model.h"
-using namespace std;
 using std::stack;
 
 Model::Model() : slv(ctx) {
@@ -119,21 +118,17 @@ void Model::addSpec(const string &specStr) {
 }
 
 bool Model::addEvent(const string &eventName, const map<string, string> &varValueMap) {
-    clock_t startTime, endTime;
-
-    startTime = clock();
-
-//    cout << "当前节点为节点" << currentState->getStateNum() << "，开始尝试转移" << endl;
+    logger->debug("当前节点为节点%d，开始尝试转移", currentState->getStateNum());
 
     // 如果当前是起始节点，则需要添加起始节点的表达式和SPEC表达式
     if (currentState == startState) {
         for (auto &z3Expr : startState->getZ3ExprList()) {
             this->slv.add(z3Expr);
-//            cout << "添加起始节点的表达式" << z3Expr << endl;
+            logger->debug("添加起始节点的表达式%s", z3Expr);;
         }
         for (auto &spec : specZ3ExprVector) {
             this->slv.add(spec);
-//            cout << "添加轨迹验证表达式" << spec << endl;
+            logger->debug("添加轨迹验证表达式%s", spec);
         }
         // 始终保留起始节点的表达式和SPEC表达式，后续添加的表达式在到达终止节点继续转移时弹出
         this->slv.push();
@@ -152,7 +147,7 @@ bool Model::addEvent(const string &eventName, const map<string, string> &varValu
         // 重新初始化状态轨迹
         this->stateTrace.clear();
         this->stateTrace.push_back(startState);
-        cout << "  从终止节点" << endState->getStateNum() << "调整至起始节点" << startState->getStateNum() << "开始转移" << endl;
+        logger->info("从终止节点%d调整至起始节点%d开始转移", endState->getStateNum(),  startState->getStateNum());
     }
 
     // 初始化当前尝试失败的节点集合
@@ -188,20 +183,12 @@ bool Model::addEvent(const string &eventName, const map<string, string> &varValu
     }
 
     if (result) {
-        cout << "  事件" << eventName << "导致节点" << currentState->getStateNum() << "转移到节点" << nextState->getStateNum()
-             << endl;
+        logger->info("事件\"%s\"导致节点%d转移到节点%d", eventName.c_str(), currentState->getStateNum(), nextState->getStateNum());
         currentState = const_cast<State *>(nextState);
         this->stateTrace.push_back(currentState);
-
-        endTime = clock();
-//        cout << "事件转移用时 " << (double) (endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
         return true;
     } else {
-        cout << "  事件" << eventName << "无法转移" << endl;
-
-        endTime = clock();
-//        cout << "事件转移用时 " << (double) (endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
-
+        logger->warning("事件\"%s\"无法转移", eventName.c_str());
         return false;
     }
 }
@@ -214,17 +201,17 @@ bool Model::initModel() {
         }
     }
     if (num > 0) {
-        cerr << "模型中存在" << num << "个虚拟的空节点" << endl;
+        logger->error("模型中存在%d个虚拟的空节点", num);
         return false;
     }
 
     // 判断模型是否有起始和终止节点
     if (!hasStartState) {
-        cerr << "模型未指定起始节点" << endl;
+        logger->error("模型未指定起始节点");
         return false;
     }
     if (!hasEndState) {
-        cerr << "模型未指定终止节点" << endl;
+        logger->error("模型未指定终止节点");
         return false;
     }
 
@@ -261,7 +248,7 @@ const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum
                 identifier.push_back(c);
             } else if (!isspace(c)) {
                 // 其他情况必须为空格
-                cerr << "非法字符" << c << endl;
+                logger->error("表达式中出现非法字符%c", c);
             }
         } else if (currentType == "var") {
             // 当前已处于变量状态
@@ -288,7 +275,7 @@ const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum
                     currentType = "operator";
                     identifier.push_back(c);
                 } else {
-                    cerr << "不合法的标识符" << identifier + c << endl;
+                    logger->error("表达式中出现不合法的标识符%s%c", identifier.c_str(), c);
                 }
             }
         } else if (currentType == "operand") {
@@ -308,7 +295,7 @@ const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum
                     currentType = "operator";
                     identifier.push_back(c);
                 } else {
-                    cerr << "非法的标识符" << identifier + c << endl;
+                    logger->error("表达式中出现不合法的标识符%s%c", identifier.c_str(), c);
                 }
             }
         } else if (currentType == "operator") {
@@ -344,7 +331,7 @@ const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum
                 } else if (isspace(c) != 0) {
                     currentType = "";
                 } else {
-                    cerr << "非法字符" << c << endl;
+                    logger->error("表达式中出现非法字符%c", c);
                 }
             }
         }
@@ -360,7 +347,7 @@ const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum
         exprStack.push(generateNumExp(identifier));
         identifier.clear();
     } else if (currentType == "operator") {
-        cerr << "表达式" << exprStr << "以运算符结尾，非法！" << endl;
+        logger->error("表达式\"%s\"以运算符结尾，非法！", exprStr.c_str());
     }
 
     while (operatorStack.size() > 1) {
@@ -368,7 +355,7 @@ const Z3Expr Model::extractZ3Expr(const string &exprStr, const string &serialNum
         operatorStack.pop();
 
         if (exprStack.size() < 2) {
-            cerr << "运算数或变量不足，表达式" << exprStr << "不合法" << endl;
+            logger->error("运算数或变量不足，表达式\"%s\"不合法", exprStr.c_str());
             break;
         }
         Z3Expr expr2 = exprStack.top();
@@ -394,12 +381,12 @@ const Z3Expr Model::generateVarExp(const string &varName) {
     string serialNum = varName.substr(digitIndex);
 
     if (varsDecl.find(varNameWithoutNum) == varsDecl.end()) {
-        cerr << "变量" << varName << "未定义" << endl;
+        logger->error("变量\"%s\"未定义", varName.c_str());
         return this->ctx.bool_val(true);
     }
 
     if (serialNum.empty() || states.find(std::stoi(serialNum)) == states.end()) {
-        cerr << "变量" << varName << "缺少有效的序号后缀" << endl;
+        logger->error("变量\"%s\"缺少有效的序号后缀", varName.c_str());
         return this->ctx.bool_val(true);
     }
 
@@ -414,7 +401,7 @@ const Z3Expr Model::generateVarExp(const string &varName) {
         return this->ctx.bool_const(varName.c_str());
     }
     else {
-        cerr << __FUNCTION__ << "中不支持的变量类型，变量为" << varName << endl;
+        logger->error("不支持的变量类型，变量为%s", varName.c_str());
         return this->ctx.bool_val(true);
     }
 }
@@ -444,11 +431,11 @@ bool Model::compareOperator(const string &operator1, const string &operator2) {
             {"/",  4}
     };
     if (operatorPriority.find(operator1) == operatorPriority.end()) {
-        cerr << "运算符" << operator1 << "不支持" << endl;
+        logger->error("运算符\"%s\"不支持", operator1.c_str());
         return false;
     }
     if (operatorPriority.find(operator2) == operatorPriority.end()) {
-        cerr << "运算符" << operator2 << "不支持" << endl;
+        logger->error("运算符\"%s\"不支持", operator2.c_str());
         return false;
     }
     return operatorPriority[operator1] > operatorPriority[operator2];
@@ -466,36 +453,35 @@ const Z3Expr Model::calcExpr(const Z3Expr &expr1, const string &currentOperator,
     if (currentOperator == "*") return expr1 * expr2;
     if (currentOperator == "/") return expr1 / expr2;
 
-    cerr << "不支持的运算符" << currentOperator << endl;
+    logger->error("不支持的运算符\"%s\"", currentOperator.c_str());
     return expr1;
 }
 
 bool Model::verify(const State *nextState, const map<string, string> &varValueMap) {
     int nextStateNum = nextState->getStateNum();
 
-//    cout << "尝试转移到节点" << nextStateNum << endl;
+    logger->debug("尝试转移到节点%d", nextStateNum);
 
     slv.push();
     // 先添加下一状态中的全部Z3表达式
     const vector<Z3Expr> &stateZ3ExprList = nextState->getZ3ExprList();
     for (auto &z3Expr : stateZ3ExprList) {
         slv.add(z3Expr);
-//        cout << "添加节点" << nextStateNum << "中的表达式" << z3Expr << endl;
+        logger->debug("添加节点%d中的表达式%s", nextStateNum, z3Expr);
     }
 
     // 再将事件上的变量全部构造成Z3表达式添加进去
     for (auto &varValue : varValueMap) {
         string varType = varsDecl[varValue.first];
         if (varType.empty()) {
-            cerr << "事件中出现未定义的变量" << varValue.first << endl;
+            logger->error("事件中出现未定义的变量%s", varValue.first.c_str());
             continue;
         }
 
         if (varType == "int") {
-//            slv.add(this->ctx.int_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.int_val(varValue.second.c_str()));
             Z3Expr z3Expr = this->ctx.int_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.int_val(varValue.second.c_str());
             slv.add(z3Expr);
-//            cout << "添加事件上变量值构成的表达式" << z3Expr << endl;
+            logger->debug("添加事件上变量值构成的表达式%s", z3Expr);
         } else if (varType == "double") {
             slv.add(this->ctx.real_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.real_val(varValue.second.c_str()));
         } else if (varType == "bool") {
@@ -504,10 +490,10 @@ bool Model::verify(const State *nextState, const map<string, string> &varValueMa
     }
 
     if (slv.check() == z3::sat) {
-//        cout << "尝试转移到节点" << nextStateNum << "成功" << endl;
+        logger->info("尝试转移到节点%d成功", nextStateNum);
         return true;
     } else {
-//        cout << "尝试转移到节点" << nextStateNum << "失败" << endl;
+        logger->info("尝试转移到节点%d失败", nextStateNum);
         slv.pop();
         currentFailedStates.insert(nextState);
         return false;

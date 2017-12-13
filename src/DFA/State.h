@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <z3++.h>
+#include <Logger.h>
 
 class Tran;
 
@@ -105,6 +106,7 @@ class State {
      */
     vector<const Tran *> outTranList;
 
+    Logger *logger = Logger::getLogger();
 };
 
 
