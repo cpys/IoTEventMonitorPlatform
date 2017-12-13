@@ -91,7 +91,16 @@ void EventManager::run() {
     fdPseudoTerminal = serialPortRepeater->getPseudoTerminalFd();
     fdSerialPort = serialPortRepeater->getSerialPortFd();
 
-    int maxfd = std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort));
+    // 最后启动memoryClient
+    if (!memoryCleint->start()) {
+        emit sendLogMessage("内存事件获取服务器连接失败！");
+        logger->error("内存事件获取服务器连接失败！");
+        memoryCleint->stop();
+        return;
+    }
+    socketMemoryClient = memoryCleint->getFd();
+
+    int maxfd = std::max(std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort)), socketMemoryClient);
 
     uint eventNum = 0;
     uint interceptNum = 0;
@@ -146,7 +155,7 @@ void EventManager::run() {
                         logger->info("网络事件 \"%s\" 验证通过", event);
                     }
                     else {
-                        logger->info("网络事件 \"%s\" 验证通过", event);
+                        logger->info("网络事件 \"%s\" 验证不通过", event);
                     }
                 }
             }
@@ -181,9 +190,37 @@ void EventManager::run() {
                         logger->info("串口事件 \"%s\" 验证通过", event);
                     }
                     else {
-                        logger->info("串口事件 \"%s\" 验证通过", event);
+                        logger->info("串口事件 \"%s\" 验证不通过", event);
                     }
                 }
+            }
+            else if (FD_ISSET(socketMemoryClient, &fs_read)) {
+                event = memoryCleint->getEvent();
+                logger->info("采集到内存事件：%s", event);
+
+                bool result = stateParser->validateEvent(event);
+                if (stateParser->getIsEventImportant()) {
+                    emit sendLogMessage(("采集到内存关键事件:" + string(event)).c_str());
+                    logger->debug("该事件为关键事件");
+                    if (result) {
+                        emit sendLogMessage("内存事件验证可通过");
+                        logger->info("内存事件 \"%s\" 验证通过", event);
+                    }
+                    else {
+                        emit sendLogMessage("内存事件验证后不通过");
+                        logger->warning("内存事件 \"%s\"验证不通过", event);
+                    }
+                }
+                else {
+                    logger->debug("该事件为非关键事件");
+                    if (result) {
+                        logger->info("内存事件 \"%s\" 验证通过", event);
+                    }
+                    else {
+                        logger->info("内存事件 \"%s\" 验证不通过", event);
+                    }
+                }
+
             }
         }
     }
@@ -196,6 +233,9 @@ void EventManager::run() {
 
     // 再关闭serialPortClient
     serialPortRepeater->closePorts();
+
+    // 最后关闭memoryClient
+    memoryCleint->stop();
 }
 
 void EventManager::setStateConf(const string &stateFilePath) {

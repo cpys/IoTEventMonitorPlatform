@@ -11,6 +11,7 @@
 #include <fstream>
 #include <SerialPortClient.h>
 #include <SerialPortRepeater.h>
+#include <MemoryClient.h>
 #include <Logger.h>
 #include "StateParser.h"
 
@@ -56,7 +57,9 @@ class EventManager : public QThread {
 
     string pseudoTerminal;
     string serialPort;
-    SerialPortRepeater *serialPortRepeater;
+    SerialPortRepeater *serialPortRepeater = nullptr;
+
+    MemoryCleint *memoryCleint = nullptr;
 
     string stateFilePath;
     ifstream stateFile;
@@ -79,6 +82,7 @@ class EventManager : public QThread {
     int socketNetlink = -1;
     int fdPseudoTerminal = -1;
     int fdSerialPort = -1;
+    int socketMemoryClient = -1;
 
     Logger *logger = Logger::getLogger();
 };
