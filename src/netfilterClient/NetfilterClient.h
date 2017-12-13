@@ -29,6 +29,7 @@ class NetfilterClient {
     void remove();
     bool start();
     void stop();
+    int getFd();
 
   private:
     bool threadStop = false;

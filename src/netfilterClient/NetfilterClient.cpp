@@ -55,3 +55,7 @@ bool NetfilterClient::passEvent() {
 bool NetfilterClient::interceptEvent() {
     return netlink->sendDropMessage();
 }
+
+int NetfilterClient::getFd() {
+    return netlink->getFd();
+}

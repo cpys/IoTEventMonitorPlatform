@@ -56,8 +56,23 @@ bool SerialPortRepeater::hasEvent() {
     return false;
 }
 
-const string &SerialPortRepeater::getEvent() {
-    return lastEvent;
+string SerialPortRepeater::getEvent(int fd) {
+    if (pseudoTerminal->getFd() == fd) {
+        pseudoTerminal->getMessage();
+        if (searchEvent(pseudoTerminal->getMessageQueue(), serialPort)){
+            lastDevice = pseudoTerminal;
+            return lastEvent;
+        }
+        else return "";
+    }
+    if (serialPort->getFd() == fd) {
+        serialPort->getMessage();
+        if (searchEvent(serialPort->getMessageQueue(), pseudoTerminal)) {
+            lastDevice = serialPort;
+            return lastEvent;
+        }
+        else return "";
+    }
 }
 
 void SerialPortRepeater::sendEvent(const string &event) {
@@ -110,4 +125,12 @@ void SerialPortRepeater::passEvent() {
 
 void SerialPortRepeater::interceptEvent() {
     // pass
+}
+
+int SerialPortRepeater::getPseudoTerminalFd() {
+    return pseudoTerminal->getFd();
+}
+
+int SerialPortRepeater::getSerialPortFd() {
+    return serialPort->getFd();
 }

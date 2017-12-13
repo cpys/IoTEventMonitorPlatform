@@ -44,7 +44,7 @@ public:
      * 从串口上获取事件
      * @return
      */
-    const string &getEvent();
+    string getEvent(int fd);
     /**
      * 通过上一个获取的事件
      */
@@ -53,6 +53,9 @@ public:
      * 拦截上一个获取的事件
      */
     void interceptEvent();
+
+    int getPseudoTerminalFd();
+    int getSerialPortFd();
 
 private:
     string pseudoTerminalName;

@@ -124,3 +124,7 @@ bool Netlink::sendDropMessage() {
 
     return true;
 }
+
+int Netlink::getFd() {
+    return socketClient;
+}

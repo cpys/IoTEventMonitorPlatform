@@ -20,6 +20,7 @@ class Netlink {
     string getMessage();
     bool sendAcceptMessage();
     bool sendDropMessage();
+    int getFd();
 
   private:
     /**

@@ -45,6 +45,8 @@ class SerialPortClient {
      */
     bool sendMessage(const string& message);
 
+    int getFd();
+
   private:
     /**
      * 波特率

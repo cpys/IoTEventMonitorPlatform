@@ -202,3 +202,7 @@ string &SerialPortClient::getMessageQueue() {
     return messageQueue;
 }
 
+int SerialPortClient::getFd() {
+    return fd;
+}
+
