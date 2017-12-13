@@ -1,0 +1,11 @@
+//
+// Created by chenkuan on 17-12-12.
+//
+
+#ifndef IOTEVENTMONITORPLATFORM_CONF_H
+#define IOTEVENTMONITORPLATFORM_CONF_H
+
+// 是否显示运行时间
+#define SHOW_RUN_TIME
+
+#endif //IOTEVENTMONITORPLATFORM_CONF_H
