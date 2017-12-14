@@ -19,6 +19,7 @@ void SerialPortRepeater::setPorts(const string &pseudoTerminalName, const string
 }
 
 bool SerialPortRepeater::init() {
+    logger->debug("初始化串口转发器");
     delete(pseudoTerminal);
     delete(serialPort);
     pseudoTerminal = new SerialPortClient();

@@ -7,6 +7,7 @@
 EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient();
     serialPortRepeater = new SerialPortRepeater();
+    memoryCleint = new MemoryClient();
     stateParser = new StateParser();
 }
 
@@ -101,6 +102,7 @@ void EventManager::run() {
     socketMemoryClient = memoryCleint->getFd();
 
     int maxfd = std::max(std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort)), socketMemoryClient);
+//    int maxfd = socketMemoryClient;
 
     uint eventNum = 0;
     uint interceptNum = 0;
@@ -112,19 +114,14 @@ void EventManager::run() {
         FD_SET(socketNetlink, &fs_read);
         FD_SET(fdPseudoTerminal, &fs_read);
         FD_SET(fdSerialPort, &fs_read);
+        FD_SET(socketMemoryClient, &fs_read);
         tv = defaultTv;
 
-        if (select(maxfd + 1, &fs_read, NULL, NULL, &tv) > 0) {
+        if (select(maxfd + 1, &fs_read, nullptr, nullptr, &tv) > 0) {
             if (FD_ISSET(socketNetlink, &fs_read)) {
                 event = netfilterClient->getEvent();
                 logger->info("采集到网络事件：%s", event);
                 ++eventNum;
-
-//                netfilterClient->passEvent();
-//                if (stateParser->justGetIsEventImportant(event)) {
-//                    emit sendLogMessage(QString::fromStdString("网络事件：" + event));
-//                }
-//                netfilterClient->passEvent();
 
                 bool result = stateParser->validateEvent(event);
                 if (stateParser->getIsEventImportant()) {
@@ -163,10 +160,12 @@ void EventManager::run() {
                 if (FD_ISSET(fdPseudoTerminal, &fs_read)) {
                     event = serialPortRepeater->getEvent(fdPseudoTerminal);
                     logger->info("采集到串口事件(虚拟机-->外部设备)：%s", event);
+                    ++eventNum;
                 }
                 else if (FD_ISSET(fdSerialPort, &fs_read)) {
                     event = serialPortRepeater->getEvent(fdSerialPort);
                     logger->info("采集到串口事件(外部设备-->虚拟机)：%s", event);
+                    ++eventNum;
                 }
 
                 bool result = stateParser->validateEvent(event);
@@ -197,6 +196,7 @@ void EventManager::run() {
             else if (FD_ISSET(socketMemoryClient, &fs_read)) {
                 event = memoryCleint->getEvent();
                 logger->info("采集到内存事件：%s", event);
+                ++eventNum;
 
                 bool result = stateParser->validateEvent(event);
                 if (stateParser->getIsEventImportant()) {
@@ -220,7 +220,6 @@ void EventManager::run() {
                         logger->info("内存事件 \"%s\" 验证不通过", event);
                     }
                 }
-
             }
         }
     }

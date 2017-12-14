@@ -12,6 +12,7 @@ Netlink::~Netlink() {
 }
 
 bool Netlink::init() {
+    logger->debug("初始化Netlink");
     // 创建客户端原始套接字，协议为NETLINK_TEST
     if ((socketClient = socket(PF_NETLINK, SOCK_RAW, NETLINK_TEST)) < 0) {
         return false;
@@ -48,6 +49,7 @@ bool Netlink::init() {
         return false;
     }
 
+    logger->debug("初始化Netlink成功");
     return true;
 }
 

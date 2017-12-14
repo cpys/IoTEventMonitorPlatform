@@ -86,6 +86,8 @@ private:
      * @param event
      */
     void sendEvent(const string &event);
+
+    Logger *logger = Logger::getLogger();
 };
 
 

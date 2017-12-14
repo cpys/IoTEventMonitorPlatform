@@ -15,6 +15,7 @@ NetfilterClient::~NetfilterClient() {
 }
 
 bool NetfilterClient::install() {
+    logger->debug("安装netfilter内核模块");
     return true;
 }
 

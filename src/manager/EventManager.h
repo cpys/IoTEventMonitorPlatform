@@ -59,7 +59,7 @@ class EventManager : public QThread {
     string serialPort;
     SerialPortRepeater *serialPortRepeater = nullptr;
 
-    MemoryCleint *memoryCleint = nullptr;
+    MemoryClient *memoryCleint = nullptr;
 
     string stateFilePath;
     ifstream stateFile;

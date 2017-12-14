@@ -5,7 +5,11 @@
 #ifndef IOTEVENTMONITORPLATFORM_MEMORYCLIENT_H
 #define IOTEVENTMONITORPLATFORM_MEMORYCLIENT_H
 
+#include <netinet/in.h>
 #include <string>
+#include <Logger.h>
+#include "memoryClientConf.h"
+
 using std::string;
 
 class MemoryClient {
@@ -18,7 +22,12 @@ class MemoryClient {
     int getFd();
 
   private:
-    int socketFd = -1;
+    int clientSocket = -1;
+    struct sockaddr_in serverAddr;
+
+    char buffer[MAX_BUFFER_SIZE];
+
+    Logger *logger = Logger::getLogger();
 };
 
 

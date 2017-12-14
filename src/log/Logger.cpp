@@ -44,7 +44,7 @@ void Logger::info(const char *fmt, ...) {
     }
     fmtCurTime();
 
-    printf("%s [INFO] ", timeFmtBuf);
+    printf("%s [INFO.] ", timeFmtBuf);
 
     va_list args;
     va_start(args, fmt);
@@ -60,7 +60,7 @@ void Logger::warning(const char *fmt, ...) {
     }
     fmtCurTime();
 
-    printf("%s [WARNING] ", timeFmtBuf);
+    printf("%s [WARN.] ", timeFmtBuf);
 
     va_list args;
     va_start(args, fmt);

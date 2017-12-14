@@ -43,6 +43,8 @@ class NetfilterClient {
 
     Netlink *netlink;
     string event;
+
+    Logger *logger = Logger::getLogger();
 };
 
 
