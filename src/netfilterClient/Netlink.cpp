@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <unistd.h>
+#include <fcntl.h>
 #include "Netlink.h"
 
 Netlink::~Netlink() {
@@ -17,6 +18,15 @@ bool Netlink::init() {
     if ((socketClient = socket(PF_NETLINK, SOCK_RAW, NETLINK_TEST)) < 0) {
         return false;
     }
+
+//    // 设置套接字非阻塞
+//    int flag = fcntl(socketClient, F_GETFL, 0);
+//    if (flag < 0) {
+//        logger->warning("fcntl F_GETFL fail");
+//    }
+//    else if (fcntl(socketClient, F_SETFL, flag | O_NONBLOCK) < 0) {
+//        logger->warning("fcntl F_SETFL fail");
+//    }
 
     // 创建本地地址数据结构
     struct sockaddr_nl local;
@@ -74,7 +84,9 @@ void Netlink::closeConnection() {
 const char *Netlink::getMessage()  {
     static int destAddrLen = sizeof(struct sockaddr_nl);
 
+    logger->debug("netlink 开始调用recvfrom");
     int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
+    logger->debug("netlink 结束调用recvfrom");
 
     if (ret < 0) {
         logger->error("recv message from kernel failed!");
