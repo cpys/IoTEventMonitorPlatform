@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <queue>
 #include <set>
 #include <z3++.h>
 #include <Logger.h>
@@ -17,6 +18,7 @@
 
 using std::string;
 using std::vector;
+using std::queue;
 using std::map;
 using std::set;
 using z3::context;
@@ -133,7 +135,11 @@ class Model {
     /**
      * 状态节点轨迹
      */
-    vector<State *> stateTrace;
+    queue<State *> stateTrace;
+    /**
+     * 能记录的最长状态节点轨迹
+     */
+    static const int MAX_TRACE_LEN = 1000;
     /**
      * 记录当前事件尝试转移过程中失败的节点
      */

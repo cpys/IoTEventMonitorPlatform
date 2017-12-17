@@ -120,33 +120,15 @@ void Model::addSpec(const string &specStr) {
 bool Model::addEvent(const string &eventName, const map<string, string> &varValueMap) {
     logger->debug("当前节点为节点%d，开始尝试转移", currentState->getStateNum());
 
-    // 如果当前是起始节点，则需要添加起始节点的表达式和SPEC表达式
-    if (currentState == startState) {
-        for (auto &z3Expr : startState->getZ3ExprList()) {
-            this->slv.add(z3Expr);
-            logger->debug("添加起始节点的表达式%s", z3Expr);;
-        }
-        for (auto &spec : specZ3ExprVector) {
-            this->slv.add(spec);
-            logger->debug("添加轨迹验证表达式%s", spec);
-        }
-        // 始终保留起始节点的表达式和SPEC表达式，后续添加的表达式在到达终止节点继续转移时弹出
-        this->slv.push();
-
-        // 初始化状态轨迹
-        this->stateTrace.clear();
-        this->stateTrace.push_back(startState);
-    }
-
     // 如果当前是终止节点，则调整至起始节点开始转移
     if (currentState == endState) {
         currentState = startState;
-        this->slv.pop();
-        this->slv.push();
 
-        // 重新初始化状态轨迹
-        this->stateTrace.clear();
-        this->stateTrace.push_back(startState);
+        // 保持记录的状态轨迹在一个长度范围内
+        while (this->stateTrace.size() > MAX_TRACE_LEN) {
+            this->stateTrace.pop();
+        }
+        this->stateTrace.push(startState);
         logger->info("从终止节点%d调整至起始节点%d开始转移", endState->getStateNum(),  startState->getStateNum());
     }
 
@@ -185,7 +167,7 @@ bool Model::addEvent(const string &eventName, const map<string, string> &varValu
     if (result) {
         logger->info("事件\"%s\"导致节点%d转移到节点%d", eventName.c_str(), currentState->getStateNum(), nextState->getStateNum());
         currentState = const_cast<State *>(nextState);
-        this->stateTrace.push_back(currentState);
+        this->stateTrace.push(currentState);
         return true;
     } else {
         logger->warning("事件\"%s\"无法转移", eventName.c_str());
@@ -216,6 +198,23 @@ bool Model::initModel() {
     }
 
     currentState = startState;
+
+    // 添加起始节点的表达式和SPEC表达式
+    for (auto &z3Expr : startState->getZ3ExprList()) {
+        this->slv.add(z3Expr);
+        logger->debug("添加起始节点的表达式%s", z3Expr);;
+    }
+    for (auto &spec : specZ3ExprVector) {
+        this->slv.add(spec);
+        logger->debug("添加轨迹验证表达式%s", spec);
+    }
+
+    // 初始化状态轨迹
+    while (!this->stateTrace.empty()) {
+        this->stateTrace.pop();
+    }
+    this->stateTrace.push(startState);
+
     return true;
 }
 
