@@ -93,16 +93,16 @@ void EventManager::run() {
     fdSerialPort = serialPortRepeater->getSerialPortFd();
 
     // 最后启动memoryClient
-    if (!memoryCleint->start()) {
-        emit sendLogMessage("内存事件获取服务器连接失败！");
-        logger->error("内存事件获取服务器连接失败！");
-        memoryCleint->stop();
-        return;
-    }
-    socketMemoryClient = memoryCleint->getFd();
+//    if (!memoryCleint->start()) {
+//        emit sendLogMessage("内存事件获取服务器连接失败！");
+//        logger->error("内存事件获取服务器连接失败！");
+//        memoryCleint->stop();
+//        return;
+//    }
+//    socketMemoryClient = memoryCleint->getFd();
 
-    int maxfd = std::max(std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort)), socketMemoryClient);
-//    int maxfd = socketMemoryClient;
+//    int maxfd = std::max(std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort)), socketMemoryClient);
+    int maxfd = std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort));
 
     uint eventNum = 0;
     uint interceptNum = 0;
@@ -114,7 +114,7 @@ void EventManager::run() {
         FD_SET(socketNetlink, &fs_read);
         FD_SET(fdPseudoTerminal, &fs_read);
         FD_SET(fdSerialPort, &fs_read);
-        FD_SET(socketMemoryClient, &fs_read);
+//        FD_SET(socketMemoryClient, &fs_read);
         tv = defaultTv;
 
         if (select(maxfd + 1, &fs_read, nullptr, nullptr, &tv) > 0) {
@@ -234,7 +234,7 @@ void EventManager::run() {
     serialPortRepeater->closePorts();
 
     // 最后关闭memoryClient
-    memoryCleint->stop();
+//    memoryCleint->stop();
 }
 
 void EventManager::setStateConf(const string &stateFilePath) {

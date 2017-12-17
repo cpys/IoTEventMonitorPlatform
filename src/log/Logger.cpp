@@ -102,7 +102,7 @@ void Logger::timeEnd() {
 void Logger::showTime(const string &str) {
 #ifdef SHOW_RUN_TIME
     fmtCurTime();
-    clog << timeFmtBuf << str << (double)(endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
+    clog << timeFmtBuf << " [TIME.] " << str << (double)(endTime - startTime) / CLOCKS_PER_SEC * 1000 << "ms" << endl;
 #endif
 }
 
