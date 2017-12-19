@@ -15,5 +15,5 @@
     <stateMachines>
         <stateMachine name="状态机1"/>
     </stateMachines>
-    <run event="事件1" stateMachine="/home/chenkuan/nat/system-test/simple-model.xml" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="/dev/pts/3" serialPort="/dev/ttyUSB0"/>
+    <run event="事件1" stateMachine="/home/chenkuan/nat/system-test/simple-model.xml" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="/dev/pts/1" serialPort="/dev/ttyUSB0"/>
 </xml>
