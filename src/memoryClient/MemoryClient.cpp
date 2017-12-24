@@ -13,8 +13,35 @@ MemoryClient::~MemoryClient() {
 }
 
 const char *MemoryClient::getEvent() {
+    bufferOffset = 0;
+    while (true) {
+        ssize_t recvNum = recv(clientSocket, buffer + bufferOffset, MIN_BUFFER_SIZE, 0);
+        if (recvNum < 0) {
+            logger->error("接收事件失败！%s", strerror(errno));
+        }
+        else if (recvNum < MIN_BUFFER_SIZE) {
+            bufferOffset += recvNum;
+            char *endPos = strchr(buffer, '\0');
+
+            break;
+        }
+        else {
+            bool hasEndChar = false;
+            for (int offset = bufferOffset; offset < bufferOffset + MIN_BUFFER_SIZE; ++offset) {
+                if (buffer[offset] == '\0') {
+                    hasEndChar = true;
+                    break;
+                }
+            }
+            if (hasEndChar) {
+                return buffer;
+            }
+            bufferOffset += MIN_BUFFER_SIZE;
+        }
+    }
+
     memset(buffer, 0, sizeof(buffer));
-    ssize_t recvNum = recv(clientSocket,buffer, MAX_BUFFER_SIZE, 0);
+    ssize_t recvNum = recv(clientSocket, buffer, MIN_BUFFER_SIZE, 0);
     if (recvNum < 0) {
         logger->error("接收事件失败！%s", strerror(errno));
     }

@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <sys/select.h>
+#include <cstring>
 
 using std::string;
 using std::vector;
@@ -51,29 +52,39 @@ bool SerialPortClient::hasMessage() {
     return fs_sel > 0;
 }
 
-void SerialPortClient::getMessage() {
-    int len = 0;
-    do {
-        len += read(fd, buffer + len, MAX_MSG - len);
-        if (len > MAX_LINE_SIZE || buffer[len - 1] == '\n') {
+bool SerialPortClient::getMessage() {
+    int len = 0, recvNum = 0;
+    while (true) {
+        recvNum = read(fd, buffer + len , MAX_MSG - len);
+        if (recvNum < 0) {
+            // 读不到数据了
+            break;
+        }
+        len += recvNum;
+        if (len > MAX_LINE_SIZE) {
             break;
         }
     }
-    while (hasMessage());
 
-    messageQueue += string(std::begin(buffer), std::begin(buffer) + len);
+    if (len > 0) {
+        messageQueue.append(string(std::begin(buffer), std::begin(buffer) + len));
+        return true;
+    }
+    else return false;
 }
 
 bool SerialPortClient::openPort() {
-    fd = open(port.c_str(), O_RDWR|O_NOCTTY|O_NDELAY);
+    fd = open(port.c_str(), O_RDWR|O_NOCTTY|O_NONBLOCK);
     if (fd < 0){
         logger->error("无法打开端口 %s！", port.c_str());
         return false;
     }
+    /*
     if(fcntl(fd, F_SETFL, 0) < 0){
         logger->error("端口 %s fcntl 设置失败！", port.c_str());
         return false;
     }
+     */
 /*
     if(0 == isatty(STDIN_FILENO)){
         cerr << port << " is not a terminal device" << endl;
@@ -186,6 +197,7 @@ bool SerialPortClient::setPort() {
 }
 
 bool SerialPortClient::sendMessage(const string &message) {
+    if (message.empty()) return true;
     auto len = write(fd, message.c_str(), message.size());
     if (len == message.size()) {
         logger->debug("成功发送%d字节到端口%s，内容为：%s", len, port.c_str(), message.c_str());

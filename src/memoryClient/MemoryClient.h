@@ -26,6 +26,7 @@ class MemoryClient {
     struct sockaddr_in serverAddr;
 
     char buffer[MAX_BUFFER_SIZE];
+    unsigned bufferOffset = 0;
 
     Logger *logger = Logger::getLogger();
 };

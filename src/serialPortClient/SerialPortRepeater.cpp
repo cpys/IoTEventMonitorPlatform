@@ -58,29 +58,18 @@ bool SerialPortRepeater::hasEvent() {
 }
 
 const char *SerialPortRepeater::getEvent(int fd) {
-    lastEvent = "";
     if (pseudoTerminal->getFd() == fd) {
-        pseudoTerminal->getMessage();
-        if (searchEvent(pseudoTerminal->getMessageQueue(), serialPort)){
+        if (pseudoTerminal->getMessage() && searchEvent(pseudoTerminal->getMessageQueue(), serialPort)){
             lastDevice = pseudoTerminal;
         }
     }
     else if (serialPort->getFd() == fd) {
-        serialPort->getMessage();
-        if (searchEvent(serialPort->getMessageQueue(), pseudoTerminal)) {
+        if (serialPort->getMessage() && searchEvent(serialPort->getMessageQueue(), pseudoTerminal)) {
             lastDevice = serialPort;
         }
     }
-    return lastEvent.c_str();
-}
-
-void SerialPortRepeater::sendEvent(const string &event) {
-    if (lastDevice == pseudoTerminal) {
-        serialPort->sendMessage(event);
-    }
-    else if (lastDevice == serialPort) {
-        pseudoTerminal->sendMessage(event);
-    }
+    if (lastEvent.empty()) return nullptr;
+    else return lastEvent.c_str();
 }
 
 void SerialPortRepeater::setEventMatchText(const string &eventHeadText, const string &eventTailText) {
@@ -101,7 +90,7 @@ bool SerialPortRepeater::searchEvent(string &messageQueue, SerialPortClient *oth
         else if (messageQueue.size() >= MAX_MESSAGE_SIZE){
             // 如果尾巴没找到但超长了，视为非事件转发
             otherPort->sendMessage(messageQueue);
-            messageQueue = "";
+            messageQueue.clear();
         }
     }
     else {
@@ -110,16 +99,25 @@ bool SerialPortRepeater::searchEvent(string &messageQueue, SerialPortClient *oth
             otherPort->sendMessage(messageQueue.substr(0, messageQueue.size() - eventHeadText.size() + 1));
             messageQueue = messageQueue.substr(messageQueue.size() - eventHeadText.size() + 1);
         }
-        else {
-            otherPort->sendMessage(messageQueue.substr(0, 1));
-            messageQueue = messageQueue.substr(1);
-        }
+        // 队列太短时给予全部保留
+//        else {
+//            otherPort->sendMessage(messageQueue.substr(0, 1));
+//            messageQueue = messageQueue.substr(1);
+//        }
     }
     return false;
 }
 
 void SerialPortRepeater::passEvent() {
-    sendEvent(lastEvent);
+    if (lastEvent.empty()) return;
+
+    if (lastDevice == pseudoTerminal) {
+        serialPort->sendMessage(lastEvent);
+    }
+    else if (lastDevice == serialPort) {
+        pseudoTerminal->sendMessage(lastEvent);
+    }
+    lastEvent.clear();
 }
 
 void SerialPortRepeater::interceptEvent() {

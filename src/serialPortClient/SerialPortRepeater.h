@@ -81,11 +81,6 @@ private:
      * @return
      */
     bool searchEvent(string &messageQueue, SerialPortClient *otherPort);
-    /**
-     * 往上一个获取事件的串口对端发事件
-     * @param event
-     */
-    void sendEvent(const string &event);
 
     Logger *logger = Logger::getLogger();
 };
