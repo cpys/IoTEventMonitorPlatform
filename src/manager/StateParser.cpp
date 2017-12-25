@@ -100,6 +100,8 @@ bool StateParser::validateEvent(const char *event) {
     logger->timeBegin();
 #endif
 
+    isEventImportant = false;
+
     XMLDocument xmlDocument;
     XMLError xmlError = xmlDocument.Parse(event);
     if (xmlError != XML_SUCCESS) {
@@ -113,12 +115,19 @@ bool StateParser::validateEvent(const char *event) {
         logger->error("event \"%s\"缺少事件名称！", event);
         return false;
     }
-    auto eventImportant = eventRoot->Attribute("important");
-    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
-        isEventImportant = false;
-    }
-    else {
-        isEventImportant = true;
+//    auto eventImportant = eventRoot->Attribute("important");
+//    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
+//        isEventImportant = false;
+//    }
+//    else {
+//        isEventImportant = true;
+//    }
+
+    for (const char *importantEventName : IMPORTANT_EVENT_NAME_LIST) {
+        if (strcmp(eventName, importantEventName) == 0) {
+            isEventImportant = true;
+            break;
+        }
     }
 
     map<string, string> vars;

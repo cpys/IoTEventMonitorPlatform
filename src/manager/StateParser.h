@@ -90,6 +90,11 @@ class StateParser {
     bool parseSpec(const char *spec);
 
     Logger *logger = Logger::getLogger();
+
+    const vector<const char *> IMPORTANT_EVENT_NAME_LIST = {
+            "increase",
+            "decrease"
+    };
 };
 
 
