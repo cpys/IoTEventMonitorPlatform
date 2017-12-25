@@ -77,34 +77,35 @@ void EventManager::run() {
 //        return;
 //    }
 //    socketNetlink = netfilterClient->getFd();
-
-    // 再启动serialPortClient
-    serialPortRepeater->setEventMatchText(eventHeadText, eventTailText);
-    serialPortRepeater->setPorts(pseudoTerminal, serialPort);
-    if (!serialPortRepeater->init()) {
-        emit sendLogMessage("串口转发器初始化失败！");
-        logger->error("串口转发器初始化失败！");
-        serialPortRepeater->closePorts();
-        netfilterClient->stop();
-        netfilterClient->remove();
-        return;
-    }
-    fdPseudoTerminal = serialPortRepeater->getPseudoTerminalFd();
-    fdSerialPort = serialPortRepeater->getSerialPortFd();
-
-//    // 最后启动memoryClient
-//    if (!memoryCleint->start()) {
-//        emit sendLogMessage("内存事件获取服务器连接失败！");
-//        logger->error("内存事件获取服务器连接失败！");
-//        memoryCleint->stop();
+//
+//    // 再启动serialPortClient
+//    serialPortRepeater->setEventMatchText(eventHeadText, eventTailText);
+//    serialPortRepeater->setPorts(pseudoTerminal, serialPort);
+//    if (!serialPortRepeater->init()) {
+//        emit sendLogMessage("串口转发器初始化失败！");
+//        logger->error("串口转发器初始化失败！");
+//        serialPortRepeater->closePorts();
+//        netfilterClient->stop();
+//        netfilterClient->remove();
 //        return;
 //    }
-//    socketMemoryClient = memoryCleint->getFd();
+//    fdPseudoTerminal = serialPortRepeater->getPseudoTerminalFd();
+//    fdSerialPort = serialPortRepeater->getSerialPortFd();
+
+    // 最后启动memoryClient
+    if (!memoryCleint->start()) {
+        emit sendLogMessage("内存事件获取服务器连接失败！");
+        logger->error("内存事件获取服务器连接失败！");
+        memoryCleint->stop();
+        return;
+    }
+    socketMemoryClient = memoryCleint->getFd();
 
 //    int maxfd = std::max(std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort)), socketMemoryClient);
 //    int maxfd = std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort));
 //    int maxfd = socketNetlink;
-    int maxfd = std::max(fdPseudoTerminal, fdSerialPort);
+//    int maxfd = std::max(fdPseudoTerminal, fdSerialPort);
+    int maxfd = socketMemoryClient;
 
     uint eventNum = 0;
     uint interceptNum = 0;
@@ -114,9 +115,9 @@ void EventManager::run() {
         // 轮询各个客户端
         FD_ZERO(&fs_read);
 //        FD_SET(socketNetlink, &fs_read);
-        FD_SET(fdPseudoTerminal, &fs_read);
-        FD_SET(fdSerialPort, &fs_read);
-//        FD_SET(socketMemoryClient, &fs_read);
+//        FD_SET(fdPseudoTerminal, &fs_read);
+//        FD_SET(fdSerialPort, &fs_read);
+        FD_SET(socketMemoryClient, &fs_read);
         tv = defaultTv;
 
         if (select(maxfd + 1, &fs_read, nullptr, nullptr, &tv) > 0) {
@@ -125,7 +126,7 @@ void EventManager::run() {
 //                event = netfilterClient->getEvent();
 //                logger->info("采集到网络事件：%s", event);
 //                ++eventNum;
-
+//
 //                bool result = stateParser->validateEvent(event);
 //                if (stateParser->getIsEventImportant()) {
 //                    emit sendLogMessage(("采集到网络通信关键事件:" + string(event)).c_str());
@@ -159,29 +160,29 @@ void EventManager::run() {
 //                    }
 //                }
 //            }
-            if (FD_ISSET(fdPseudoTerminal, &fs_read) || FD_ISSET(fdSerialPort, &fs_read)) {
+//            else if (FD_ISSET(fdPseudoTerminal, &fs_read) || FD_ISSET(fdSerialPort, &fs_read)) {
 //                logger->debug("串口上有数据");
-                if (FD_ISSET(fdPseudoTerminal, &fs_read)) {
-                    logger->debug("伪终端上有数据");
-                    event = serialPortRepeater->getEvent(fdPseudoTerminal);
-                    if (event == nullptr) {
-                        continue;
-                    }
-                    logger->info("采集到串口事件(虚拟机-->外部设备)：%s", event);
-                    ++eventNum;
-                }
-                else if (FD_ISSET(fdSerialPort, &fs_read)) {
-                    logger->debug("物理串口上有数据");
-                    event = serialPortRepeater->getEvent(fdSerialPort);
-                    if (event == nullptr) {
-                        continue;
-                    }
-                    logger->info("采集到串口事件(外部设备-->虚拟机)：%s", event);
-                    ++eventNum;
-                }
-
-                serialPortRepeater->passEvent();
-
+//                if (FD_ISSET(fdPseudoTerminal, &fs_read)) {
+//                    logger->debug("伪终端上有数据");
+//                    event = serialPortRepeater->getEvent(fdPseudoTerminal);
+//                    if (event == nullptr) {
+//                        continue;
+//                    }
+//                    logger->info("采集到串口事件(虚拟机-->外部设备)：%s", event);
+//                    ++eventNum;
+//                }
+//                else if (FD_ISSET(fdSerialPort, &fs_read)) {
+//                    logger->debug("物理串口上有数据");
+//                    event = serialPortRepeater->getEvent(fdSerialPort);
+//                    if (event == nullptr) {
+//                        continue;
+//                    }
+//                    logger->info("采集到串口事件(外部设备-->虚拟机)：%s", event);
+//                    ++eventNum;
+//                }
+//
+//                serialPortRepeater->passEvent();
+//
 //                bool result = stateParser->validateEvent(event);
 //                if (stateParser->getIsEventImportant()) {
 //                    emit sendLogMessage(("采集到串口通信关键事件:" + string(event)).c_str());
@@ -207,35 +208,36 @@ void EventManager::run() {
 //                        logger->info("串口事件 \"%s\" 验证不通过", event);
 //                    }
 //                }
-            }
-//            else if (FD_ISSET(socketMemoryClient, &fs_read)) {
-//                event = memoryCleint->getEvent();
-//                logger->info("采集到内存事件：%s", event);
-//                ++eventNum;
-//
-//                bool result = stateParser->validateEvent(event);
-//                if (stateParser->getIsEventImportant()) {
-//                    emit sendLogMessage(("采集到内存关键事件:" + string(event)).c_str());
-//                    logger->debug("该事件为关键事件");
-//                    if (result) {
-//                        emit sendLogMessage("内存事件验证可通过");
-//                        logger->info("内存事件 \"%s\" 验证通过", event);
-//                    }
-//                    else {
-//                        emit sendLogMessage("内存事件验证后不通过");
-//                        logger->warning("内存事件 \"%s\"验证不通过", event);
-//                    }
-//                }
-//                else {
-//                    logger->debug("该事件为非关键事件");
-//                    if (result) {
-//                        logger->info("内存事件 \"%s\" 验证通过", event);
-//                    }
-//                    else {
-//                        logger->info("内存事件 \"%s\" 验证不通过", event);
-//                    }
-//                }
 //            }
+            if (FD_ISSET(socketMemoryClient, &fs_read)) {
+                event = memoryCleint->getEvent();
+                if (event == nullptr) continue;
+                logger->info("采集到内存事件：%s", event);
+                ++eventNum;
+
+                bool result = stateParser->validateEvent(event);
+                if (stateParser->getIsEventImportant()) {
+                    emit sendLogMessage(("采集到内存关键事件:" + string(event)).c_str());
+                    logger->debug("该事件为关键事件");
+                    if (result) {
+                        emit sendLogMessage("内存事件验证可通过");
+                        logger->info("内存事件 \"%s\" 验证通过", event);
+                    }
+                    else {
+                        emit sendLogMessage("内存事件验证后不通过");
+                        logger->warning("内存事件 \"%s\"验证不通过", event);
+                    }
+                }
+                else {
+                    logger->debug("该事件为非关键事件");
+                    if (result) {
+                        logger->info("内存事件 \"%s\" 验证通过", event);
+                    }
+                    else {
+                        logger->info("内存事件 \"%s\" 验证不通过", event);
+                    }
+                }
+            }
         }
     }
     logger->info("接收到事件总数为%d", eventNum);
@@ -244,12 +246,12 @@ void EventManager::run() {
 //    // 先关闭netfilterClient
 //    netfilterClient->stop();
 //    netfilterClient->remove();
-
-    // 再关闭serialPortClient
-    serialPortRepeater->closePorts();
+//
+//    // 再关闭serialPortClient
+//    serialPortRepeater->closePorts();
 
     // 最后关闭memoryClient
-//    memoryCleint->stop();
+    memoryCleint->stop();
 }
 
 void EventManager::setStateConf(const string &stateFilePath) {
