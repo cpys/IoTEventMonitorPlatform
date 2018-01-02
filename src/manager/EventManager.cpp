@@ -54,12 +54,15 @@ void EventManager::run() {
         getline(stateFile, line);
         file += line;
     }
+    stateFile.close();
+
     stateParser->setStateXML(file);
     if (!stateParser->parseStateXML()) {
         emit sendLogMessage(("状态机文件 " + stateFilePath + " 无法正常解析").c_str());
         logger->error("状态机文件 %s 无法正常解析", stateFilePath.c_str());
     }
-    stateFile.close();
+
+    bool hasNetfilterClient = true, hasSerialPortRepeater = true, hasMemoryClient = true;
 
     // 再启动netfilterClient
     netfilterClient->setEventMatchText(eventHeadText, eventTailText);
@@ -74,7 +77,7 @@ void EventManager::run() {
         logger->error("netfilter客户端初始化失败!");
         netfilterClient->stop();
         netfilterClient->remove();
-        return;
+        hasNetfilterClient = false;
     }
     socketNetlink = netfilterClient->getFd();
 
@@ -87,7 +90,7 @@ void EventManager::run() {
         serialPortRepeater->closePorts();
         netfilterClient->stop();
         netfilterClient->remove();
-        return;
+        hasSerialPortRepeater = false;
     }
     fdPseudoTerminal = serialPortRepeater->getPseudoTerminalFd();
     fdSerialPort = serialPortRepeater->getSerialPortFd();
@@ -97,37 +100,53 @@ void EventManager::run() {
         emit sendLogMessage("内存事件获取服务器连接失败！");
         logger->error("内存事件获取服务器连接失败！");
         memoryCleint->stop();
-        return;
+        hasMemoryClient = false;
     }
     socketMemoryClient = memoryCleint->getFd();
 
-    int maxfd = std::max(std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort)), socketMemoryClient);
-//    int maxfd = std::max(socketNetlink, std::max(fdPseudoTerminal, fdSerialPort));
-//    int maxfd = socketNetlink;
-//    int maxfd = std::max(fdPseudoTerminal, fdSerialPort);
-//    int maxfd = socketMemoryClient;
+    int maxfd = 0;
+    if (hasNetfilterClient) {
+        maxfd = socketNetlink;
+    }
+    if (hasSerialPortRepeater) {
+        maxfd = std::max(maxfd, std::max(fdPseudoTerminal, fdSerialPort));
+    }
+    if (hasMemoryClient) {
+        maxfd = std::max(maxfd, socketMemoryClient);
+    }
+    if (maxfd == 0) {
+        return;
+    }
 
     uint eventNum = 0;
     uint interceptNum = 0;
     uint interceptFailedNum = 0;
     const char *event = nullptr;
+
     while (!threadStop) {
         // 轮询各个客户端
         FD_ZERO(&fs_read);
-        FD_SET(socketNetlink, &fs_read);
-        FD_SET(fdPseudoTerminal, &fs_read);
-        FD_SET(fdSerialPort, &fs_read);
-        FD_SET(socketMemoryClient, &fs_read);
+        if (hasNetfilterClient) {
+            FD_SET(socketNetlink, &fs_read);
+        }
+        if (hasSerialPortRepeater) {
+            FD_SET(fdPseudoTerminal, &fs_read);
+            FD_SET(fdSerialPort, &fs_read);
+        }
+        if (hasMemoryClient) {
+            FD_SET(socketMemoryClient, &fs_read);
+        }
         tv = defaultTv;
 
         if (select(maxfd + 1, &fs_read, nullptr, nullptr, &tv) > 0) {
+            startSerial:
             if (FD_ISSET(fdPseudoTerminal, &fs_read) || FD_ISSET(fdSerialPort, &fs_read)) {
                 logger->debug("串口上有数据");
                 if (FD_ISSET(fdPseudoTerminal, &fs_read)) {
                     logger->debug("伪终端上有数据");
                     event = serialPortRepeater->getEvent(fdPseudoTerminal);
                     if (event == nullptr) {
-                        continue;
+                        goto startMemory;
                     }
                     logger->info("采集到串口事件(虚拟机-->外部设备)：%s", event);
                     ++eventNum;
@@ -136,7 +155,7 @@ void EventManager::run() {
                     logger->debug("物理串口上有数据");
                     event = serialPortRepeater->getEvent(fdSerialPort);
                     if (event == nullptr) {
-                        continue;
+                        goto startMemory;
                     }
                     logger->info("采集到串口事件(外部设备-->虚拟机)：%s", event);
                     ++eventNum;
@@ -168,10 +187,12 @@ void EventManager::run() {
                     }
                 }
             }
-            else if (FD_ISSET(socketMemoryClient, &fs_read)) {
+            startMemory:
+            if (FD_ISSET(socketMemoryClient, &fs_read)) {
+                logger->debug("内存服务器上有数据");
                 event = memoryCleint->getEvent();
                 if (event == nullptr) {
-                    continue;
+                    goto startNet;
                 }
                 logger->info("采集到内存事件：%s", event);
                 ++eventNum;
@@ -199,7 +220,8 @@ void EventManager::run() {
                     }
                 }
             }
-            else if (FD_ISSET(socketNetlink, &fs_read)) {
+            startNet:
+            if (FD_ISSET(socketNetlink, &fs_read)) {
                 logger->debug("netlink上有数据");
                 event = netfilterClient->getEvent();
                 if (event == nullptr) {
@@ -241,7 +263,6 @@ void EventManager::run() {
                     }
                 }
             }
-
 
         }
     }
