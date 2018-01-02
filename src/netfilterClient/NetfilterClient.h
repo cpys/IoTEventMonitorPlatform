@@ -45,6 +45,11 @@ class NetfilterClient {
     string event;
 
     Logger *logger = Logger::getLogger();
+
+    /**
+     * 转义所有配置字符串
+     */
+    void escapeAllConfStr();
 };
 
 
