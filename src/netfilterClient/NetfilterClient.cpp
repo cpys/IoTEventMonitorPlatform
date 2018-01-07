@@ -20,6 +20,7 @@ bool NetfilterClient::install() {
     FILE *fp = nullptr;
 
     // 先移除可能未移除的netfilter模块
+    logger->debug("尝试移除已有的Netfilter内核模块");
     fp = popen("sudo rmmod netfilter", "r");
     if (fp == nullptr) {
         logger->error("无法使用popen执行shell指令来移除已有的netfilter模块");
@@ -43,8 +44,9 @@ bool NetfilterClient::install() {
             else { print $0 > "%s"}
         }' %s;
         make;
-    )delimiter", NETFILTER_SRC_PATH, vmIp, NETFILTER_CONF_FILENAME, externalIp, NETFILTER_CONF_FILENAME, eventHeadText, NETFILTER_CONF_FILENAME, eventTailText, NETFILTER_CONF_FILENAME, NETFILTER_CONF_FILENAME, NETFILTER_CONF_FILENAME);
+    )delimiter", NETFILTER_SRC_PATH, vmIp.c_str(), NETFILTER_CONF_FILENAME, externalIp.c_str(), NETFILTER_CONF_FILENAME, eventHeadText.c_str(), NETFILTER_CONF_FILENAME, eventTailText.c_str(), NETFILTER_CONF_FILENAME, NETFILTER_CONF_FILENAME, NETFILTER_CONF_FILENAME);
 
+    logger->debug("尝试对Netfilter配置文件进行更改并编译Netfilter内核模块");
     fp = popen(cmd, "r");
     if (fp == nullptr) {
         logger->error("无法使用popen执行shell指令来修改和编译netfilter代码");
@@ -58,17 +60,28 @@ bool NetfilterClient::install() {
             result += buffer;
         }
     }
-    logger->debug("after modify and make:%s", result.c_str());
+    logger->debug("after modify and make\n:%s", result.c_str());
     pclose(fp);
     fp = nullptr;
 
     // 最后安装模块
-    fp = popen("sudo insmod netfilter.ko", "r");
+    sprintf(cmd, "cd %s;sudo insmod netfilter.ko", NETFILTER_SRC_PATH);
+    fp = popen(cmd, "r");
     if (fp == nullptr) {
         logger->error("无法使用popen执行shell指令来安装netfilter模块");
         return false;
     }
+
+    result.clear();
+    while (!feof(fp)) {
+        if (fgets(buffer, sizeof(buffer), fp) != nullptr) {
+            result += buffer;
+        }
+    }
+    logger->debug("after insmod:%s", result.c_str());
+
     pclose(fp);
+    fp = nullptr;
 
     return true;
 }
@@ -116,6 +129,24 @@ int NetfilterClient::getFd() {
 }
 
 void NetfilterClient::escapeAllConfStr() {
-    // TODO
+    logger->debug("将Netfilter配置字符串进行转义");
+    escapeStr(vmIp);
+    escapeStr(externalIp);
+    escapeStr(eventHeadText);
+    escapeStr(eventTailText);
+}
 
+void NetfilterClient::escapeStr(string &str) {
+    logger->debug("开始转义字符串 %s", str.c_str());
+    string strBackup;
+    for (const auto &c : str) {
+        if (c == '"') {
+            strBackup.append(R"(\\\")");
+        }
+        else {
+            strBackup.push_back(c);
+        }
+    }
+    logger->debug("字符串 %s 转义成了 %s", str.c_str(), strBackup.c_str());
+    str = strBackup;
 }

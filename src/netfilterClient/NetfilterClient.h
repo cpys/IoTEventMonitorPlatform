@@ -50,6 +50,11 @@ class NetfilterClient {
      * 转义所有配置字符串
      */
     void escapeAllConfStr();
+    /**
+     * 转义指定的配置字符串
+     * @param str
+     */
+    void escapeStr(string &str);
 };
 
 
