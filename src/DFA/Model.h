@@ -25,6 +25,15 @@ using z3::context;
 using z3::solver;
 using Z3Expr = z3::expr;
 
+/**
+ * 事件验证的结果可能
+ */
+enum VerificationResult {
+    ACCEPT,
+    DROP,
+    PENDING
+};
+
 class Model {
   public:
     Model();
@@ -84,7 +93,7 @@ class Model {
      * @param varValueMap 变量名:变量值 映射表
      * @return 事件验证结果
      */
-    bool addEvent(const string &eventName, const map<string, string> &varValueMap);
+    enum VerificationResult addEvent(const string &eventName, const map<string, string> &varValueMap);
 
     /**
      * 初始化模型，进行虚拟空节点检查
@@ -150,9 +159,13 @@ class Model {
      */
     context ctx;
     /**
-     * Z3求解器
+     * Z3正向求解器
      */
-    solver slv;
+    solver positiveSolver;
+    /**
+     * Z3反向求解器
+     */
+    solver negativeSolver;
 
     /**
      * 将字符串形式的表达式转成Z3表达式
@@ -195,13 +208,13 @@ class Model {
     const Z3Expr calcExpr(const Z3Expr &expr1, const string &currentOperator, const Z3Expr &expr2);
     /**
      * 验证待定的下一个状态和事件上的变量能否通过验证
-     * 验证成功则保留新加入的Z3表达式
-     * 验证失败则删除新加入的Z3表达式
+     * 验证ACCEPT或PENDING则保留新加入的Z3表达式
+     * 验证DROP则删除新加入的Z3表达式
      * @param nextState 待定的下一个状态
      * @param varValueMap 事件上的变量名：变量值 映射表
      * @return 验证结果
      */
-    bool verify(const State *nextState, const map<string, string> &varValueMap);
+    enum VerificationResult verify(const State *nextState, const map<string, string> &varValueMap);
 
     Logger *logger = Logger::getLogger();
 };

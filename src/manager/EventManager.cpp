@@ -185,25 +185,29 @@ void EventManager::run() {
                     ++eventNum;
                 }
 
-                bool result = stateParser->validateEvent(event);
+                enum VerificationResult result = stateParser->validateEvent(event);
                 if (stateParser->getIsEventImportant()) {
                     emit sendLogMessage(("采集到串口通信关键事件:" + string(event)).c_str());
                     logger->debug("该事件为关键事件");
-                    if (result) {
+                    if (result == ACCEPT) {
                         emit sendLogMessage("验证事件后通过此事件");
                         logger->info("串口事件 \"%s\" 验证通过", event);
                         serialPortRepeater->passEvent();
                     }
-                    else {
+                    else if (result == DROP){
                         emit sendLogMessage("验证事件后拦截此事件");
                         logger->info("串口事件 \"%s\"验证拦截", event);
                         ++interceptNum;
                         serialPortRepeater->interceptEvent();
                     }
+                    else if (result == PENDING){
+                        // TODO
+                        // 开始等待后续事件处理结果
+                    }
                 }
                 else {
                     logger->debug("该事件为非关键事件");
-                    if (result) {
+                    if (result == ACCEPT || result == PENDING) {
                         logger->info("串口事件 \"%s\" 验证通过", event);
                     }
                     else {
@@ -221,22 +225,22 @@ void EventManager::run() {
                 logger->info("采集到内存事件：%s", event);
                 ++eventNum;
 
-                bool result = stateParser->validateEvent(event);
+                enum VerificationResult result = stateParser->validateEvent(event);
                 if (stateParser->getIsEventImportant()) {
                     emit sendLogMessage(("采集到内存关键事件:" + string(event)).c_str());
                     logger->debug("该事件为关键事件");
-                    if (result) {
+                    if (result == ACCEPT || result == PENDING) {
                         emit sendLogMessage("内存事件验证可通过");
                         logger->info("内存事件 \"%s\" 验证通过", event);
                     }
-                    else {
+                    else if (result == DROP){
                         emit sendLogMessage("内存事件验证后不通过");
                         logger->warning("内存事件 \"%s\"验证不通过", event);
                     }
                 }
                 else {
                     logger->debug("该事件为非关键事件");
-                    if (result) {
+                    if (result == ACCEPT || result == PENDING) {
                         logger->info("内存事件 \"%s\" 验证通过", event);
                     }
                     else {
@@ -254,11 +258,11 @@ void EventManager::run() {
                 logger->info("采集到网络事件：%s", event);
                 ++eventNum;
 
-                bool result = stateParser->validateEvent(event);
+                enum VerificationResult result = stateParser->validateEvent(event);
                 if (stateParser->getIsEventImportant()) {
                     emit sendLogMessage(("采集到网络通信关键事件:" + string(event)).c_str());
                     logger->debug("该事件为关键事件");
-                    if (result) {
+                    if (result == ACCEPT) {
                         emit sendLogMessage("验证事件后通过此事件");
                         logger->info("网络事件 \"%s\" 验证通过", event);
                         if (!netfilterClient->passEvent()) {
@@ -266,7 +270,7 @@ void EventManager::run() {
                             logger->warning("通过指令发送失败！");
                         }
                     }
-                    else {
+                    else if (result == DROP) {
                         emit sendLogMessage("验证事件后拦截此事件");
                         logger->info("网络事件 \"%s\"验证拦截", event);
                         ++interceptNum;
@@ -276,10 +280,14 @@ void EventManager::run() {
                             ++interceptFailedNum;
                         }
                     }
+                    else if (result == PENDING) {
+                        // TODO
+                        // 开始等待后续事件结果
+                    }
                 }
                 else {
                     logger->debug("该事件为非关键事件");
-                    if (result) {
+                    if (result == ACCEPT || result == PENDING) {
                         logger->info("网络事件 \"%s\" 验证通过", event);
                     }
                     else {

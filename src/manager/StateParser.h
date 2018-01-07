@@ -33,7 +33,7 @@ class StateParser {
      * @param event
      * @return
      */
-    bool validateEvent(const char *event);
+    enum VerificationResult validateEvent(const char *event);
     /**
      * 获取事件是否是关键事件
      * @return

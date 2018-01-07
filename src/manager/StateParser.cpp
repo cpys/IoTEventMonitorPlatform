@@ -95,7 +95,7 @@ bool StateParser::parseStateXML() {
     return true;
 }
 
-bool StateParser::validateEvent(const char *event) {
+enum VerificationResult StateParser::validateEvent(const char *event) {
 #ifdef SHOW_RUN_TIME
     logger->timeBegin();
 #endif
@@ -106,22 +106,15 @@ bool StateParser::validateEvent(const char *event) {
     XMLError xmlError = xmlDocument.Parse(event);
     if (xmlError != XML_SUCCESS) {
         logger->error("event \"%s\"  不符合XML规范！", event);
-        return false;
+        return DROP;
     }
 
     XMLElement *eventRoot = xmlDocument.FirstChildElement();
     auto eventName = eventRoot->Attribute("name");
     if (eventName == nullptr) {
         logger->error("event \"%s\"缺少事件名称！", event);
-        return false;
+        return DROP;
     }
-//    auto eventImportant = eventRoot->Attribute("important");
-//    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
-//        isEventImportant = false;
-//    }
-//    else {
-//        isEventImportant = true;
-//    }
 
     for (const char *importantEventName : IMPORTANT_EVENT_NAME_LIST) {
         if (strcmp(eventName, importantEventName) == 0) {
@@ -135,7 +128,7 @@ bool StateParser::validateEvent(const char *event) {
         vars[string(varLabel->Value())] = string(varLabel->GetText());
     }
 
-    bool result = model->addEvent(string(eventName), vars);
+    enum VerificationResult result = model->addEvent(string(eventName), vars);
 
 #ifdef SHOW_RUN_TIME
     logger->timeEnd();

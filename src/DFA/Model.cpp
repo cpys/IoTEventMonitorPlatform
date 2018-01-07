@@ -6,7 +6,7 @@
 #include "Model.h"
 using std::stack;
 
-Model::Model() : slv(ctx) {
+Model::Model() : positiveSolver(ctx), negativeSolver(ctx) {
 
 }
 
@@ -117,7 +117,7 @@ void Model::addSpec(const string &specStr) {
     specZ3ExprVector.push_back(z3Expr);
 }
 
-bool Model::addEvent(const string &eventName, const map<string, string> &varValueMap) {
+enum VerificationResult Model::addEvent(const string &eventName, const map<string, string> &varValueMap) {
     logger->debug("当前节点为节点%d，开始尝试转移", currentState->getStateNum());
 
     // 如果当前是终止节点，则调整至起始节点开始转移
@@ -136,7 +136,7 @@ bool Model::addEvent(const string &eventName, const map<string, string> &varValu
     currentFailedStates.clear();
 
     // 假设不能转移
-    bool result = false;
+    enum VerificationResult result = DROP;
     const State *nextState = nullptr;
 
     // 先查看当前状态能否转移到相邻状态
@@ -145,33 +145,37 @@ bool Model::addEvent(const string &eventName, const map<string, string> &varValu
         nextState = tran->getDestState();
         if (tran->getTranName() == eventName) {
             result = this->verify(nextState, varValueMap);
-            if (result) {
+            if (result == DROP) {
                 break;
             }
         }
     }
 
     // 如果无法转移到相邻状态或者转移到相邻状态验证失败则在全局中搜索转移
-    if (!result) {
+    if (result == DROP) {
         for (auto &tran : trans) {
             nextState = tran->getDestState();
             if (tran->getSourceState() != currentState && tran->getTranName() == eventName && currentFailedStates.find(nextState) == currentFailedStates.end()) {
                 result = this->verify(nextState, varValueMap);
-                if (result) {
+                if (result != DROP) {
                     break;
                 }
             }
         }
     }
 
-    if (result) {
+    if (result == ACCEPT) {
         logger->info("事件\"%s\"导致节点%d转移到节点%d", eventName.c_str(), currentState->getStateNum(), nextState->getStateNum());
         currentState = const_cast<State *>(nextState);
         this->stateTrace.push(currentState);
-        return true;
-    } else {
+        return ACCEPT;
+    } else if (result == DROP){
         logger->warning("事件\"%s\"无法转移", eventName.c_str());
-        return false;
+        return DROP;
+    }
+    else if (result == PENDING) {
+        logger->info("事件\"%s\"暂时无法确定是否能转移，需等待后续事件", eventName.c_str());
+        return PENDING;
     }
 }
 
@@ -201,12 +205,17 @@ bool Model::initModel() {
 
     // 添加起始节点的表达式和SPEC表达式
     for (auto &z3Expr : startState->getZ3ExprList()) {
-        this->slv.add(z3Expr);
+        this->positiveSolver.add(z3Expr);
+        this->negativeSolver.add(z3Expr);
         logger->debug("添加起始节点的表达式%s", z3Expr);;
     }
     for (auto &spec : specZ3ExprVector) {
-        this->slv.add(spec);
-        logger->debug("添加轨迹验证表达式%s", spec);
+        this->positiveSolver.add(spec);
+        logger->debug("为正向求解器添加轨迹验证表达式%s", spec);
+    }
+    for (auto &spec : specZ3ExprVector) {
+        this->negativeSolver.add(!spec);
+        logger->debug("为反向求解器添加取反的轨迹验证表达式%s", spec);
     }
 
     // 初始化状态轨迹
@@ -456,16 +465,18 @@ const Z3Expr Model::calcExpr(const Z3Expr &expr1, const string &currentOperator,
     return expr1;
 }
 
-bool Model::verify(const State *nextState, const map<string, string> &varValueMap) {
+enum VerificationResult Model::verify(const State *nextState, const map<string, string> &varValueMap) {
     int nextStateNum = nextState->getStateNum();
 
     logger->debug("尝试转移到节点%d", nextStateNum);
 
-    slv.push();
+    positiveSolver.push();
+    negativeSolver.push();
     // 先添加下一状态中的全部Z3表达式
     const vector<Z3Expr> &stateZ3ExprList = nextState->getZ3ExprList();
     for (auto &z3Expr : stateZ3ExprList) {
-        slv.add(z3Expr);
+        positiveSolver.add(z3Expr);
+        negativeSolver.add(z3Expr);
         logger->debug("添加节点%d中的表达式%s", nextStateNum, z3Expr);
     }
 
@@ -479,22 +490,35 @@ bool Model::verify(const State *nextState, const map<string, string> &varValueMa
 
         if (varType == "int") {
             Z3Expr z3Expr = this->ctx.int_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.int_val(varValue.second.c_str());
-            slv.add(z3Expr);
+            positiveSolver.add(z3Expr);
+            negativeSolver.add(z3Expr);
             logger->debug("添加事件上变量值构成的表达式%s", z3Expr);
         } else if (varType == "double") {
-            slv.add(this->ctx.real_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.real_val(varValue.second.c_str()));
+            Z3Expr z3Expr = this->ctx.real_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.real_val(varValue.second.c_str());
+            positiveSolver.add(z3Expr);
+            negativeSolver.add(z3Expr);
+            logger->debug("添加事件上变量值构成的表达式%s", z3Expr);
         } else if (varType == "bool") {
-            slv.add(this->ctx.bool_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.bool_val(varValue.second == "true"));
+            Z3Expr z3Expr = this->ctx.bool_const((varValue.first + std::to_string(nextStateNum)).c_str()) == this->ctx.bool_val(varValue.second == "true");
+            positiveSolver.add(z3Expr);
+            negativeSolver.add(z3Expr);
+            logger->debug("添加事件上变量值构成的表达式%s", z3Expr);
         }
     }
 
-    if (slv.check() == z3::sat) {
-        logger->info("尝试转移到节点%d成功", nextStateNum);
-        return true;
-    } else {
+    if (positiveSolver.check() == z3::unsat) {
         logger->info("尝试转移到节点%d失败", nextStateNum);
-        slv.pop();
+        positiveSolver.pop();
+        negativeSolver.pop();
         currentFailedStates.insert(nextState);
-        return false;
+        return DROP;
+    }
+    else if (negativeSolver.check() == z3::sat) {
+        logger->info("尝试转移到节点%d出现非确定式成功", nextStateNum);
+        return PENDING;
+    }
+    else {
+        logger->info("尝试转移到节点%d成功", nextStateNum);
+        return ACCEPT;
     }
 }
