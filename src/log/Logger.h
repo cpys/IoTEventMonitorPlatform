@@ -6,6 +6,7 @@
 #define IOTEVENTMONITORPLATFORM_LOGGER_H
 
 #include <string>
+#include <ctime>
 #include "logConf.h"
 using std::string;
 
@@ -40,9 +41,9 @@ class Logger {
     clock_t endTime = 0;
 #endif
 
-    time_t tt;
+    time_t tt = 0;
     static const unsigned TIME_FMT_BUF_MAX_SIZE = 128;
-    char timeFmtBuf[TIME_FMT_BUF_MAX_SIZE];
+    char timeFmtBuf[TIME_FMT_BUF_MAX_SIZE] = {0};
 
     void fmtCurTime();
 };
