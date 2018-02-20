@@ -21,6 +21,12 @@ class CustomEventManagerWidget : public QWidget {
   public:
     explicit CustomEventManagerWidget(QWidget *parent = nullptr);
 
+  protected slots:
+
+    void addEvent();
+
+    void deleteEvent();
+
   private:
     /**
      * 整体采用左右布局
@@ -39,6 +45,7 @@ class CustomEventManagerWidget : public QWidget {
      * 右侧堆叠CustomEventWidget
      */
     QStackedWidget *eventStackedWidget = nullptr;
+
 
 };
 

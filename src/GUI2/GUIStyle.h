@@ -23,6 +23,9 @@ extern const char *DELETE_EVENT;
 extern const char *MAIN_WINDOW_TITLE;
 extern const char *EVENT_MANAGER_TITLE;
 extern const char *RUN_TITLE;
+
+extern const char *EVENT;
+
 extern const char *EVENT_SELECT;
 extern const char *VM_IP;
 extern const char *EXTERNAL_IP;

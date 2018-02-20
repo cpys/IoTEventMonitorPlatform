@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     Logger *logger = Logger::getLogger();
-    logger->setLogLevel(info);
+    logger->setLogLevel(debug);
 
     if (argc == 2) {
         if (strcmp(argv[1], "debug") == 0) {

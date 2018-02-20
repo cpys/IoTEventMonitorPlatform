@@ -19,6 +19,7 @@ const char *DELETE_EVENT = "-";
 const char *MAIN_WINDOW_TITLE = "物联网服务系统监控平台";
 const char *EVENT_MANAGER_TITLE = "事件模板定义";
 const char *RUN_TITLE = "运行展示";
+const char *EVENT = "事件";
 const char *EVENT_SELECT = "事件选择";
 const char *VM_IP = "虚拟机ip";
 const char *EXTERNAL_IP = "外部设备ip";

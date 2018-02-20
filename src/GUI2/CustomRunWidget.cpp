@@ -61,5 +61,10 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     leftGridLayout->addWidget(runButton, 7, 0, 1, 2);
     leftGridLayout->addWidget(clearButton, 8, 0, 1, 2);
 
-    // 设置间距风格 TODO
+    // 设置间距风格
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
+    hBoxLayout->setSpacing(0);
+
+    leftGridLayout->setContentsMargins(0, 0, 0, 0);
+    leftGridLayout->setSpacing(0);
 }
