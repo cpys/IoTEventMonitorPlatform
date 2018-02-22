@@ -11,6 +11,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QHBoxLayout>
+#include <Logger.h>
 
 /**
  * 事件管理页面，显示事件、添加删除事件等
@@ -22,14 +23,18 @@ class CustomEventManagerWidget : public QWidget {
     explicit CustomEventManagerWidget(QWidget *parent = nullptr);
 
   signals:
-
     void insertEvent(int index, const QString &text);
-
     void removeEvent(int index);
+
+    void modifyEvent(int index, const QString &text);
 
   protected slots:
     void addEvent();
     void deleteEvent();
+
+    void editListItem(QListWidgetItem *item);
+
+    void afterEditEvent(QListWidgetItem *item);
 
   private:
     /**
@@ -50,6 +55,7 @@ class CustomEventManagerWidget : public QWidget {
      */
     QStackedWidget *eventStackedWidget = nullptr;
 
+    Logger *logger = Logger::getLogger();
 
 };
 

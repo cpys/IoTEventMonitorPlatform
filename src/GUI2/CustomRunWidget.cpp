@@ -77,3 +77,7 @@ void CustomRunWidget::insertEvent(int index, const QString &text) {
 void CustomRunWidget::removeEvent(int index) {
     eventComboBox->removeItem(index);
 }
+
+void CustomRunWidget::modifyEvent(int index, const QString &text) {
+    eventComboBox->setItemText(index, text);
+}

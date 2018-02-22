@@ -16,15 +16,26 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
     setContentsMargins(0, 0, 0, 0);
 
     // 将eventManagerWidget中的事件列表变更信号与runWidget中的信号槽连接起来
-    QObject::connect(eventManagerWidget, SIGNAL(insertEvent(int,
-                                                        const QString&)), runWidget, SLOT(insertEvent(int,
-                                                                                                  const QString&)));
-    QObject::connect(eventManagerWidget, SIGNAL(removeEvent(int)), runWidget, SLOT(removeEvent(int)));
+    QObject::connect(eventManagerWidget,
+                     SIGNAL(insertEvent(int,
+                                    const QString&)),
+                     runWidget,
+                     SLOT(insertEvent(int,
+                                  const QString&)));
+    QObject::connect(eventManagerWidget,
+                     SIGNAL(removeEvent(int)),
+                     runWidget,
+                     SLOT(removeEvent(int)));
+    QObject::connect(eventManagerWidget,
+                     SIGNAL(modifyEvent(int,
+                                    const QString&)),
+                     runWidget,
+                     SLOT(modifyEvent(int,
+                                  const QString&)));
 }
 
 void CustomTabWidget::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
-    logger->debug("width %d --> %d", currentWidth, width());
     // 只有当界面宽度变化时才进行标签的重绘
     if (currentWidth != width()) {
         currentWidth = width();

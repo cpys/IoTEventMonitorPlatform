@@ -5,6 +5,7 @@
 #include "CustomEventManagerWidget.h"
 #include <CustomEventWidget.h>
 #include <GUIStyle.h>
+#include <qdebug.h>
 
 CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);
@@ -37,8 +38,23 @@ CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(pa
     QObject::connect(addButton, SIGNAL(clicked()), this, SLOT(addEvent()));
     QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteEvent()));
 
+    // 双击list的item响应，设置item为可编辑
+    QObject::connect(eventListWidget,
+                     SIGNAL(itemDoubleClicked(QListWidgetItem * )),
+                     this,
+                     SLOT(editListItem(QListWidgetItem * )));
+
+    // list的item内容变化响应，item内容变化时emit信号
+    QObject::connect(eventListWidget,
+                     SIGNAL(itemChanged(QListWidgetItem * )),
+                     this,
+                     SLOT(afterEditEvent(QListWidgetItem * )));
+
     // 使list与stackedWidget对应
-    QObject::connect(eventListWidget, SIGNAL(currentRowChanged(int)), eventStackedWidget, SLOT(setCurrentIndex(int)));
+    QObject::connect(eventListWidget,
+                     SIGNAL(currentRowChanged(int)),
+                     eventStackedWidget,
+                     SLOT(setCurrentIndex(int)));
 }
 
 void CustomEventManagerWidget::addEvent() {
@@ -62,4 +78,14 @@ void CustomEventManagerWidget::deleteEvent() {
     QWidget *currentEventWidget = eventStackedWidget->widget(currentRow);
     eventStackedWidget->removeWidget(currentEventWidget);
     delete currentEventWidget;
+}
+
+void CustomEventManagerWidget::editListItem(QListWidgetItem *item) {
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+}
+
+
+void CustomEventManagerWidget::afterEditEvent(QListWidgetItem *item) {
+    logger->debug("after modify, item->text:%s", item->text().toLocal8Bit().data());
+    emit modifyEvent(eventListWidget->currentRow(), item->text());
 }

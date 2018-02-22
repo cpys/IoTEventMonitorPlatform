@@ -26,6 +26,8 @@ class CustomRunWidget : public QWidget {
 
     void removeEvent(int index);
 
+    void modifyEvent(int index, const QString &text);
+
   private:
     /**
      * 整体采用左右布局，左右可设2:8宽度比
