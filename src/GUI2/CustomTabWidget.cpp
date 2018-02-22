@@ -14,6 +14,12 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
 
     // 设置间距风格
     setContentsMargins(0, 0, 0, 0);
+
+    // 将eventManagerWidget中的事件列表变更信号与runWidget中的信号槽连接起来
+    QObject::connect(eventManagerWidget, SIGNAL(insertEvent(int,
+                                                        const QString&)), runWidget, SLOT(insertEvent(int,
+                                                                                                  const QString&)));
+    QObject::connect(eventManagerWidget, SIGNAL(removeEvent(int)), runWidget, SLOT(removeEvent(int)));
 }
 
 void CustomTabWidget::paintEvent(QPaintEvent *event) {

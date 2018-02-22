@@ -21,10 +21,14 @@ class CustomEventManagerWidget : public QWidget {
   public:
     explicit CustomEventManagerWidget(QWidget *parent = nullptr);
 
+  signals:
+
+    void insertEvent(int index, const QString &text);
+
+    void removeEvent(int index);
+
   protected slots:
-
     void addEvent();
-
     void deleteEvent();
 
   private:

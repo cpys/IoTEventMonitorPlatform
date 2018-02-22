@@ -33,7 +33,7 @@ CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(pa
 
     eventListWidget->setFixedWidth(EVENT_TAB_WIDTH);
 
-    // 添加删除事件的响应
+    // 添加和删除事件的响应
     QObject::connect(addButton, SIGNAL(clicked()), this, SLOT(addEvent()));
     QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteEvent()));
 
@@ -42,12 +42,14 @@ CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(pa
 }
 
 void CustomEventManagerWidget::addEvent() {
-    eventListWidget->addItem((EVENT + std::to_string(eventListWidget->count() + 1)).c_str());
+    int pos = eventListWidget->count();
+    QString eventName = EVENT + QString::number(pos + 1);
+    eventListWidget->addItem(eventName);
+    eventListWidget->setCurrentRow(pos);
+    emit insertEvent(pos, eventName);
 
     auto eventWidget = new CustomEventWidget(this);
     eventStackedWidget->addWidget(eventWidget);
-
-    eventListWidget->setCurrentRow(eventListWidget->count() - 1);
 }
 
 void CustomEventManagerWidget::deleteEvent() {
@@ -55,6 +57,7 @@ void CustomEventManagerWidget::deleteEvent() {
     if (currentRow < 0) return;
 
     delete eventListWidget->takeItem(currentRow);
+    emit removeEvent(currentRow);
 
     QWidget *currentEventWidget = eventStackedWidget->widget(currentRow);
     eventStackedWidget->removeWidget(currentEventWidget);

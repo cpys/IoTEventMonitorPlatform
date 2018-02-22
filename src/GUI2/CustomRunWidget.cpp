@@ -67,4 +67,13 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 
     leftGridLayout->setContentsMargins(0, 0, 0, 0);
     leftGridLayout->setSpacing(0);
+
+}
+
+void CustomRunWidget::insertEvent(int index, const QString &text) {
+    eventComboBox->insertItem(index, text);
+}
+
+void CustomRunWidget::removeEvent(int index) {
+    eventComboBox->removeItem(index);
 }

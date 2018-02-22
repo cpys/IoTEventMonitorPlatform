@@ -20,6 +20,12 @@ class CustomRunWidget : public QWidget {
   public:
     explicit CustomRunWidget(QWidget *parent = nullptr);
 
+  protected slots:
+
+    void insertEvent(int index, const QString &text);
+
+    void removeEvent(int index);
+
   private:
     /**
      * 整体采用左右布局，左右可设2:8宽度比
