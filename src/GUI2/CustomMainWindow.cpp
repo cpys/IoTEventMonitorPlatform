@@ -3,7 +3,7 @@
 //
 
 #include "CustomMainWindow.h"
-#include <GUIStyle.h>
+#include <GUIConf.h>
 
 CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
     tabWidget = new CustomTabWidget(this);
@@ -15,4 +15,9 @@ CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
     setContentsMargins(0, 0, 0, 0);
     resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
     setWindowTitle(MAIN_WINDOW_TITLE);
+}
+
+void CustomMainWindow::closeEvent(QCloseEvent *event) {
+    tabWidget->saveConf();
+    QWidget::closeEvent(event);
 }

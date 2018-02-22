@@ -11,6 +11,9 @@
 #include <CustomRunWidget.h>
 #include <QtWidgets/QStatusBar>
 #include <Logger.h>
+#include <tinyxml2.h>
+
+using namespace tinyxml2;
 
 /**
  * 主tabWidget，两个tab分别显示事件管理和运行展示页面
@@ -21,11 +24,24 @@ class CustomTabWidget : public QTabWidget {
   public:
     explicit CustomTabWidget(QWidget *parent = nullptr);
 
+    void loadConf();
+
+    bool parseConf();
+
+    void saveConf();
+
   private:
     CustomEventManagerWidget *eventManagerWidget = nullptr;
     CustomRunWidget *runWidget = nullptr;
 
     Logger *logger = Logger::getLogger();
+
+    /**
+     * GUI界面的记忆配置读取存放于此
+     */
+    XMLDocument GUIConf;
+    XMLElement *eventsConf;
+    XMLElement *runConf;
 
     /**
     * 记录当前width，用于在重绘事件中判断是否要重绘

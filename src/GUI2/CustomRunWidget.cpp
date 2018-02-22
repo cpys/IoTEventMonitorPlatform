@@ -3,7 +3,7 @@
 //
 
 #include "CustomRunWidget.h"
-#include <GUIStyle.h>
+#include <GUIConf.h>
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);

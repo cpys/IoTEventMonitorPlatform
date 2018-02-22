@@ -18,6 +18,13 @@ class CustomMainWindow : public QMainWindow {
   public:
     explicit CustomMainWindow(QWidget *parent = nullptr);
 
+  protected:
+    /**
+    * 重写关闭窗口事件，在关闭前进行配置保存
+    * @param event
+    */
+    void closeEvent(QCloseEvent *event) override;
+
   private:
     CustomTabWidget *tabWidget = nullptr;
     QStatusBar *statusBar = nullptr;

@@ -36,7 +36,7 @@ aux_source_directory(src/serialPortClient SRC_SERIAL_PORT_CLIENT)
 aux_source_directory(src/tinyxml2 SRC_TINY_XML)
 
 #add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_DFA} ${SRC_GUI} ${SRC_LOG} ${SRC_MANAGER} ${SRC_NETFILTER_CLIENT} ${SRC_SERIAL_PORT_CLIENT} ${SRC_TINY_XML})
-add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_LOG})
+add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_LOG} ${SRC_TINY_XML})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
 

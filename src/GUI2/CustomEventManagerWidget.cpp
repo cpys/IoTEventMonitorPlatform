@@ -4,7 +4,7 @@
 
 #include "CustomEventManagerWidget.h"
 #include <CustomEventWidget.h>
-#include <GUIStyle.h>
+#include <GUIConf.h>
 #include <qdebug.h>
 
 CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(parent) {
@@ -107,7 +107,7 @@ void CustomEventManagerWidget::afterEditEventContent() {
 
     auto item = eventListWidget->item(row);
     auto eventWidget = dynamic_cast<CustomEventWidget *>(eventStackedWidget->widget(row));
-    logger->debug("after modify, item->event->text:%s", eventWidget->text().toLocal8Bit().data());
+    logger->debug("after modify, item->event->text:\n%s", eventWidget->text().toLocal8Bit().data());
 
     emit modifyEvent(row, item->text(), eventWidget->text());
 }

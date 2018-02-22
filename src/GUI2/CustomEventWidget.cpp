@@ -3,6 +3,7 @@
 //
 
 #include "CustomEventWidget.h"
+#include <GUIConf.h>
 
 CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     gridLayout = new QGridLayout(this);
@@ -33,12 +34,12 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     gridLayout->setSpacing(0);
 
     // 设置默认内容
-    upperOutLayer->setText("<xml>");
-    middleLayer->setText("<name>value</name>");
-    bottomOutLayer->setText("</xml>");
-    upperIndicator->setText("事件匹配头部");
-    middleIndicator->setText("事件非匹配主体");
-    bottomIndicator->setText("事件匹配尾部");
+    upperOutLayer->setText(DEFAULT_EVENT_MATCH_HEAD);
+    middleLayer->setText(DEFAULT_EVENT_MATCH_BODY);
+    bottomOutLayer->setText(DEFAULT_EVENT_MATCH_TAIL);
+    upperIndicator->setText(EVENT_MATCH_HEAD_DESC);
+    middleIndicator->setText(EVENT_MATCH_BODY_DESC);
+    bottomIndicator->setText(EVENT_MATCH_TAIL_DESC);
 
     // 添加内容变化的响应
     QObject::connect(upperOutLayer, SIGNAL(textChanged()), this, SIGNAL(eventContentChanged()));

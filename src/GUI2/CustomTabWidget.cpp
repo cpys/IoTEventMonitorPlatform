@@ -3,7 +3,7 @@
 //
 
 #include "CustomTabWidget.h"
-#include <GUIStyle.h>
+#include <GUIConf.h>
 
 CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
     eventManagerWidget = new CustomEventManagerWidget(this);
@@ -32,6 +32,44 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
                      runWidget,
                      SLOT(modifyEvent(int,
                                   const QString&, const QString&)));
+
+    // 载入配置
+    loadConf();
+}
+
+void CustomTabWidget::loadConf() {
+    // 按配置文件、默认配置文件、默认配置内容顺序选择
+    if (GUIConf.LoadFile(GUI_CONF_FILE) != XML_SUCCESS || !parseConf()) {
+        if (GUIConf.LoadFile(GUI_CONF_DEFAULT_FILE) != XML_SUCCESS || !parseConf()) {
+            GUIConf.Parse(GUI_CONF_TEMPLATE);
+            parseConf();
+        }
+    }
+}
+
+bool CustomTabWidget::parseConf() {
+    XMLElement *root = GUIConf.FirstChildElement();
+    if (root == nullptr || strcmp(root->Attribute("projectName"), PROJECT_NAME) != 0) {
+        return false;
+    }
+
+    eventsConf = root->FirstChildElement("events");
+    if (eventsConf == nullptr) {
+        eventsConf = GUIConf.NewElement("events");
+        root->InsertEndChild(eventsConf);
+    }
+
+    runConf = root->FirstChildElement("run");
+    if (runConf == nullptr) {
+        runConf = GUIConf.NewElement("run");
+        root->InsertEndChild(runConf);
+    }
+
+    return true;
+}
+
+void CustomTabWidget::saveConf() {
+    // TODO
 }
 
 void CustomTabWidget::paintEvent(QPaintEvent *event) {
