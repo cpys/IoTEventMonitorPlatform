@@ -13,6 +13,7 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QPushButton>
 #include <CustomIpEdit.h>
+#include <QtWidgets/QStackedWidget>
 
 class CustomRunWidget : public QWidget {
   Q_OBJECT
@@ -22,11 +23,11 @@ class CustomRunWidget : public QWidget {
 
   protected slots:
 
-    void insertEvent(int index, const QString &text);
+    void insertEvent(int index, const QString &eventName, const QString &eventContent);
 
     void removeEvent(int index);
 
-    void modifyEvent(int index, const QString &text);
+    void modifyEvent(int index, const QString &eventName, const QString &eventContent);
 
   private:
     /**
@@ -42,7 +43,8 @@ class CustomRunWidget : public QWidget {
     QLabel *eventLabel = nullptr;
     QComboBox *eventComboBox = nullptr;
     // 事件预览
-    QTextBrowser *eventPreviewBrowser = nullptr;
+//    QTextBrowser *eventPreviewBrowser = nullptr;
+    QStackedWidget *eventPreviewStackedWidget = nullptr;
     // 网络监控配置
     QLabel *vmIpLabel = nullptr;
     CustomIpEdit *vmIpEdit = nullptr;

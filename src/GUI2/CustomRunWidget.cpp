@@ -17,7 +17,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     eventLabel = new QLabel(EVENT_SELECT, this);
     eventComboBox = new QComboBox(this);
 
-    eventPreviewBrowser = new QTextBrowser(this);
+//    eventPreviewBrowser = new QTextBrowser(this);
+    eventPreviewStackedWidget = new QStackedWidget(this);
 
     vmIpLabel = new QLabel(VM_IP, this);
     vmIpEdit = new CustomIpEdit(this);
@@ -41,7 +42,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     leftGridLayout->addWidget(eventLabel, 0, 0);
     leftGridLayout->addWidget(eventComboBox, 0, 1);
 
-    leftGridLayout->addWidget(eventPreviewBrowser, 1, 0, 1, 2);
+//    leftGridLayout->addWidget(eventPreviewBrowser, 1, 0, 1, 2);
+    leftGridLayout->addWidget(eventPreviewStackedWidget, 1, 0, 1, 2);
 
     leftGridLayout->addWidget(vmIpLabel, 2, 0);
     leftGridLayout->addWidget(vmIpEdit, 2, 1);
@@ -68,16 +70,30 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     leftGridLayout->setContentsMargins(0, 0, 0, 0);
     leftGridLayout->setSpacing(0);
 
+    // 设置下拉框与预览框对应
+    QObject::connect(eventComboBox, SIGNAL(activated(int)),
+                     eventPreviewStackedWidget, SLOT(setCurrentIndex(int)));
+
 }
 
-void CustomRunWidget::insertEvent(int index, const QString &text) {
-    eventComboBox->insertItem(index, text);
+void CustomRunWidget::insertEvent(int index, const QString &eventName, const QString &eventContent) {
+    eventComboBox->insertItem(index, eventName);
+
+    auto eventPreviewTextBrowser = new QTextBrowser(this);
+    eventPreviewTextBrowser->setText(eventContent);
+    eventPreviewStackedWidget->insertWidget(index, eventPreviewTextBrowser);
 }
 
 void CustomRunWidget::removeEvent(int index) {
     eventComboBox->removeItem(index);
+
+    auto eventPreviewTextBrowser = eventPreviewStackedWidget->widget(index);
+    eventPreviewStackedWidget->removeWidget(eventPreviewTextBrowser);
+    delete (eventPreviewTextBrowser);
 }
 
-void CustomRunWidget::modifyEvent(int index, const QString &text) {
-    eventComboBox->setItemText(index, text);
+void CustomRunWidget::modifyEvent(int index, const QString &eventName, const QString &eventContent) {
+    eventComboBox->setItemText(index, eventName);
+    auto eventPreviewTextBrowser = dynamic_cast<QTextBrowser *>(eventPreviewStackedWidget->widget(index));
+    eventPreviewTextBrowser->setText(eventContent);
 }

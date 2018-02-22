@@ -17,6 +17,16 @@ class CustomEventWidget : public QWidget {
   public:
     explicit CustomEventWidget(QWidget *parent = nullptr);
 
+    /**
+     * 返回拼接的完整事件内容
+     * @return
+     */
+    QString text();
+
+  signals:
+
+    void eventContentChanged();
+
   private:
     /**
      * 使用网格布局

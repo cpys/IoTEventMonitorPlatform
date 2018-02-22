@@ -39,4 +39,18 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     upperIndicator->setText("事件匹配头部");
     middleIndicator->setText("事件非匹配主体");
     bottomIndicator->setText("事件匹配尾部");
+
+    // 添加内容变化的响应
+    QObject::connect(upperOutLayer, SIGNAL(textChanged()), this, SIGNAL(eventContentChanged()));
+    QObject::connect(middleLayer, SIGNAL(textChanged()), this, SIGNAL(eventContentChanged()));
+    QObject::connect(bottomOutLayer, SIGNAL(textChanged()), this, SIGNAL(eventContentChanged()));
+
+}
+
+QString CustomEventWidget::text() {
+    return upperOutLayer->toPlainText()
+           + '\n'
+           + middleLayer->toPlainText()
+           + '\n'
+           + bottomOutLayer->toPlainText();
 }

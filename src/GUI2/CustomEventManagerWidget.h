@@ -23,10 +23,11 @@ class CustomEventManagerWidget : public QWidget {
     explicit CustomEventManagerWidget(QWidget *parent = nullptr);
 
   signals:
-    void insertEvent(int index, const QString &text);
+
+    void insertEvent(int index, const QString &eventName, const QString &eventContent);
     void removeEvent(int index);
 
-    void modifyEvent(int index, const QString &text);
+    void modifyEvent(int index, const QString &eventName, const QString &eventContent);
 
   protected slots:
     void addEvent();
@@ -34,7 +35,9 @@ class CustomEventManagerWidget : public QWidget {
 
     void editListItem(QListWidgetItem *item);
 
-    void afterEditEvent(QListWidgetItem *item);
+    void afterEditEventName(QListWidgetItem *item);
+
+    void afterEditEventContent();
 
   private:
     /**

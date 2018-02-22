@@ -48,7 +48,7 @@ CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(pa
     QObject::connect(eventListWidget,
                      SIGNAL(itemChanged(QListWidgetItem * )),
                      this,
-                     SLOT(afterEditEvent(QListWidgetItem * )));
+                     SLOT(afterEditEventName(QListWidgetItem * )));
 
     // 使list与stackedWidget对应
     QObject::connect(eventListWidget,
@@ -58,14 +58,19 @@ CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(pa
 }
 
 void CustomEventManagerWidget::addEvent() {
-    int pos = eventListWidget->count();
-    QString eventName = EVENT + QString::number(pos + 1);
+    int row = eventListWidget->count();
+    QString eventName = EVENT + QString::number(row + 1);
     eventListWidget->addItem(eventName);
-    eventListWidget->setCurrentRow(pos);
-    emit insertEvent(pos, eventName);
+    eventListWidget->setCurrentRow(row);
 
     auto eventWidget = new CustomEventWidget(this);
     eventStackedWidget->addWidget(eventWidget);
+    eventStackedWidget->setCurrentIndex(row);
+    // 为每个添加的eventWiget添加一个内容变化的消息响应
+    QObject::connect(eventWidget, SIGNAL(eventContentChanged()),
+                     this, SLOT(afterEditEventContent()));
+
+    emit insertEvent(row, eventName, eventWidget->text());
 }
 
 void CustomEventManagerWidget::deleteEvent() {
@@ -73,19 +78,36 @@ void CustomEventManagerWidget::deleteEvent() {
     if (currentRow < 0) return;
 
     delete eventListWidget->takeItem(currentRow);
-    emit removeEvent(currentRow);
 
     QWidget *currentEventWidget = eventStackedWidget->widget(currentRow);
     eventStackedWidget->removeWidget(currentEventWidget);
     delete currentEventWidget;
+
+    emit removeEvent(currentRow);
 }
 
 void CustomEventManagerWidget::editListItem(QListWidgetItem *item) {
     item->setFlags(item->flags() | Qt::ItemIsEditable);
 }
 
+void CustomEventManagerWidget::afterEditEventName(QListWidgetItem *item) {
+    // 非当前行发生变化则忽略处理
+    if (eventListWidget->currentItem() != item) return;
 
-void CustomEventManagerWidget::afterEditEvent(QListWidgetItem *item) {
     logger->debug("after modify, item->text:%s", item->text().toLocal8Bit().data());
-    emit modifyEvent(eventListWidget->currentRow(), item->text());
+    int row = eventListWidget->currentRow();
+    if (row < 0) return;
+    auto eventWidget = dynamic_cast<CustomEventWidget *>(eventStackedWidget->widget(row));
+    emit modifyEvent(row, item->text(), eventWidget->text());
+}
+
+void CustomEventManagerWidget::afterEditEventContent() {
+    int row = eventListWidget->currentRow();
+    if (row < 0) return;
+
+    auto item = eventListWidget->item(row);
+    auto eventWidget = dynamic_cast<CustomEventWidget *>(eventStackedWidget->widget(row));
+    logger->debug("after modify, item->event->text:%s", eventWidget->text().toLocal8Bit().data());
+
+    emit modifyEvent(row, item->text(), eventWidget->text());
 }
