@@ -27,5 +27,5 @@
         </event>
     </events>
     <run currentEventName="事件2" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1"
-         stateMachineFilePath="/home/chenkuan/状态机1.xml"/>
+         stateMachineFilePath="D:/Users/chenkuan/ClionProjects/IoTEventMonitorPlatform/conf/gui_conf.xml"/>
 </xml>

@@ -4,6 +4,7 @@
 
 #include "CustomRunWidget.h"
 #include <GUIConf.h>
+#include <QtWidgets/QFileDialog>
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);
@@ -32,7 +33,7 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     serialPortEdit = new QLineEdit(this);
 
     stateMachineSelectLabel = new QLabel(STATE_MACHINE_SELECT_LABEL, this);
-    stateMachineEdit = new QLineEdit(this);
+    stateMachineEdit = new CustomLineEdit(this);
 
     runButton = new QPushButton(RUN_BUTTON, this);
     clearButton = new QPushButton(CLEAR_BUTTON, this);
@@ -71,6 +72,10 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     // 设置下拉框与预览框对应
     QObject::connect(eventComboBox, SIGNAL(activated(int)),
                      eventPreviewStackedWidget, SLOT(setCurrentIndex(int)));
+
+    // 设置状态机文件输入框点击的响应
+    QObject::connect(stateMachineEdit, SIGNAL(clicked()),
+                     this, SLOT(selectStateMachineFile()));
 
 }
 
@@ -117,4 +122,14 @@ void CustomRunWidget::modifyEvent(int index, const QString &eventName, const QSt
     eventComboBox->setItemText(index, eventName);
     auto eventPreviewTextBrowser = dynamic_cast<QTextBrowser *>(eventPreviewStackedWidget->widget(index));
     eventPreviewTextBrowser->setText(eventContent);
+}
+
+void CustomRunWidget::selectStateMachineFile() {
+    QString stateMachineFilePath = QFileDialog::getOpenFileName(this,
+                                                                tr(SELECT_FILE_DIALOG_TITLE),
+                                                                ".",
+                                                                tr("XML files (*.xml)"));
+    if (!stateMachineFilePath.isEmpty()) {
+        stateMachineEdit->setText(stateMachineFilePath);
+    }
 }

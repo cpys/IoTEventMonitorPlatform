@@ -67,4 +67,6 @@ extern const char *STATE_MACHINE_SELECT_LABEL;
 extern const char *RUN_BUTTON;
 extern const char *CLEAR_BUTTON;
 
+extern const char *SELECT_FILE_DIALOG_TITLE;
+
 #endif //IOTEVENTMONITORPLATFORM_GUISTYLE_H

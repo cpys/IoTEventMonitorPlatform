@@ -15,6 +15,7 @@
 #include <CustomIpEdit.h>
 #include <QtWidgets/QStackedWidget>
 #include <tinyxml2.h>
+#include <CustomLineEdit.h>
 
 using namespace tinyxml2;
 
@@ -35,6 +36,8 @@ class CustomRunWidget : public QWidget {
     void removeEvent(int index);
 
     void modifyEvent(int index, const QString &eventName, const QString &eventContent);
+
+    void selectStateMachineFile();
 
   private:
     /**
@@ -63,7 +66,7 @@ class CustomRunWidget : public QWidget {
     QLineEdit *serialPortEdit = nullptr;
     // 状态机文件选择
     QLabel *stateMachineSelectLabel = nullptr;
-    QLineEdit *stateMachineEdit = nullptr;
+    CustomLineEdit *stateMachineEdit = nullptr;
 
     // 启动与停止
     QPushButton *runButton = nullptr;

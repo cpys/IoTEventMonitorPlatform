@@ -65,6 +65,8 @@ const char *HOST_SERIAL_PORT_LABEL = "宿主机串口名称";
 const char *STATE_MACHINE_SELECT_LABEL = "状态机文件选择";
 const char *RUN_BUTTON = "启动";
 const char *CLEAR_BUTTON = "清屏";
+
+const char *SELECT_FILE_DIALOG_TITLE = "选择文件";
 #endif
 
 #ifdef ENGLISH
