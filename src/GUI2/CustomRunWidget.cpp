@@ -77,6 +77,12 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     QObject::connect(stateMachineEdit, SIGNAL(clicked()),
                      this, SLOT(selectStateMachineFile()));
 
+    // 启动按钮响应
+    QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
+
+    // 清除按钮
+    QObject::connect(clearButton, SIGNAL(clicked()), logTextBrowser, SLOT(clear()));
+
 }
 
 void CustomRunWidget::loadConf(XMLElement *runConf) {
@@ -132,4 +138,44 @@ void CustomRunWidget::selectStateMachineFile() {
     if (!stateMachineFilePath.isEmpty()) {
         stateMachineEdit->setText(stateMachineFilePath);
     }
+}
+
+void CustomRunWidget::runButtonClicked() {
+    // 判断按钮状态调用不同的函数
+    if (runButton->text() == "启动") {
+        run();
+    } else {
+        stop();
+    }
+}
+
+void CustomRunWidget::run() {
+    // 开始执行后更改各组件状态
+    changeWidgetState(false);
+    runButton->setText("停止");
+
+    // 启动处理线程
+//    sendStatusMessage("正在启动...");
+//    eventManager->setEventConf(currentEventWidget->getHeadText(), currentEventWidget->getBodyText(), currentEventWidget->getTailText());
+//    eventManager->setNetfilterConf(this->vmIpEdit->getIp(), this->externalIpEdit->getIp());
+//    eventManager->setSerialPortConf(this->pseudoTerminalEdit->text().toStdString(), this->serialPortEdit->text().toStdString());
+//    eventManager->setStateConf(this->stateEdit->text().toStdString());
+//    eventManager->start();
+}
+
+void CustomRunWidget::stop() {
+    // 结束处理线程
+//    eventManager->stop();
+//    sendStatusMessage("正在停止...");
+//    eventManager->wait();
+//    sendStatusMessage("事件接收处理已停止");
+}
+
+void CustomRunWidget::changeWidgetState(bool isEnabled) {
+    eventComboBox->setEnabled(isEnabled);
+    vmIpEdit->setEnabled(isEnabled);
+    externalIpEdit->setEnabled(isEnabled);
+    pseudoTerminalEdit->setEnabled(isEnabled);
+    serialPortEdit->setEnabled(isEnabled);
+    stateMachineEdit->setEnabled(isEnabled);
 }

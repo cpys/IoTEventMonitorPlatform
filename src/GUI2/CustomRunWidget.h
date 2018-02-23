@@ -39,6 +39,8 @@ class CustomRunWidget : public QWidget {
 
     void selectStateMachineFile();
 
+    void runButtonClicked();
+
   private:
     /**
      * 整体采用左右布局，左右可设2:8宽度比
@@ -79,6 +81,22 @@ class CustomRunWidget : public QWidget {
     QTextBrowser *logTextBrowser = nullptr;
 
     XMLElement *runConf = nullptr;
+
+    /**
+     * 启动后台处理线程
+     */
+    void run();
+
+    /**
+     * 停止后台处理线程
+     */
+    void stop();
+
+    /**
+     * 改变页面所有可编辑控件的状态
+     * @param isEnabled
+     */
+    void changeWidgetState(bool isEnabled);
 };
 
 
