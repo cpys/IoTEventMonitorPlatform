@@ -12,6 +12,9 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QHBoxLayout>
 #include <Logger.h>
+#include <tinyxml2.h>
+
+using namespace tinyxml2;
 
 /**
  * 事件管理页面，显示事件、添加删除事件等
@@ -22,11 +25,14 @@ class CustomEventManagerWidget : public QWidget {
   public:
     explicit CustomEventManagerWidget(QWidget *parent = nullptr);
 
+    void loadConf(XMLElement *eventsConf);
+
+    void saveConf();
+
   signals:
 
     void insertEvent(int index, const QString &eventName, const QString &eventContent);
     void removeEvent(int index);
-
     void modifyEvent(int index, const QString &eventName, const QString &eventContent);
 
   protected slots:
@@ -57,6 +63,11 @@ class CustomEventManagerWidget : public QWidget {
      * 右侧堆叠CustomEventWidget
      */
     QStackedWidget *eventStackedWidget = nullptr;
+
+    /**
+     * 该页的信息描述
+     */
+    XMLElement *eventsConf = nullptr;
 
     Logger *logger = Logger::getLogger();
 

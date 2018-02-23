@@ -48,6 +48,34 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
 
 }
 
+void CustomEventWidget::loadConf(XMLElement *eventConf) {
+    auto headConf = eventConf->FirstChildElement(EVENT_HEAD_TAG);
+    auto bodyConf = eventConf->FirstChildElement(EVENT_BODY_TAG);
+    auto tailConf = eventConf->FirstChildElement(EVENT_TAIL_TAG);
+
+    if (headConf) upperOutLayer->setText(headConf->GetText());
+    if (bodyConf) middleLayer->setText(bodyConf->GetText());
+    if (tailConf) bottomOutLayer->setText(tailConf->GetText());
+
+}
+
+void CustomEventWidget::saveConf(XMLElement *eventConf) {
+    // 创建各个事件组件节点
+    XMLElement *headElement = eventConf->GetDocument()->NewElement(EVENT_HEAD_TAG);
+    XMLElement *bodyElement = eventConf->GetDocument()->NewElement(EVENT_BODY_TAG);
+    XMLElement *tailElement = eventConf->GetDocument()->NewElement(EVENT_TAIL_TAG);
+
+    // 设置各个节点内容
+    headElement->SetText(upperOutLayer->toPlainText().toStdString().c_str());
+    bodyElement->SetText(middleLayer->toPlainText().toStdString().c_str());
+    tailElement->SetText(bottomOutLayer->toPlainText().toStdString().c_str());
+
+    // 插入各个事件组件节点
+    eventConf->InsertEndChild(headElement);
+    eventConf->InsertEndChild(bodyElement);
+    eventConf->InsertEndChild(tailElement);
+}
+
 QString CustomEventWidget::text() {
     return upperOutLayer->toPlainText()
            + '\n'

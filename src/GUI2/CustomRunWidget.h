@@ -14,12 +14,19 @@
 #include <QtWidgets/QPushButton>
 #include <CustomIpEdit.h>
 #include <QtWidgets/QStackedWidget>
+#include <tinyxml2.h>
+
+using namespace tinyxml2;
 
 class CustomRunWidget : public QWidget {
   Q_OBJECT
 
   public:
     explicit CustomRunWidget(QWidget *parent = nullptr);
+
+    void loadConf(XMLElement *runConf);
+
+    void saveConf();
 
   protected slots:
 
@@ -43,7 +50,6 @@ class CustomRunWidget : public QWidget {
     QLabel *eventLabel = nullptr;
     QComboBox *eventComboBox = nullptr;
     // 事件预览
-//    QTextBrowser *eventPreviewBrowser = nullptr;
     QStackedWidget *eventPreviewStackedWidget = nullptr;
     // 网络监控配置
     QLabel *vmIpLabel = nullptr;
@@ -68,6 +74,8 @@ class CustomRunWidget : public QWidget {
      * 右侧使用一个QTextBrowser显示信息
      */
     QTextBrowser *logTextBrowser = nullptr;
+
+    XMLElement *runConf = nullptr;
 };
 
 

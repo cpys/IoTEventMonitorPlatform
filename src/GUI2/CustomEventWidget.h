@@ -10,12 +10,19 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QTextBrowser>
+#include <tinyxml2.h>
+
+using namespace tinyxml2;
 
 class CustomEventWidget : public QWidget {
   Q_OBJECT
 
   public:
     explicit CustomEventWidget(QWidget *parent = nullptr);
+
+    void loadConf(XMLElement *eventConf);
+
+    void saveConf(XMLElement *eventConf);
 
     /**
      * 返回拼接的完整事件内容
@@ -39,6 +46,7 @@ class CustomEventWidget : public QWidget {
     QTextBrowser *upperIndicator = nullptr;
     QTextBrowser *middleIndicator = nullptr;
     QTextBrowser *bottomIndicator = nullptr;
+
 };
 
 

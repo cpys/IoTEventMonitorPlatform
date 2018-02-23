@@ -35,6 +35,9 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
 
     // 载入配置
     loadConf();
+    // 将各页面配置下发
+    eventManagerWidget->loadConf(eventsConf);
+    runWidget->loadConf(runConf);
 }
 
 void CustomTabWidget::loadConf() {
@@ -49,19 +52,22 @@ void CustomTabWidget::loadConf() {
 
 bool CustomTabWidget::parseConf() {
     XMLElement *root = GUIConf.FirstChildElement();
-    if (root == nullptr || strcmp(root->Attribute("projectName"), PROJECT_NAME) != 0) {
+    if (root == nullptr
+        || strcmp(root->Name(), ROOT_TAG) != 0
+        || strcmp(root->Attribute(PROJECT_NAME_ATTR),
+                  PROJECT_NAME_ATTR_VALUE) != 0) {
         return false;
     }
 
-    eventsConf = root->FirstChildElement("events");
+    eventsConf = root->FirstChildElement(EVENTS_TAG);
     if (eventsConf == nullptr) {
-        eventsConf = GUIConf.NewElement("events");
+        eventsConf = GUIConf.NewElement(EVENTS_TAG);
         root->InsertEndChild(eventsConf);
     }
 
-    runConf = root->FirstChildElement("run");
+    runConf = root->FirstChildElement(RUN_TAG);
     if (runConf == nullptr) {
-        runConf = GUIConf.NewElement("run");
+        runConf = GUIConf.NewElement(RUN_TAG);
         root->InsertEndChild(runConf);
     }
 
@@ -69,7 +75,10 @@ bool CustomTabWidget::parseConf() {
 }
 
 void CustomTabWidget::saveConf() {
-    // TODO
+    eventManagerWidget->saveConf();
+    runWidget->saveConf();
+
+    GUIConf.SaveFile(GUI_CONF_FILE);
 }
 
 void CustomTabWidget::paintEvent(QPaintEvent *event) {

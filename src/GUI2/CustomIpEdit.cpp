@@ -28,19 +28,19 @@ CustomIpEdit::CustomIpEdit(QWidget *parent) : QWidget(parent) {
 }
 
 
-void CustomIpEdit::setIp(const string &ip) {
-    QString ipStr(ip.c_str());
+void CustomIpEdit::setIp(const char *ip) {
+    QString ipStr(ip);
     QStringList ipStrList = ipStr.split(".");
     for (int i = 0; i < 4; ++i) {
         ipEdits[i]->setText(std::to_string(ipStrList[i].toInt()).c_str());
     }
 }
 
-string CustomIpEdit::getIp() {
-    return ipEdits[0]->text().toStdString() +
-           "." + ipEdits[1]->text().toStdString() +
-           "." + ipEdits[2]->text().toStdString() +
-           "." + ipEdits[3]->text().toStdString();
+QString CustomIpEdit::getIp() {
+    return ipEdits[0]->text() +
+           "." + ipEdits[1]->text() +
+           "." + ipEdits[2]->text() +
+           "." + ipEdits[3]->text();
 }
 
 void CustomIpEdit::changeStyle() {

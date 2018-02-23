@@ -11,10 +11,8 @@
 #include <QtWidgets/QLabel>
 #include <vector>
 #include <QtWidgets/QHBoxLayout>
-#include <string>
 
 using std::vector;
-using std::string;
 
 class CustomIpEdit : public QWidget {
   Q_OBJECT
@@ -26,13 +24,13 @@ class CustomIpEdit : public QWidget {
      * 输入ip点分10进制字符串，解析并填充到输入框中
      * @param ip
      */
-    void setIp(const string &ip);
+    void setIp(const char *ip);
 
     /**
      * 返回点分10进制的ip字符串
      * @return
      */
-    string getIp();
+    QString getIp();
 
   private:
     QHBoxLayout *hBoxLayout;

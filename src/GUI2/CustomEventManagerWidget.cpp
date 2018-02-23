@@ -5,7 +5,7 @@
 #include "CustomEventManagerWidget.h"
 #include <CustomEventWidget.h>
 #include <GUIConf.h>
-#include <qdebug.h>
+#include <GUIConf.h>
 
 CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);
@@ -55,6 +55,61 @@ CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(pa
                      SIGNAL(currentRowChanged(int)),
                      eventStackedWidget,
                      SLOT(setCurrentIndex(int)));
+}
+
+void CustomEventManagerWidget::loadConf(XMLElement *eventsConf) {
+    this->eventsConf = eventsConf;
+
+    // 遍历所有<event>节点
+    for (auto eventConf = eventsConf->FirstChildElement(EVENT_TAG);
+         eventConf != nullptr;
+         eventConf = eventConf->NextSiblingElement(EVENT_TAG)) {
+        // 将事件名称添加到list中
+        const char *eventName = eventConf->Attribute(EVENT_NAME_ATTR);
+        eventListWidget->addItem(eventName);
+        // 添加一个eventWidget并传入事件内容
+        auto eventWidget = new CustomEventWidget(this);
+        eventWidget->loadConf(eventConf);
+        eventStackedWidget->addWidget(eventWidget);
+        // 为每个添加的eventWiget添加一个内容变化的消息响应
+        QObject::connect(eventWidget, SIGNAL(eventContentChanged()),
+                         this, SLOT(afterEditEventContent()));
+
+        // 发送添加事件的信号
+        emit insertEvent(eventListWidget->count() - 1, eventName, eventWidget->text());
+    }
+
+    // 根据属性currentEventName选择到相应的事件显示
+    int currentRow = 0;
+    const char *currentEventName = eventsConf->Attribute(CURRENT_EVENT_NAME_ATTR);
+    for (int row = 0; row < eventListWidget->count(); ++row) {
+        auto item = eventListWidget->item(row);
+        if (item->text() == currentEventName) {
+            currentRow = row;
+            break;
+        }
+    }
+    eventListWidget->setCurrentRow(currentRow);
+    eventStackedWidget->setCurrentIndex(currentRow);
+}
+
+void CustomEventManagerWidget::saveConf() {
+    // 先清空存储的旧的events
+    eventsConf->DeleteChildren();
+
+    auto currentItem = eventListWidget->currentItem();
+    eventsConf->SetAttribute(CURRENT_EVENT_NAME_ATTR, currentItem->text().toStdString().c_str());
+
+    for (int row = 0; row < eventListWidget->count(); ++row) {
+        // 插入一个event节点
+        XMLElement *eventElement = eventsConf->GetDocument()->NewElement(EVENT_TAG);
+        eventsConf->InsertEndChild(eventElement);
+
+        // 节点中添加事件名称
+        eventElement->SetAttribute(EVENT_NAME_ATTR, eventListWidget->item(row)->text().toStdString().c_str());
+        // 节点中添加事件内容
+        dynamic_cast<CustomEventWidget *>(eventStackedWidget->widget(row))->saveConf(eventElement);
+    }
 }
 
 void CustomEventManagerWidget::addEvent() {

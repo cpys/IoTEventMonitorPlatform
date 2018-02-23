@@ -12,7 +12,23 @@ extern const char *GUI_CONF_DEFAULT_FILE;
 // 默认配置内容
 extern const char *GUI_CONF_TEMPLATE;
 
-extern const char *PROJECT_NAME;
+// 配置中节点信息
+extern const char *ROOT_TAG;
+extern const char *PROJECT_NAME_ATTR;
+extern const char *PROJECT_NAME_ATTR_VALUE;
+extern const char *EVENTS_TAG;
+extern const char *EVENT_TAG;
+extern const char *EVENT_NAME_ATTR;
+extern const char *EVENT_HEAD_TAG;
+extern const char *EVENT_BODY_TAG;
+extern const char *EVENT_TAIL_TAG;
+extern const char *RUN_TAG;
+extern const char *CURRENT_EVENT_NAME_ATTR;
+extern const char *VM_IP_ATTR;
+extern const char *EXTERNAL_IP_ATTR;
+extern const char *PSEUDO_TERMINAL_ATTR;
+extern const char *SERIAL_PORT_ATTR;
+extern const char *STATE_MACHINE_FILE_PATH_ATTR;
 
 // 尺寸信息
 extern const int MAIN_WINDOW_WIDTH;
@@ -42,13 +58,13 @@ extern const char *EVENT_MATCH_BODY_DESC;
 extern const char *EVENT_MATCH_TAIL_DESC;
 
 extern const char *RUN_TITLE;
-extern const char *EVENT_SELECT;
-extern const char *VM_IP;
-extern const char *EXTERNAL_IP;
-extern const char *PSEUDO_TERMINAL;
-extern const char *HOST_SERIAL_PORT;
-extern const char *STATE_MACHINE_SELECT;
-extern const char *RUN;
-extern const char *CLEAR;
+extern const char *EVENT_SELECT_LABEL;
+extern const char *VM_IP_LABEL;
+extern const char *EXTERNAL_IP_LABEL;
+extern const char *PSEUDO_TERMINAL_LABEL;
+extern const char *HOST_SERIAL_PORT_LABEL;
+extern const char *STATE_MACHINE_SELECT_LABEL;
+extern const char *RUN_BUTTON;
+extern const char *CLEAR_BUTTON;
 
 #endif //IOTEVENTMONITORPLATFORM_GUISTYLE_H

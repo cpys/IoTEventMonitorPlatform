@@ -14,35 +14,33 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout->addLayout(leftGridLayout, 2);
     hBoxLayout->addWidget(logTextBrowser, 8);
 
-    eventLabel = new QLabel(EVENT_SELECT, this);
+    eventLabel = new QLabel(EVENT_SELECT_LABEL, this);
     eventComboBox = new QComboBox(this);
 
-//    eventPreviewBrowser = new QTextBrowser(this);
     eventPreviewStackedWidget = new QStackedWidget(this);
 
-    vmIpLabel = new QLabel(VM_IP, this);
+    vmIpLabel = new QLabel(VM_IP_LABEL, this);
     vmIpEdit = new CustomIpEdit(this);
 
-    externalIpLabel = new QLabel(EXTERNAL_IP, this);
+    externalIpLabel = new QLabel(EXTERNAL_IP_LABEL, this);
     externalIpEdit = new CustomIpEdit(this);
 
-    pseudoTerminalLabel = new QLabel(PSEUDO_TERMINAL, this);
+    pseudoTerminalLabel = new QLabel(PSEUDO_TERMINAL_LABEL, this);
     pseudoTerminalEdit = new QLineEdit(this);
 
-    serialPortLabel = new QLabel(HOST_SERIAL_PORT, this);
+    serialPortLabel = new QLabel(HOST_SERIAL_PORT_LABEL, this);
     serialPortEdit = new QLineEdit(this);
 
-    stateMachineSelectLabel = new QLabel(STATE_MACHINE_SELECT, this);
+    stateMachineSelectLabel = new QLabel(STATE_MACHINE_SELECT_LABEL, this);
     stateMachineEdit = new QLineEdit(this);
 
-    runButton = new QPushButton(RUN, this);
-    clearButton = new QPushButton(CLEAR, this);
+    runButton = new QPushButton(RUN_BUTTON, this);
+    clearButton = new QPushButton(CLEAR_BUTTON, this);
 
     // 完成左侧的网格布局
     leftGridLayout->addWidget(eventLabel, 0, 0);
     leftGridLayout->addWidget(eventComboBox, 0, 1);
 
-//    leftGridLayout->addWidget(eventPreviewBrowser, 1, 0, 1, 2);
     leftGridLayout->addWidget(eventPreviewStackedWidget, 1, 0, 1, 2);
 
     leftGridLayout->addWidget(vmIpLabel, 2, 0);
@@ -74,6 +72,29 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     QObject::connect(eventComboBox, SIGNAL(activated(int)),
                      eventPreviewStackedWidget, SLOT(setCurrentIndex(int)));
 
+}
+
+void CustomRunWidget::loadConf(XMLElement *runConf) {
+    this->runConf = runConf;
+
+    int currentEventIndex = eventComboBox->findText(runConf->Attribute(CURRENT_EVENT_NAME_ATTR));
+    eventComboBox->setCurrentIndex(currentEventIndex);
+    eventPreviewStackedWidget->setCurrentIndex(currentEventIndex);
+
+    vmIpEdit->setIp(runConf->Attribute(VM_IP_ATTR));
+    externalIpEdit->setIp(runConf->Attribute(EXTERNAL_IP_ATTR));
+    pseudoTerminalEdit->setText(runConf->Attribute(PSEUDO_TERMINAL_ATTR));
+    serialPortEdit->setText(runConf->Attribute(SERIAL_PORT_ATTR));
+    stateMachineEdit->setText(runConf->Attribute(STATE_MACHINE_FILE_PATH_ATTR));
+}
+
+void CustomRunWidget::saveConf() {
+    runConf->SetAttribute(CURRENT_EVENT_NAME_ATTR, eventComboBox->currentText().toStdString().c_str());
+    runConf->SetAttribute(VM_IP_ATTR, vmIpEdit->getIp().toStdString().c_str());
+    runConf->SetAttribute(EXTERNAL_IP_ATTR, externalIpEdit->getIp().toStdString().c_str());
+    runConf->SetAttribute(PSEUDO_TERMINAL_ATTR, pseudoTerminalEdit->text().toStdString().c_str());
+    runConf->SetAttribute(SERIAL_PORT_ATTR, serialPortEdit->text().toStdString().c_str());
+    runConf->SetAttribute(STATE_MACHINE_FILE_PATH_ATTR, stateMachineEdit->text().toStdString().c_str());
 }
 
 void CustomRunWidget::insertEvent(int index, const QString &eventName, const QString &eventContent) {

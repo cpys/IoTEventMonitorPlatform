@@ -1,19 +1,31 @@
 <xml projectName="IoTEventMonitorPlatform">
-    <events>
+    <events currentEventName="事件2">
         <event name="事件1">
-            <head>&lt;xml type="event"</head>
-            <body> name="event1" important="1"&gt;
-&lt;varName&gt;value&lt;/varName&gt;</body>
+            <head>&lt;xml name="event1"&gt;</head>
+            <body>&lt;name&gt;value1&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
         <event name="事件2">
+            <head>&lt;xml&gt;</head>
+            <body>&lt;name&gt;value222&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
+        <event name="事件3">
+            <head>&lt;xml&gt;</head>
+            <body>&lt;name&gt;value3&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
+        <event name="事件4">
+            <head>&lt;xml&gt;</head>
+            <body>&lt;name&gt;value4&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
+        <event name="事件5">
             <head>&lt;xml&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
     </events>
-    <stateMachines>
-        <stateMachine name="状态机1"/>
-    </stateMachines>
-    <run event="事件1" stateMachine="/home/chenkuan/nat/system-test/simple-model.xml" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="/dev/pts/3" serialPort="/dev/ttyUSB0"/>
+    <run currentEventName="事件2" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1"
+         stateMachineFilePath="/home/chenkuan/状态机1.xml"/>
 </xml>
