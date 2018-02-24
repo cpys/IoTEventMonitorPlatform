@@ -99,7 +99,11 @@ void CustomEventManagerWidget::saveConf() {
     eventsConf->DeleteChildren();
 
     auto currentItem = eventListWidget->currentItem();
-    eventsConf->SetAttribute(CURRENT_EVENT_NAME_ATTR, currentItem->text().toStdString().c_str());
+    if (currentItem != nullptr) {
+        eventsConf->SetAttribute(CURRENT_EVENT_NAME_ATTR, currentItem->text().toStdString().c_str());
+    } else {
+        eventsConf->SetAttribute(CURRENT_EVENT_NAME_ATTR, "");
+    }
 
     for (int row = 0; row < eventListWidget->count(); ++row) {
         // 插入一个event节点
