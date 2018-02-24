@@ -2,9 +2,10 @@
 // Created by chenkuan on 2018/2/20.
 //
 
-#include "CustomRunWidget.h"
+#include <CustomRunWidget.h>
 #include <GUIConf.h>
 #include <QtWidgets/QFileDialog>
+#include <moc_CustomRunWidget.cpp>
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);

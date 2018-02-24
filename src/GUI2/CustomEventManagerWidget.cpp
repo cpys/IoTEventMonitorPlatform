@@ -2,10 +2,11 @@
 // Created by chenkuan on 2018/2/20.
 //
 
-#include "CustomEventManagerWidget.h"
+#include <CustomEventManagerWidget.h>
 #include <CustomEventWidget.h>
 #include <GUIConf.h>
 #include <GUIConf.h>
+#include <moc_CustomEventManagerWidget.cpp>
 
 CustomEventManagerWidget::CustomEventManagerWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);

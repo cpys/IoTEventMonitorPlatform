@@ -2,8 +2,8 @@
 // Created by yingzi on 2017/10/8.
 //
 
-#include <iostream>
-#include "CustomIpEdit.h"
+#include <CustomIpEdit.h>
+#include <moc_CustomIpEdit.cpp>
 
 CustomIpEdit::CustomIpEdit(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);

@@ -2,8 +2,9 @@
 // Created by chenkuan on 2018/2/20.
 //
 
-#include "CustomMainWindow.h"
+#include <CustomMainWindow.h>
 #include <GUIConf.h>
+#include <moc_CustomMainWindow.cpp>
 
 CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
     tabWidget = new CustomTabWidget(this);

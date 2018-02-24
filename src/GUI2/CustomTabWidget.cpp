@@ -2,8 +2,9 @@
 // Created by chenkuan on 2018/2/20.
 //
 
-#include "CustomTabWidget.h"
+#include <CustomTabWidget.h>
 #include <GUIConf.h>
+#include <moc_CustomTabWidget.cpp>
 
 CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
     eventManagerWidget = new CustomEventManagerWidget(this);

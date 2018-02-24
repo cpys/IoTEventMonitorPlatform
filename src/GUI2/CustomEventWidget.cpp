@@ -2,8 +2,9 @@
 // Created by chenkuan on 2018/2/20.
 //
 
-#include "CustomEventWidget.h"
+#include <CustomEventWidget.h>
 #include <GUIConf.h>
+#include <moc_CustomEventWidget.cpp>
 
 CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     gridLayout = new QGridLayout(this);

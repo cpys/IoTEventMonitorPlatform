@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 # 打开QT的MOC功能功能
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC_RELAXED_MODE ON)
 
 # 查找 QT的库
 #set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
@@ -16,13 +17,14 @@ find_package(Qt5Widgets)
 link_directories(D:\\software\\compilerandalgorithm\\z3\\z3-4.6.0-x64-ubuntu-16.04\\bin)
 
 # 依赖头文件
-include_directories(src/DFA)
+include_directories(headers/DFA)
+include_directories(headers/GUI2)
 include_directories(src/GUI2)
-include_directories(src/log)
-include_directories(src/manager)
-include_directories(src/netfilterClient)
-include_directories(src/serialPortClient)
-include_directories(src/tinyxml2)
+include_directories(headers/log)
+include_directories(headers/manager)
+include_directories(headers/netfilterClient)
+include_directories(headers/serialPortClient)
+include_directories(headers/tinyxml2)
 include_directories(D:\\software\\compilerandalgorithm\\z3\\z3-4.6.0-x64-ubuntu-16.04\\include)
 
 # 代码文件

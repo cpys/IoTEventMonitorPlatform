@@ -2,7 +2,8 @@
 // Created by chenkuan on 2018/2/24.
 //
 
-#include "CustomLineEdit.h"
+#include <CustomLineEdit.h>
+#include <moc_CustomLineEdit.cpp>
 
 CustomLineEdit::CustomLineEdit(QWidget *parent) : QLineEdit(parent) {
 
