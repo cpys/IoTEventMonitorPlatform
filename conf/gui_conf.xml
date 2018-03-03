@@ -1,31 +1,11 @@
 <xml projectName="IoTEventMonitorPlatform">
-    <events currentEventName="事件4">
+    <events currentEventName="事件1">
         <event name="事件1">
             <head>&lt;xml&gt;1333</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
-        <event name="事件2">
-            <head>&lt;xml&gt;233222444sss</head>
-            <body>&lt;name&gt;value&lt;/name&gt;rwe</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件4">
-            <head>&lt;xml&gt;444333</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件4">
-            <head>&lt;xml&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
-        <event name="事件5">
-            <head>&lt;xml&gt;</head>
-            <body>&lt;name&gt;value&lt;/name&gt;</body>
-            <tail>&lt;/xml&gt;</tail>
-        </event>
     </events>
-    <run currentEventName="事件4" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1"
+    <run currentEventName="事件1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1"
          stateMachineFilePath="D:/Users/chenkuan/ClionProjects/IoTEventMonitorPlatform/conf/gui_conf.xml"/>
 </xml>

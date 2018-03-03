@@ -16,9 +16,17 @@ CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
     setContentsMargins(0, 0, 0, 0);
     resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
     setWindowTitle(MAIN_WINDOW_TITLE);
+
+    QObject::connect(tabWidget,
+                     SIGNAL(showStatusMessage(
+                                    const QString &)),
+                     statusBar,
+                     SLOT(showMessage(
+                                  const QString &)));
 }
 
 void CustomMainWindow::closeEvent(QCloseEvent *event) {
+    statusBar->showMessage("保存配置中...");
     tabWidget->saveConf();
     QWidget::closeEvent(event);
 }

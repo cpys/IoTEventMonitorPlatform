@@ -31,6 +31,10 @@ class CustomRunWidget : public QWidget {
 
     void saveConf();
 
+  signals:
+
+    void showStatusMessage(const QString &);
+
   protected slots:
 
     void insertEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
@@ -42,6 +46,8 @@ class CustomRunWidget : public QWidget {
     void selectStateMachineFile();
 
     void runButtonClicked();
+
+    void showLogMessage(const QString &message);
 
     /**
      * 后台线程结束事件，进行页面内恢复工作

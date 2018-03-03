@@ -41,8 +41,8 @@ class EventManager : public QThread {
     void stop();
 
   signals:
-    void sendStatusMessage(const QString&);
-    void sendLogMessage(const QString&);
+
+    void showLogMessage(const QString &);
 
   protected:
     void run() override ;

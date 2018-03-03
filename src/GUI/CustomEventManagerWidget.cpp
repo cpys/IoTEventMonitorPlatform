@@ -120,6 +120,9 @@ void CustomEventManagerWidget::saveConf() {
 void CustomEventManagerWidget::addEvent() {
     int row = eventListWidget->count();
     QString eventName = EVENT + QString::number(row + 1);
+
+    emit showStatusMessage("添加事件：\"" + eventName + "\"");
+
     eventListWidget->addItem(eventName);
     eventListWidget->setCurrentRow(row);
 
@@ -137,6 +140,8 @@ void CustomEventManagerWidget::deleteEvent() {
     int currentRow = eventListWidget->currentRow();
     if (currentRow < 0) return;
 
+    emit showStatusMessage("移除事件：\"" + eventListWidget->currentItem()->text() + "\"");
+
     delete eventListWidget->takeItem(currentRow);
 
     QWidget *currentEventWidget = eventStackedWidget->widget(currentRow);
@@ -147,6 +152,7 @@ void CustomEventManagerWidget::deleteEvent() {
 }
 
 void CustomEventManagerWidget::editListItem(QListWidgetItem *item) {
+    emit showStatusMessage("编辑事件：\"" + item->text() + "\"");
     item->setFlags(item->flags() | Qt::ItemIsEditable);
 }
 

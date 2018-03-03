@@ -46,7 +46,8 @@ void EventManager::run() {
 
     while (!threadStop) {
         logger->info("后台线程运行中...");
-        sleep(3);
+        emit showLogMessage("后台线程运行中...");
+        sleep(1);
     }
 
     // 先初始化模型

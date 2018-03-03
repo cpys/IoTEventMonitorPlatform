@@ -39,6 +39,19 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
     // 将各页面配置下发
     eventManagerWidget->loadConf(eventsConf);
     runWidget->loadConf(runConf);
+
+    QObject::connect(eventManagerWidget,
+                     SIGNAL(showStatusMessage(
+                                    const QString &)),
+                     this,
+                     SIGNAL(showStatusMessage(
+                                    const QString &)));
+    QObject::connect(runWidget,
+                     SIGNAL(showStatusMessage(
+                                    const QString &)),
+                     this,
+                     SIGNAL(showStatusMessage(
+                                    const QString &)));
 }
 
 void CustomTabWidget::loadConf() {

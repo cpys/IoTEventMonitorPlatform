@@ -30,6 +30,10 @@ class CustomTabWidget : public QTabWidget {
 
     void saveConf();
 
+  signals:
+
+    void showStatusMessage(const QString &);
+
   private:
     CustomEventManagerWidget *eventManagerWidget = nullptr;
     CustomRunWidget *runWidget = nullptr;

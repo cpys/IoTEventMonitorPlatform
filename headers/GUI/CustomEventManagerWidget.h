@@ -34,8 +34,9 @@ class CustomEventManagerWidget : public QWidget {
 
     void insertEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
     void removeEvent(int index);
-
     void modifyEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
+
+    void showStatusMessage(const QString &);
 
   protected slots:
     void addEvent();

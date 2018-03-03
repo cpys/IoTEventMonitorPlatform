@@ -83,13 +83,24 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
                      this, SLOT(selectStateMachineFile()));
 
     // 启动按钮响应
-    QObject::connect(runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
+    QObject::connect(runButton, SIGNAL(clicked()),
+                     this, SLOT(runButtonClicked()));
 
     // 清除按钮
-    QObject::connect(clearButton, SIGNAL(clicked()), logTextBrowser, SLOT(clear()));
+    QObject::connect(clearButton, SIGNAL(clicked()),
+                     logTextBrowser, SLOT(clear()));
 
     // 后台线程结束信号
-    QObject::connect(eventManager, SIGNAL(finished()), this, SLOT(threadFinished()));
+    QObject::connect(eventManager, SIGNAL(finished()),
+                     this, SLOT(threadFinished()));
+
+    // 后台线程往GUI输出日志信号
+    QObject::connect(eventManager,
+                     SIGNAL(showLogMessage(
+                                    const QString &)),
+                     this,
+                     SLOT(showLogMessage(
+                                  const QString &)));
 
 }
 
@@ -157,6 +168,13 @@ void CustomRunWidget::runButtonClicked() {
     }
 }
 
+void CustomRunWidget::showLogMessage(const QString &message) {
+    logTextBrowser->insertPlainText(message);
+    logTextBrowser->insertPlainText("\n");
+    logTextBrowser->moveCursor(QTextCursor::End);
+}
+
+
 void CustomRunWidget::threadFinished() {
     // 结束执行后更改各组件状态
     changeWidgetState(true);
@@ -164,6 +182,9 @@ void CustomRunWidget::threadFinished() {
 }
 
 void CustomRunWidget::run() {
+
+    emit showStatusMessage("后台线程运行中...");
+
     // 开始执行后更改各组件状态
     changeWidgetState(false);
     runButton->setText("停止");
@@ -179,9 +200,13 @@ void CustomRunWidget::run() {
 }
 
 void CustomRunWidget::stop() {
+    emit showStatusMessage("后台线程结束中...");
+
     // 结束处理线程
     eventManager->stop();
     eventManager->wait();
+
+    emit showStatusMessage("后台线程已结束");
 }
 
 void CustomRunWidget::changeWidgetState(bool isEnabled) {
