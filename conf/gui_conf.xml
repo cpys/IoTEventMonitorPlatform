@@ -11,11 +11,16 @@
             <tail>&lt;/xml&gt;</tail>
         </event>
         <event name="事件4">
-            <head>&lt;xml&gt;444</head>
+            <head>&lt;xml&gt;444333</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
         <event name="事件4">
+            <head>&lt;xml&gt;</head>
+            <body>&lt;name&gt;value&lt;/name&gt;</body>
+            <tail>&lt;/xml&gt;</tail>
+        </event>
+        <event name="事件5">
             <head>&lt;xml&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>

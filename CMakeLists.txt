@@ -18,25 +18,25 @@ link_directories(D:\\Users\\chenkuan\\ClionProjects\\tinyxml2\\lib)
 link_directories(D:\\Users\\chenkuan\\ClionProjects\\runtime-verification-system\\lib)
 
 # 依赖头文件
-include_directories(headers/GUI2)
-#include_directories(headers/manager)
+include_directories(headers/GUI)
+include_directories(headers/manager)
 include_directories(headers/netfilterClient)
 include_directories(headers/serialPortClient)
 include_directories(D:\\Users\\chenkuan\\ClionProjects\\tinylog\\headers)
 include_directories(D:\\Users\\chenkuan\\ClionProjects\\tinyxml2\\headers)
 include_directories(D:\\Users\\chenkuan\\ClionProjects\\runtime-verification-system\\headers\\DFA)
+include_directories(D:\\software\\compilerandalgorithm\\z3\\z3-4.6.0-x86-win\\include)
 
 # 代码文件
 set(SRC_MAIN src/main.cpp)
-aux_source_directory(src/GUI2 SRC_GUI)
+aux_source_directory(src/GUI SRC_GUI)
 aux_source_directory(src/manager SRC_MANAGER)
 aux_source_directory(src/netfilterClient SRC_NETFILTER_CLIENT)
 aux_source_directory(src/serialPortClient SRC_SERIAL_PORT_CLIENT)
 
-#add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_DFA} ${SRC_GUI} ${SRC_LOG} ${SRC_MANAGER} ${SRC_NETFILTER_CLIENT} ${SRC_SERIAL_PORT_CLIENT} ${SRC_TINY_XML})
-add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI})
+add_executable(IoTEventMonitorPlatform ${SRC_MAIN} ${SRC_GUI} ${SRC_MANAGER})
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 # 链接QT库
 target_link_libraries(IoTEventMonitorPlatform Qt5::Widgets)

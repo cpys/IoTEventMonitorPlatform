@@ -2,15 +2,15 @@
 // Created by yingzi on 2017/10/8.
 //
 
-#include <iostream>
-#include "CustomIpEdit.h"
+#include <CustomIpEdit.h>
+#include <moc_CustomIpEdit.cpp>
 
 CustomIpEdit::CustomIpEdit(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);
-    for (auto& ipEdit : ipEdits) {
+    for (auto &ipEdit : ipEdits) {
         ipEdit = new QLineEdit("0", this);
     }
-    for (auto& pointLabel : pointLabels) {
+    for (auto &pointLabel : pointLabels) {
         pointLabel = new QLabel(".", this);
     }
 
@@ -28,19 +28,19 @@ CustomIpEdit::CustomIpEdit(QWidget *parent) : QWidget(parent) {
 }
 
 
-void CustomIpEdit::setIp(const string &ip) {
-    QString ipStr(ip.c_str());
+void CustomIpEdit::setIp(const char *ip) {
+    QString ipStr(ip);
     QStringList ipStrList = ipStr.split(".");
     for (int i = 0; i < 4; ++i) {
         ipEdits[i]->setText(std::to_string(ipStrList[i].toInt()).c_str());
     }
 }
 
-string CustomIpEdit::getIp() {
-    return ipEdits[0]->text().toStdString() +
-           "." + ipEdits[1]->text().toStdString() +
-                 "." + ipEdits[2]->text().toStdString() +
-                       "." + ipEdits[3]->text().toStdString();
+QString CustomIpEdit::getIp() {
+    return ipEdits[0]->text() +
+           "." + ipEdits[1]->text() +
+           "." + ipEdits[2]->text() +
+           "." + ipEdits[3]->text();
 }
 
 void CustomIpEdit::changeStyle() {
@@ -48,10 +48,10 @@ void CustomIpEdit::changeStyle() {
     hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
 
-    for (auto& ipEdit : ipEdits) {
+    for (auto &ipEdit : ipEdits) {
         ipEdit->setContentsMargins(0, 0, 0, 0);
     }
-    for (auto& pointLabel : pointLabels) {
+    for (auto &pointLabel : pointLabels) {
         pointLabel->setMaximumWidth(3);
         pointLabel->setContentsMargins(0, 0, 0, 0);
     }

@@ -1,26 +1,24 @@
 //
-// Created by yingzi on 2017/10/23.
+// Created by chenkuan on 2018/2/20.
 //
 
-#include "CustomMainWindow.h"
+#include <CustomMainWindow.h>
+#include <GUIConf.h>
+#include <moc_CustomMainWindow.cpp>
 
 CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
-    centralWidget = new CustomMainTabWidget(this);
-    statusBar = new QStatusBar();
+    tabWidget = new CustomTabWidget(this);
+    statusBar = new QStatusBar(this);
 
-    this->setCentralWidget(centralWidget);
-    this->setStatusBar(statusBar);
+    setCentralWidget(tabWidget);
+    setStatusBar(statusBar);
 
-    this->resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
-    this->setContentsMargins(0, 0, 0, 0);
-    this->setWindowTitle("物联网服务系统监控平台");
-
-    QObject::connect(centralWidget, SIGNAL(sendStatusMessage(const QString&)), statusBar, SLOT(showMessage(const QString&)));
+    setContentsMargins(0, 0, 0, 0);
+    resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
+    setWindowTitle(MAIN_WINDOW_TITLE);
 }
 
 void CustomMainWindow::closeEvent(QCloseEvent *event) {
-    centralWidget->saveConf();
+    tabWidget->saveConf();
     QWidget::closeEvent(event);
 }
-
-

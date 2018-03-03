@@ -6,13 +6,13 @@
 #define IOTEVENTMONITORPLATFORM_EVENTMANAGER_H
 
 #include <QtCore/QThread>
-#include <NetfilterClient.h>
 #include <string>
 #include <fstream>
-#include <SerialPortClient.h>
-#include <SerialPortRepeater.h>
+//#include <NetfilterClient.h>
+//#include <SerialPortClient.h>
+//#include <SerialPortRepeater.h>
 #include <Logger.h>
-#include "StateMachineParser.h"
+#include <StateMachineParser.h>
 
 using std::string;
 using std::ifstream;
@@ -29,10 +29,14 @@ class EventManager : public QThread {
   public:
     explicit EventManager(QObject *parent = nullptr);
     ~EventManager() override ;
-    void setEventConf(const string &eventHeadText, const string &eventBodyText, const string &eventTailText);
-    void setNetfilterConf(const string &vmIp, const string &externalIp);
-    void setSerialPortConf(const string &pseudoTerminal, const string &serialPort);
-    void setStateConf(const string &stateFilePath);
+
+    void setEventConf(const QString &eventHead, const QString &eventTail);
+
+    void setNetfilterConf(const QString &vmIp, const QString &externalIp);
+
+    void setSerialPortConf(const QString &pseudoTerminal, const QString &serialPort);
+
+    void setStateMachineConf(const QString &stateFilePath);
 
     void stop();
 
@@ -46,22 +50,19 @@ class EventManager : public QThread {
   private:
     bool threadStop = false;
 
-    string eventHeadText;
-    string eventBodyText;
-    string eventTailText;
+    QString eventHead;
+    QString eventTail;
 
-    string vmIp;
-    string externalIp;
-    NetfilterClient *netfilterClient = nullptr;
+    QString vmIp;
+    QString externalIp;
 
-    string pseudoTerminal;
-    string serialPort;
-    SerialPortRepeater *serialPortRepeater;
+    QString pseudoTerminal;
+    QString serialPort;
 
-    string stateFilePath;
-    ifstream stateFile;
+    QString stateMachineFilePath;
 
-    StateMachineParser *stateParser;
+//    NetfilterClient *netfilterClient = nullptr;
+//    SerialPortRepeater *serialPortRepeater = nullptr;
 
     Logger *logger = Logger::getLogger();
 };

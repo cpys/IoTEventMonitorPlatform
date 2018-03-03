@@ -17,6 +17,7 @@
 #include <tinyxml2.h>
 #include <CustomLineEdit.h>
 #include <CustomEventWidget.h>
+#include <EventManager.h>
 
 using namespace tinyxml2;
 
@@ -88,10 +89,10 @@ class CustomRunWidget : public QWidget {
 
     XMLElement *runConf = nullptr;
 
-//    /**
-//     * 后台处理线程，用来与各个客户端连接并验证事件
-//     */
-//    EventManager *eventManager;
+    /**
+     * 后台处理线程，用来与各个客户端连接并验证事件
+     */
+    EventManager *eventManager;
     /**
      * 启动后台处理线程
      */

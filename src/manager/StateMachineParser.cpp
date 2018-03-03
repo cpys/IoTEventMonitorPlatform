@@ -8,6 +8,8 @@
 #include <StateMachineParser.h>
 using namespace tinyxml2;
 
+Model *StateMachineParser::model = nullptr;
+map<int, int> StateMachineParser::idMap;
 Logger *StateMachineParser::logger = Logger::getLogger();
 
 Model *StateMachineParser::initFromFile(const char *filename) {
