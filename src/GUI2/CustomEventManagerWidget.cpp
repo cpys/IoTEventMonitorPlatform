@@ -77,7 +77,7 @@ void CustomEventManagerWidget::loadConf(XMLElement *eventsConf) {
                          this, SLOT(afterEditEventContent()));
 
         // 发送添加事件的信号
-        emit insertEvent(eventListWidget->count() - 1, eventName, eventWidget->text());
+        emit insertEvent(eventListWidget->count() - 1, eventName, eventWidget);
     }
 
     // 根据属性currentEventName选择到相应的事件显示
@@ -130,7 +130,7 @@ void CustomEventManagerWidget::addEvent() {
     QObject::connect(eventWidget, SIGNAL(eventContentChanged()),
                      this, SLOT(afterEditEventContent()));
 
-    emit insertEvent(row, eventName, eventWidget->text());
+    emit insertEvent(row, eventName, eventWidget);
 }
 
 void CustomEventManagerWidget::deleteEvent() {
@@ -158,7 +158,7 @@ void CustomEventManagerWidget::afterEditEventName(QListWidgetItem *item) {
     int row = eventListWidget->currentRow();
     if (row < 0) return;
     auto eventWidget = dynamic_cast<CustomEventWidget *>(eventStackedWidget->widget(row));
-    emit modifyEvent(row, item->text(), eventWidget->text());
+    emit modifyEvent(row, item->text(), eventWidget);
 }
 
 void CustomEventManagerWidget::afterEditEventContent() {
@@ -169,5 +169,5 @@ void CustomEventManagerWidget::afterEditEventContent() {
     auto eventWidget = dynamic_cast<CustomEventWidget *>(eventStackedWidget->widget(row));
     logger->debug("after modify, item->event->text:\n%s", eventWidget->text().toLocal8Bit().data());
 
-    emit modifyEvent(row, item->text(), eventWidget->text());
+    emit modifyEvent(row, item->text(), eventWidget);
 }

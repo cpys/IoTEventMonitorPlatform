@@ -5,6 +5,7 @@
 #include <CustomRunWidget.h>
 #include <GUIConf.h>
 #include <QtWidgets/QFileDialog>
+#include <CustomEventWidget.h>
 #include <moc_CustomRunWidget.cpp>
 
 CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
@@ -84,6 +85,9 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     // 清除按钮
     QObject::connect(clearButton, SIGNAL(clicked()), logTextBrowser, SLOT(clear()));
 
+//    // 后台线程结束信号
+//    QObject::connect(eventManager, SIGNAL(finished()), this, SLOT(threadFinished()));
+
 }
 
 void CustomRunWidget::loadConf(XMLElement *runConf) {
@@ -109,26 +113,26 @@ void CustomRunWidget::saveConf() {
     runConf->SetAttribute(STATE_MACHINE_FILE_PATH_ATTR, stateMachineEdit->text().toStdString().c_str());
 }
 
-void CustomRunWidget::insertEvent(int index, const QString &eventName, const QString &eventContent) {
+void CustomRunWidget::insertEvent(int index, const QString &eventName, CustomEventWidget *eventWidget) {
     eventComboBox->insertItem(index, eventName);
 
-    auto eventPreviewTextBrowser = new QTextBrowser(this);
-    eventPreviewTextBrowser->setText(eventContent);
-    eventPreviewStackedWidget->insertWidget(index, eventPreviewTextBrowser);
+    eventPreviewStackedWidget->insertWidget(index, new CustomEventWidget(eventWidget));
 }
 
 void CustomRunWidget::removeEvent(int index) {
     eventComboBox->removeItem(index);
 
-    auto eventPreviewTextBrowser = eventPreviewStackedWidget->widget(index);
-    eventPreviewStackedWidget->removeWidget(eventPreviewTextBrowser);
-    delete (eventPreviewTextBrowser);
+    auto eventWidget = eventPreviewStackedWidget->widget(index);
+    eventPreviewStackedWidget->removeWidget(eventWidget);
+    delete (eventWidget);
 }
 
-void CustomRunWidget::modifyEvent(int index, const QString &eventName, const QString &eventContent) {
-    eventComboBox->setItemText(index, eventName);
-    auto eventPreviewTextBrowser = dynamic_cast<QTextBrowser *>(eventPreviewStackedWidget->widget(index));
-    eventPreviewTextBrowser->setText(eventContent);
+void CustomRunWidget::modifyEvent(int index, const QString &eventName, CustomEventWidget *eventWidget) {
+    int currentIndex = eventComboBox->currentIndex();
+    removeEvent(index);
+    insertEvent(index, eventName, eventWidget);
+    eventComboBox->setCurrentIndex(currentIndex);
+    eventPreviewStackedWidget->setCurrentIndex(currentIndex);
 }
 
 void CustomRunWidget::selectStateMachineFile() {
@@ -150,13 +154,16 @@ void CustomRunWidget::runButtonClicked() {
     }
 }
 
+void CustomRunWidget::threadFinished() {
+
+}
+
 void CustomRunWidget::run() {
     // 开始执行后更改各组件状态
     changeWidgetState(false);
     runButton->setText("停止");
 
     // 启动处理线程
-//    sendStatusMessage("正在启动...");
 //    eventManager->setEventConf(currentEventWidget->getHeadText(), currentEventWidget->getBodyText(), currentEventWidget->getTailText());
 //    eventManager->setNetfilterConf(this->vmIpEdit->getIp(), this->externalIpEdit->getIp());
 //    eventManager->setSerialPortConf(this->pseudoTerminalEdit->text().toStdString(), this->serialPortEdit->text().toStdString());

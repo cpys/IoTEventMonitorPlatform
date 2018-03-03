@@ -28,6 +28,8 @@ class CustomMainWindow : public QMainWindow {
   private:
     CustomTabWidget *tabWidget = nullptr;
     QStatusBar *statusBar = nullptr;
+
+    Logger *logger = Logger::getLogger();
 };
 
 

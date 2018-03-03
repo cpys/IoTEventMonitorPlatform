@@ -5,39 +5,34 @@
 #include <tinyxml2.h>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include "StateParser.h"
+#include <StateMachineParser.h>
 using namespace tinyxml2;
 
-StateParser::~StateParser() {
-    delete model;
-}
+Logger *StateMachineParser::logger = Logger::getLogger();
 
-void StateParser::setStateXML(const string &stateXML) {
-    this->stateXML = stateXML;
-}
-
-bool StateParser::parseStateXML() {
+Model *StateMachineParser::initFromFile(const char *filename) {
     XMLDocument xmlDocument;
-    XMLError xmlError = xmlDocument.Parse(stateXML.c_str());
+    XMLError xmlError = xmlDocument.LoadFile(filename);
     if (xmlError != XML_SUCCESS) {
         logger->error("无法解析状态机XML");
-        logger->debug("状态机如下：%s", stateXML.c_str());
-        return false;
+        return nullptr;
     }
 
     XMLElement *mxGraphModel = xmlDocument.FirstChildElement("mxGraphModel");
     if (mxGraphModel == nullptr) {
         logger->error("state has no <mxGraphModel></xmGraphModel>!");
-        return false;
+        return nullptr;
     }
 
     XMLElement *root = mxGraphModel->FirstChildElement("root");
     if (root == nullptr) {
         logger->error("state has no <root></root>!");
-        return false;
+        return nullptr;
     }
 
+    // 定义并初始化类静态变量
     model = new Model();
+    idMap = map < int, int > {};
 
     // 添加变量声明
     bool hasVarDecl = false;
@@ -52,7 +47,7 @@ bool StateParser::parseStateXML() {
     }
     if (!hasVarDecl) {
         logger->error("缺少或非法的变量声明！");
-        return false;
+        return nullptr;
     }
 
     // 添加状态节点
@@ -61,11 +56,11 @@ bool StateParser::parseStateXML() {
         if (style != nullptr && strncmp("ellipse", style, 7) == 0) {
             if (strncmp("ellipse;shape=doubleEllipse", style, 27) == 0) {
                 if (!parseState(mxCell->Attribute("value"), mxCell->Attribute("id"), true)) {
-                    return false;
+                    return nullptr;
                 }
             }
             else if (!parseState(mxCell->Attribute("value"), mxCell->Attribute("id"), false)) {
-                return false;
+                return nullptr;
             }
         }
     }
@@ -78,7 +73,7 @@ bool StateParser::parseStateXML() {
         auto target = mxCell->Attribute("target");
         if (edgeAttribute != nullptr && strcmp("1", edgeAttribute) == 0 && target != nullptr) {
             if (!parseTran(mxCell->Attribute("value"), source, target)) {
-                return false;
+                return nullptr;
             }
         }
     }
@@ -88,55 +83,14 @@ bool StateParser::parseStateXML() {
     // 添加验证
     for (auto userObject = root->FirstChildElement("UserObject"); userObject != nullptr; userObject = userObject->NextSiblingElement("UserObject")) {
         if (!parseSpec(userObject->Attribute("label"))) {
-            return false;
+            return nullptr;
         }
     }
 
-    return true;
+    return model;
 }
 
-bool StateParser::validateEvent(const string &event) {
-#ifdef SHOW_RUN_TIME
-    logger->timeBegin();
-#endif
-
-    XMLDocument xmlDocument;
-    XMLError xmlError = xmlDocument.Parse(event.c_str());
-    if (xmlError != XML_SUCCESS) {
-        logger->error("event \"%s\"  不符合XML规范！", event.c_str());
-        return false;
-    }
-
-    XMLElement *eventRoot = xmlDocument.FirstChildElement();
-    auto eventName = eventRoot->Attribute("name");
-    if (eventName == nullptr) {
-        logger->error("event \"%s\"缺少事件名称！", event.c_str());
-        return false;
-    }
-    auto eventImportant = eventRoot->Attribute("important");
-    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
-        isEventImportant = false;
-    }
-    else {
-        isEventImportant = true;
-    }
-
-    map<string, string> vars;
-    for (auto varLabel = eventRoot->FirstChildElement(); varLabel != nullptr; varLabel = varLabel->NextSiblingElement()) {
-        vars[string(varLabel->Value())] = string(varLabel->GetText());
-    }
-
-    bool result = model->addEvent(string(eventName), vars);
-
-#ifdef SHOW_RUN_TIME
-    logger->timeEnd();
-    logger->showTime("验证事件总耗时");
-#endif
-
-    return result;
-}
-
-bool StateParser::parseVarDecl(const char *varDecl) {
+bool StateMachineParser::parseVarDecl(const char *varDecl) {
     QString varDeclRawStr(varDecl);
     varDeclRawStr.replace("&amp;", "&");
     varDeclRawStr.replace("&lt;", "<");
@@ -165,7 +119,7 @@ bool StateParser::parseVarDecl(const char *varDecl) {
     return true;
 }
 
-bool StateParser::parseState(const char *state, const char *stateGraphId, bool isEndState) {
+bool StateMachineParser::parseState(const char *state, const char *stateGraphId, bool isEndState) {
     QString stateRawStr(state);
     stateRawStr.replace("&amp;", "&");
     stateRawStr.replace("&lt;", "<");
@@ -218,7 +172,7 @@ bool StateParser::parseState(const char *state, const char *stateGraphId, bool i
     return true;
 }
 
-bool StateParser::parseTran(const char *tran, const char *source, const char *target) {
+bool StateMachineParser::parseTran(const char *tran, const char *source, const char *target) {
     if (idMap.find(stoi(string(target))) == idMap.end()) {
         logger->error("找不到转移 \"%s\" 的目的节点 %s", tran, target);
         return false;
@@ -246,7 +200,7 @@ bool StateParser::parseTran(const char *tran, const char *source, const char *ta
     return true;
 }
 
-bool StateParser::parseSpec(const char *spec) {
+bool StateMachineParser::parseSpec(const char *spec) {
     QString specStr(spec);
     specStr.replace("&lt;", "<");
     specStr.replace("&gt;", ">");
@@ -254,31 +208,4 @@ bool StateParser::parseSpec(const char *spec) {
     logger->info("添加验证:%s", specStr.toStdString().c_str());
     model->addSpec({specStr.toStdString()});
     return true;
-}
-
-bool StateParser::getIsEventImportant() {
-    return isEventImportant;
-}
-
-bool StateParser::justGetIsEventImportant(const string &event) {
-    XMLDocument xmlDocument;
-    XMLError xmlError = xmlDocument.Parse(event.c_str());
-    if (xmlError != XML_SUCCESS) {
-        logger->error("event \"%s\" is not xml!", event.c_str());
-        return false;
-    }
-
-    XMLElement *eventRoot = xmlDocument.FirstChildElement();
-    auto eventName = eventRoot->Attribute("name");
-    if (eventName == nullptr) {
-        logger->error("缺少事件名称!");
-        return false;
-    }
-    auto eventImportant = eventRoot->Attribute("important");
-    if (eventImportant == nullptr || strcmp("1", eventImportant) != 0) {
-        return false;
-    }
-    else {
-        return true;
-    }
 }

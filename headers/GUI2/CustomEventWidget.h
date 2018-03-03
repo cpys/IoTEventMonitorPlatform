@@ -18,7 +18,14 @@ class CustomEventWidget : public QWidget {
   Q_OBJECT
 
   public:
-    explicit CustomEventWidget(QWidget *parent = nullptr);
+    /**
+     * 默认包含显示右边文字注释的
+     * @param parent
+     * @param containInstruction
+     */
+    explicit CustomEventWidget(QWidget *parent);
+
+    CustomEventWidget(const CustomEventWidget *eventWidget);
 
     void loadConf(XMLElement *eventConf);
 
@@ -29,6 +36,12 @@ class CustomEventWidget : public QWidget {
      * @return
      */
     QString text();
+
+    QString getEventHead() const;
+
+    QString getEventBody() const;
+
+    QString getEventTail() const;
 
   signals:
 
@@ -47,6 +60,11 @@ class CustomEventWidget : public QWidget {
     QTextBrowser *middleIndicator = nullptr;
     QTextBrowser *bottomIndicator = nullptr;
 
+    void init(bool showContent, bool showInstruction);
+
+    void initContent();
+
+    void initInstruction();
 };
 
 

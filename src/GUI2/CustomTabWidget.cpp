@@ -19,20 +19,20 @@ CustomTabWidget::CustomTabWidget(QWidget *parent) : QTabWidget(parent) {
     // 将eventManagerWidget中的事件列表变更信号与runWidget中的信号槽连接起来
     QObject::connect(eventManagerWidget,
                      SIGNAL(insertEvent(int,
-                                    const QString&, const QString&)),
+                                    const QString&, CustomEventWidget *)),
                      runWidget,
                      SLOT(insertEvent(int,
-                                  const QString&, const QString&)));
+                                  const QString&, CustomEventWidget *)));
     QObject::connect(eventManagerWidget,
                      SIGNAL(removeEvent(int)),
                      runWidget,
                      SLOT(removeEvent(int)));
     QObject::connect(eventManagerWidget,
                      SIGNAL(modifyEvent(int,
-                                    const QString&, const QString&)),
+                                    const QString&, CustomEventWidget *)),
                      runWidget,
                      SLOT(modifyEvent(int,
-                                  const QString&, const QString&)));
+                                  const QString&, CustomEventWidget *)));
 
     // 载入配置
     loadConf();

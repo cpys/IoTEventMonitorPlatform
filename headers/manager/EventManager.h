@@ -12,7 +12,7 @@
 #include <SerialPortClient.h>
 #include <SerialPortRepeater.h>
 #include <Logger.h>
-#include "StateParser.h"
+#include "StateMachineParser.h"
 
 using std::string;
 using std::ifstream;
@@ -61,7 +61,7 @@ class EventManager : public QThread {
     string stateFilePath;
     ifstream stateFile;
 
-    StateParser *stateParser;
+    StateMachineParser *stateParser;
 
     Logger *logger = Logger::getLogger();
 };

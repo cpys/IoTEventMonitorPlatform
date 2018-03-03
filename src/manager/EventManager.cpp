@@ -7,7 +7,7 @@
 EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient();
     serialPortRepeater = new SerialPortRepeater();
-    stateParser = new StateParser();
+    stateParser = new StateMachineParser();
 }
 
 EventManager::~EventManager() {

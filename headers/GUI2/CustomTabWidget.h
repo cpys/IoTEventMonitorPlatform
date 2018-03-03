@@ -40,8 +40,8 @@ class CustomTabWidget : public QTabWidget {
      * GUI界面的记忆配置读取存放于此
      */
     XMLDocument GUIConf;
-    XMLElement *eventsConf;
-    XMLElement *runConf;
+    XMLElement *eventsConf = nullptr;
+    XMLElement *runConf = nullptr;
 
     /**
     * 记录当前width，用于在重绘事件中判断是否要重绘

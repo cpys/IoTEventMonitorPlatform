@@ -16,6 +16,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <tinyxml2.h>
 #include <CustomLineEdit.h>
+#include <CustomEventWidget.h>
 
 using namespace tinyxml2;
 
@@ -31,15 +32,20 @@ class CustomRunWidget : public QWidget {
 
   protected slots:
 
-    void insertEvent(int index, const QString &eventName, const QString &eventContent);
+    void insertEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
 
     void removeEvent(int index);
 
-    void modifyEvent(int index, const QString &eventName, const QString &eventContent);
+    void modifyEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
 
     void selectStateMachineFile();
 
     void runButtonClicked();
+
+    /**
+     * 后台线程结束事件，进行页面内恢复工作
+     */
+    void threadFinished();
 
   private:
     /**
@@ -82,6 +88,10 @@ class CustomRunWidget : public QWidget {
 
     XMLElement *runConf = nullptr;
 
+//    /**
+//     * 后台处理线程，用来与各个客户端连接并验证事件
+//     */
+//    EventManager *eventManager;
     /**
      * 启动后台处理线程
      */

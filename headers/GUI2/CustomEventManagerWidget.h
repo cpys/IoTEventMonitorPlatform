@@ -11,6 +11,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QHBoxLayout>
+#include <CustomEventWidget.h>
 #include <Logger.h>
 #include <tinyxml2.h>
 
@@ -31,9 +32,10 @@ class CustomEventManagerWidget : public QWidget {
 
   signals:
 
-    void insertEvent(int index, const QString &eventName, const QString &eventContent);
+    void insertEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
     void removeEvent(int index);
-    void modifyEvent(int index, const QString &eventName, const QString &eventContent);
+
+    void modifyEvent(int index, const QString &eventName, CustomEventWidget *eventWidget);
 
   protected slots:
     void addEvent();
