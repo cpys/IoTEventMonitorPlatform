@@ -8,9 +8,9 @@
 #include <QtCore/QThread>
 #include <string>
 #include <fstream>
-//#include <NetfilterClient.h>
-//#include <SerialPortClient.h>
-//#include <SerialPortRepeater.h>
+#include <NetfilterClient.h>
+#include <SerialPortClient.h>
+#include <SerialPortRepeater.h>
 #include <Logger.h>
 #include <StateMachineParser.h>
 
@@ -61,8 +61,8 @@ class EventManager : public QThread {
 
     QString stateMachineFilePath;
 
-//    NetfilterClient *netfilterClient = nullptr;
-//    SerialPortRepeater *serialPortRepeater = nullptr;
+    NetfilterClient *netfilterClient = nullptr;
+    SerialPortRepeater *serialPortRepeater = nullptr;
 
     Logger *logger = Logger::getLogger();
 };

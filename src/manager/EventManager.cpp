@@ -6,15 +6,15 @@
 #include <moc_EventManager.cpp>
 
 EventManager::EventManager(QObject *parent) : QThread(parent) {
-//    netfilterClient = new NetfilterClient();
-//    serialPortRepeater = new SerialPortRepeater();
+    netfilterClient = new NetfilterClient();
+    serialPortRepeater = new SerialPortRepeater();
 }
 
 EventManager::~EventManager() {
     stop();
     wait();
-//    delete(netfilterClient);
-//    delete(serialPortRepeater);
+    delete (netfilterClient);
+    delete (serialPortRepeater);
 }
 
 void EventManager::setEventConf(const QString &eventHead, const QString &eventTail) {
@@ -44,12 +44,6 @@ void EventManager::stop() {
 void EventManager::run() {
     threadStop = false;
 
-    while (!threadStop) {
-        logger->info("后台线程运行中...");
-        emit showLogMessage("后台线程运行中...");
-        sleep(1);
-    }
-
     // 先初始化模型
     Model *model = StateMachineParser::initFromFile(stateMachineFilePath.toLocal8Bit().data());
     if (model == nullptr) {
@@ -57,32 +51,31 @@ void EventManager::run() {
         return;
     }
 
+    // 再启动netfilterClient
+    netfilterClient->setEventMatchText(eventHead.toStdString(), eventTail.toStdString());
+    netfilterClient->setEventMatchIp(vmIp.toStdString(), externalIp.toStdString());
+    if (!netfilterClient->install()) {
+        logger->error("安装netfilter失败!");
+        return;
+    }
+    if (!netfilterClient->start()) {
+        logger->error("netfilter客户端初始化失败!");
+        netfilterClient->stop();
+        netfilterClient->remove();
+        return;
+    }
 
-//    // 再启动netfilterClient
-//    netfilterClient->setEventMatchText(eventHead, eventTail);
-//    netfilterClient->setEventMatchIp(vmIp, externalIp);
-//    if (!netfilterClient->install()) {
-//        logger->error("安装netfilter失败!");
-//        return;
-//    }
-//    if (!netfilterClient->start()) {
-//        logger->error("netfilter客户端初始化失败!");
-//        netfilterClient->stop();
-//        netfilterClient->remove();
-//        return;
-//    }
-//
-//    // 再启动serialPortClient
-//    serialPortRepeater->setEventMatchText(eventHead, eventTail);
-//    serialPortRepeater->setPorts(pseudoTerminal, serialPort);
-//    if (!serialPortRepeater->init()) {
-//        logger->error("串口转发器初始化失败！");
-//        serialPortRepeater->closePorts();
-//        netfilterClient->stop();
-//        netfilterClient->remove();
-//        return;
-//    }
-//
+    // 再启动serialPortClient
+    serialPortRepeater->setEventMatchText(eventHead, eventTail);
+    serialPortRepeater->setPorts(pseudoTerminal, serialPort);
+    if (!serialPortRepeater->init()) {
+        logger->error("串口转发器初始化失败！");
+        serialPortRepeater->closePorts();
+        netfilterClient->stop();
+        netfilterClient->remove();
+        return;
+    }
+
 //    uint eventNum = 0;
 //    uint interceptNum = 0;
 //    uint interceptFailedNum = 0;

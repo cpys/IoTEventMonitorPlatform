@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <unistd.h>
-#include "Netlink.h"
+#include <Netlink.h>
 
 Netlink::~Netlink() {
     closeConnection();
@@ -69,7 +69,7 @@ void Netlink::closeConnection() {
     }
 }
 
-string Netlink::getMessage()  {
+const char *Netlink::getMessage() {
     static int destAddrLen = sizeof(struct sockaddr_nl);
 
     int ret = recvfrom(socketClient, &recvMessage, sizeof(recvMessage), 0, (struct sockaddr *) &destAddr, (socklen_t*)&destAddrLen);
@@ -79,7 +79,7 @@ string Netlink::getMessage()  {
         return "";
     }
     else {
-        return string(recvMessage.data);
+        return recvMessage.data;
     }
 }
 
@@ -123,4 +123,8 @@ bool Netlink::sendDropMessage() {
     }
 
     return true;
+}
+
+int Netlink::getFd() {
+    return socketClient;
 }

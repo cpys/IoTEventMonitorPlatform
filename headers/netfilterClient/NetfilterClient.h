@@ -7,7 +7,7 @@
 
 #include <QtCore/QThread>
 #include <string>
-#include "Netlink.h"
+#include <Netlink.h>
 
 using std::string;
 
@@ -19,10 +19,12 @@ class NetfilterClient {
   public:
     NetfilterClient();
     ~NetfilterClient() ;
-    void setEventMatchText(const string &eventHeadText, const string &eventTailText);
+
+    void setEventMatchText(const string &eventHead, const string &eventTail);
     void setEventMatchIp(const string &vmIp, const string &externalIp);
     bool hasEvent();
-    string getEvent();
+
+    const char *getEvent();
     bool passEvent();
     bool interceptEvent();
     bool install();
@@ -30,18 +32,31 @@ class NetfilterClient {
     bool start();
     void stop();
 
+    int getFd();
+
   private:
     bool threadStop = false;
 
-    bool hasEventFlag;
-
-    string eventHeadText;
-    string eventTailText;
+    string eventHead;
+    string eventTail;
     string vmIp;
     string externalIp;
 
     Netlink *netlink;
     string event;
+
+    Logger *logger = Logger::getLogger();
+
+    /**
+    * 转义所有配置字符串
+    */
+    void escapeAllConfStr();
+
+    /**
+     * 转义指定的配置字符串
+     * @param str
+     */
+    void escapeStr(string &str);
 };
 
 

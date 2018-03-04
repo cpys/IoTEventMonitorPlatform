@@ -2,7 +2,7 @@
 // Created by yingzi on 2017/6/26.
 //
 
-#include "SerialPortClient.h"
+#include <SerialPortClient.h>
 #include <string>
 #include <vector>
 #include <iterator>
@@ -51,17 +51,24 @@ bool SerialPortClient::hasMessage() {
     return fs_sel > 0;
 }
 
-void SerialPortClient::getMessage() {
-    int len = 0;
-    do {
-        len += read(fd, buffer + len, MAX_MSG - len);
-        if (len > MAX_LINE_SIZE || buffer[len - 1] == '\n') {
+bool SerialPortClient::getMessage() {
+    int len = 0, recvNum = 0;
+    while (true) {
+        recvNum = read(fd, buffer + len, MAX_MSG - len);
+        if (recvNum < 0) {
+            // 读不到数据了
+            break;
+        }
+        len += recvNum;
+        if (len > MAX_LINE_SIZE) {
             break;
         }
     }
-    while (hasMessage());
 
-    messageQueue += string(std::begin(buffer), std::begin(buffer) + len);
+    if (len > 0) {
+        messageQueue.append(string(std::begin(buffer), std::begin(buffer) + len));
+        return true;
+    } else return false;
 }
 
 bool SerialPortClient::openPort() {
@@ -186,6 +193,7 @@ bool SerialPortClient::setPort() {
 }
 
 bool SerialPortClient::sendMessage(const string &message) {
+    if (message.empty()) return true;
     auto len = write(fd, message.c_str(), message.size());
     if (len == message.size()) {
         logger->debug("成功发送%d字节到端口%s，内容为：%s", len, port.c_str(), message.c_str());
@@ -196,9 +204,13 @@ bool SerialPortClient::sendMessage(const string &message) {
         tcflush(fd, TCOFLUSH);
         return false;
     }
+
 }
 
 string &SerialPortClient::getMessageQueue() {
     return messageQueue;
 }
 
+int SerialPortClient::getFd() {
+    return fd;
+}

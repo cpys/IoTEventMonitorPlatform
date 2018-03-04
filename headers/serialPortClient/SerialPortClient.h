@@ -28,11 +28,12 @@ class SerialPortClient {
      * @return
      */
     bool hasMessage();
+
     /**
      * 从串口上获取字节流追加到缓存的字符队列后面
-     * @return
+     * @return 是否获取到新的消息
      */
-    void getMessage();
+    bool getMessage();
     /**
      * 获取字符流队列的引用
      * @return
@@ -44,6 +45,8 @@ class SerialPortClient {
      * @return
      */
     bool sendMessage(const string& message);
+
+    int getFd();
 
   private:
     /**

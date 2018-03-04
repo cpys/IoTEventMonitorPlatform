@@ -17,9 +17,12 @@ class Netlink {
     bool init();
     void closeConnection();
     bool hasMessage();
-    string getMessage();
+
+    const char *getMessage();
     bool sendAcceptMessage();
     bool sendDropMessage();
+
+    int getFd();
 
   private:
     /**

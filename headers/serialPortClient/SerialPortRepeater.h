@@ -5,7 +5,7 @@
 #ifndef IOTEVENTMONITORPLATFORM_SERIALPORTREPEATER_H
 #define IOTEVENTMONITORPLATFORM_SERIALPORTREPEATER_H
 
-#include "SerialPortClient.h"
+#include <SerialPortClient.h>
 
 /**
  * 串口中继器，管理两个串口设备，进行事件采集与转发
@@ -14,12 +14,13 @@ class SerialPortRepeater {
 public:
     SerialPortRepeater() = default;
     ~SerialPortRepeater();
+
     /**
      * 设置事件匹配头尾
-     * @param eventHeadText
-     * @param eventTailText
+     * @param eventHead
+     * @param eventTail
      */
-    void setEventMatchText(const string &eventHeadText, const string &eventTailText);
+    void setEventMatchText(const string &eventHead, const string &eventTail);
     /**
      * 设置两个串口名称，进行初始化
      * @param pseudoTerminal
@@ -44,7 +45,7 @@ public:
      * 从串口上获取事件
      * @return
      */
-    const string &getEvent();
+    const char &getEvent(int fd);
     /**
      * 通过上一个获取的事件
      */
@@ -54,15 +55,19 @@ public:
      */
     void interceptEvent();
 
-private:
+    int getPseudoTerminalFd();
+
+    int getSerialPortFd();
+
+  private:
     string pseudoTerminalName;
     string serialPortName;
     SerialPortClient *pseudoTerminal = nullptr;
     SerialPortClient *serialPort = nullptr;
     SerialPortClient *lastDevice = nullptr;
 
-    string eventHeadText;
-    string eventTailText;
+    string eventHead;
+    string eventTail;
 
     string lastEvent;
     /**
@@ -78,11 +83,6 @@ private:
      * @return
      */
     bool searchEvent(string &messageQueue, SerialPortClient *otherPort);
-    /**
-     * 往上一个获取事件的串口对端发事件
-     * @param event
-     */
-    void sendEvent(const string &event);
 };
 
 
