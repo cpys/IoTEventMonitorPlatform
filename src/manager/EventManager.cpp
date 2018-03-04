@@ -48,33 +48,86 @@ void EventManager::run() {
     Model *model = StateMachineParser::initFromFile(stateMachineFilePath.toLocal8Bit().data());
     if (model == nullptr) {
         logger->error("从文件\"%s\"初始化模型失败！", stateMachineFilePath.toLocal8Bit().data());
+        emit showLogMessage(QString("从文件\"%s\"初始化模型失败！").arg(stateMachineFilePath));
         return;
+    } else {
+        emit showLogMessage(QString("从状态机文件\"%s\"初始化模型完成！").arg(stateMachineFilePath));
     }
+
+    bool hasNetfilterClient = true, hasSerialPortRepeater = true, hasMemoryClient = true;
 
     // 再启动netfilterClient
     netfilterClient->setEventMatchText(eventHead.toStdString(), eventTail.toStdString());
     netfilterClient->setEventMatchIp(vmIp.toStdString(), externalIp.toStdString());
+
+    emit showLogMessage("初始化netfilter...");
     if (!netfilterClient->install()) {
         logger->error("安装netfilter失败!");
-        return;
+        emit showLogMessage("安装netfilter失败!");
+        hasNetfilterClient = false;
+    } else {
+        emit showLogMessage("成功编译安装netfilter内核模块！");
     }
-    if (!netfilterClient->start()) {
-        logger->error("netfilter客户端初始化失败!");
-        netfilterClient->stop();
-        netfilterClient->remove();
-        return;
+
+    if (hasNetfilterClient) {
+        emit showLogMessage("连接内核中的netfilter模块...");
+        if (!netfilterClient->start()) {
+            logger->error("netfilter连接失败!");
+            emit showLogMessage("netfilter连接失败!");
+            netfilterClient->stop();
+            netfilterClient->remove();
+            return;
+        } else {
+            emit showLogMessage("成功连接到内核中的netfilter模块！");
+            socketNetlink = netfilterClient->getFd();
+        }
     }
 
     // 再启动serialPortClient
-    serialPortRepeater->setEventMatchText(eventHead, eventTail);
-    serialPortRepeater->setPorts(pseudoTerminal, serialPort);
+    serialPortRepeater->setEventMatchText(eventHead.toStdString(), eventTail.toStdString());
+    serialPortRepeater->setPorts(pseudoTerminal.toStdString(), serialPort.toStdString());
+
+    emit showLogMessage("初始化串口转发器...");
     if (!serialPortRepeater->init()) {
         logger->error("串口转发器初始化失败！");
+        emit showLogMessage("串口转发器初始化失败！");
         serialPortRepeater->closePorts();
         netfilterClient->stop();
         netfilterClient->remove();
+        hasSerialPortRepeater = false;
+    } else {
+        emit showLogMessage("初始化串口转发器成功！");
+        fdPseudoTerminal = serialPortRepeater->getPseudoTerminalFd();
+        fdSerialPort = serialPortRepeater->getSerialPortFd();
+    }
+
+    // 最后启动memoryClient
+    emit showLogMessage("连接内存事件获取服务器...");
+    if (!memoryClient->start()) {
+        emit showLogMessage("内存事件获取服务器连接失败！");
+        logger->error("内存事件获取服务器连接失败！");
+        memoryClient->stop();
+        hasMemoryClient = false;
+    } else {
+        emit showLogMessage("成功连接至内存事件获取服务器！");
+        socketMemoryClient = memoryClient->getFd();
+    }
+
+    int maxfd = 0;
+    if (hasNetfilterClient) {
+        maxfd = socketNetlink;
+    }
+    if (hasSerialPortRepeater) {
+        maxfd = std::max(maxfd, std::max(fdPseudoTerminal, fdSerialPort));
+    }
+    if (hasMemoryClient) {
+        maxfd = std::max(maxfd, socketMemoryClient);
+    }
+    if (maxfd == 0) {
         return;
     }
+
+//    while (!)
 
 //    uint eventNum = 0;
 //    uint interceptNum = 0;

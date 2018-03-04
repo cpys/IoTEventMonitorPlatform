@@ -11,6 +11,7 @@
 #include <NetfilterClient.h>
 #include <SerialPortClient.h>
 #include <SerialPortRepeater.h>
+#include <MemoryClient.h>
 #include <Logger.h>
 #include <StateMachineParser.h>
 
@@ -63,6 +64,25 @@ class EventManager : public QThread {
 
     NetfilterClient *netfilterClient = nullptr;
     SerialPortRepeater *serialPortRepeater = nullptr;
+    MemoryClient *memoryClient = nullptr;
+
+    /**
+    * 用于select的客户端套接字集合
+    */
+    fd_set fs_read;
+    /**
+     * 等待超时时间
+     */
+    static constexpr timeval defaultTv = {0, 1000};
+    timeval tv = defaultTv;
+
+    /**
+     * 各个来源客户端的套接字
+     */
+    int socketNetlink = -1;
+    int fdPseudoTerminal = -1;
+    int fdSerialPort = -1;
+    int socketMemoryClient = -1;
 
     Logger *logger = Logger::getLogger();
 };
