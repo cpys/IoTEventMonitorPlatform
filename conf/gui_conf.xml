@@ -1,7 +1,7 @@
 <xml projectName="IoTEventMonitorPlatform">
-    <events currentEventName="事件4">
+    <events currentEventName="事件1">
         <event name="事件1">
-            <head>&lt;xml&gt;1333</head>
+            <head>&lt;xml&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
@@ -21,5 +21,5 @@
             <tail>&lt;/xml&gt;</tail>
         </event>
     </events>
-    <run currentEventName="事件1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1" stateMachineFilePath="D:/Users/chenkuan/ClionProjects/IoTEventMonitorPlatform/conf/gui_conf.xml"/>
+    <run currentEventName="事件1" vmIP="10.108.166.205" externalIP="10.205.41.40" pseudoTerminal="psty1" serialPort="pty1" stateMachineFilePath="/home/chenkuan/CLionProjects/runtime-verification-system/examples/rvsDFA7 (1).xml"/>
 </xml>

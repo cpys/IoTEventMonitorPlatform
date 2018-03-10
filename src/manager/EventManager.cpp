@@ -8,13 +8,15 @@
 EventManager::EventManager(QObject *parent) : QThread(parent) {
     netfilterClient = new NetfilterClient();
     serialPortRepeater = new SerialPortRepeater();
+    memoryClient = new MemoryClient();
 }
 
 EventManager::~EventManager() {
     stop();
     wait();
-    delete (netfilterClient);
     delete (serialPortRepeater);
+    delete (memoryClient);
+    delete (netfilterClient);
 }
 
 void EventManager::setEventConf(const QString &eventHead, const QString &eventTail) {
@@ -61,6 +63,7 @@ void EventManager::run() {
     netfilterClient->setEventMatchText(eventHead.toStdString(), eventTail.toStdString());
     netfilterClient->setEventMatchIp(vmIp.toStdString(), externalIp.toStdString());
 
+    logger->info("初始化netfilter...");
     emit showLogMessage("初始化netfilter...");
     if (!netfilterClient->install()) {
         logger->error("安装netfilter失败!");
@@ -72,6 +75,7 @@ void EventManager::run() {
     }
 
     if (hasNetfilterClient) {
+        logger->info("连接内核中的netfilter模块...");
         emit showLogMessage("连接内核中的netfilter模块...");
         if (!netfilterClient->start()) {
             logger->error("netfilter连接失败!");
@@ -90,6 +94,7 @@ void EventManager::run() {
     serialPortRepeater->setEventMatchText(eventHead.toStdString(), eventTail.toStdString());
     serialPortRepeater->setPorts(pseudoTerminal.toStdString(), serialPort.toStdString());
 
+    logger->info("初始化串口转发器...");
     emit showLogMessage("初始化串口转发器...");
     if (!serialPortRepeater->init()) {
         logger->error("串口转发器初始化失败！");
@@ -97,19 +102,22 @@ void EventManager::run() {
         serialPortRepeater->closePorts();
         hasSerialPortRepeater = false;
     } else {
+        logger->info("初始化串口转发器成功！");
         emit showLogMessage("初始化串口转发器成功！");
         fdPseudoTerminal = serialPortRepeater->getPseudoTerminalFd();
         fdSerialPort = serialPortRepeater->getSerialPortFd();
     }
 
     // 最后启动memoryClient
+    logger->info("连接内存事件获取服务器...");
     emit showLogMessage("连接内存事件获取服务器...");
     if (!memoryClient->start()) {
-        emit showLogMessage("内存事件获取服务器连接失败！");
         logger->error("内存事件获取服务器连接失败！");
+        emit showLogMessage("内存事件获取服务器连接失败！");
         memoryClient->stop();
         hasMemoryClient = false;
     } else {
+        logger->info("成功连接至内存事件获取服务器！");
         emit showLogMessage("成功连接至内存事件获取服务器！");
         socketMemoryClient = memoryClient->getFd();
     }
@@ -125,8 +133,8 @@ void EventManager::run() {
         maxfd = std::max(maxfd, socketMemoryClient);
     }
     if (maxfd == 0) {
-        emit showLogMessage("没有可用的服务器!");
         logger->error("一个能连接的服务器都没有!");
+        emit showLogMessage("没有可用的服务器!");
     }
 
 //    while (!)

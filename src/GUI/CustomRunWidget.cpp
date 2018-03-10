@@ -179,6 +179,7 @@ void CustomRunWidget::threadFinished() {
     // 结束执行后更改各组件状态
     changeWidgetState(true);
     runButton->setText("启动");
+    emit showStatusMessage("后台线程已结束");
 }
 
 void CustomRunWidget::run() {
