@@ -10,26 +10,26 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
     hBoxLayout = new QHBoxLayout(this);
     gridLayout = new QGridLayout();
 
-    eventLabel = new QLabel("事件选择", this);
-    stateLabel = new QLabel("状态机选择", this);
+    eventLabel = new QLabel(EVENT_CHOOSE, this);
+    stateLabel = new QLabel(STATE_MACHINE_CHOOSE, this);
     eventComboBox = new QComboBox(this);
 //    stateComboBox = new QComboBox(this);
     stateEdit = new QLineEdit(this);
 
     eventTextBrowser = new QTextBrowser(this);
 //    stateGraphicsView = new QGraphicsView(this);
-    eventTextBrowser->setText("事件模板预览");
+    eventTextBrowser->setText(EVENT_PREVIEW);
     eventTextBrowser->setAlignment(Qt::AlignCenter);
 
     eventTraceTextBrowser = new QTextBrowser(this);
 
-    vmIpLabel = new QLabel("虚拟机ip", this);
-    externalIpLabel = new QLabel("外部设备ip", this);
+    vmIpLabel = new QLabel(VM_IP, this);
+    externalIpLabel = new QLabel(EXTERNAL_IP, this);
     vmIpEdit = new CustomIpEdit(this);
     externalIpEdit = new CustomIpEdit(this);
 
-    pseudoTerminalLabel = new QLabel("KVM伪终端名称", this);
-    serialPortLabel = new QLabel("宿主机串口名称", this);
+    pseudoTerminalLabel = new QLabel(PSEUDO_TERMIAL_NAME, this);
+    serialPortLabel = new QLabel(SERIAL_NAME, this);
     pseudoTerminalEdit = new QLineEdit(this);
     serialPortEdit = new QLineEdit(this);
 
@@ -38,8 +38,8 @@ CustomRunWidget::CustomRunWidget(QWidget *parent) : QWidget(parent) {
 //    vmNameEdit = new QLineEdit(this);
 //    vmPidEdit = new QLineEdit(this);
 
-    runButton = new QPushButton("启动", this);
-    clearButton = new QPushButton("清屏", this);
+    runButton = new QPushButton(RUN, this);
+    clearButton = new QPushButton(CLEAR, this);
 
     eventManager = new EventManager(this);
 

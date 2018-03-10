@@ -3,6 +3,7 @@
 //
 
 #include "CustomEventWidget.h"
+#include "GUIStyle.h"
 
 CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     upperOutLayer = new QTextEdit(this);
@@ -31,9 +32,9 @@ CustomEventWidget::CustomEventWidget(QWidget *parent) : QWidget(parent) {
     upperOutLayer->setText("<xml>");
     middleLayer->setText("<name>value</name>");
     bottomOutLayer->setText("</xml>");
-    upperIndicator->setText("事件匹配头部");
-    middleIndicator->setText("事件非匹配主体");
-    bottomIndicator->setText("事件匹配尾部");
+    upperIndicator->setText(EVENT_HEAD);
+    middleIndicator->setText(EVENT_BODY);
+    bottomIndicator->setText(EVENT_TAIL);
 
 //    upperIndicator->setAlignment(Qt::AlignCenter|Qt::AlignBottom|Qt::AlignHCenter);
 }

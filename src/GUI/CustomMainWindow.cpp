@@ -3,6 +3,7 @@
 //
 
 #include "CustomMainWindow.h"
+#include "GUIStyle.h"
 
 CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
     centralWidget = new CustomMainTabWidget(this);
@@ -13,7 +14,7 @@ CustomMainWindow::CustomMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     this->resize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
     this->setContentsMargins(0, 0, 0, 0);
-    this->setWindowTitle("物联网服务系统监控平台");
+    this->setWindowTitle(WINDOW_TITLE);
 
     QObject::connect(centralWidget, SIGNAL(sendStatusMessage(const QString&)), statusBar, SLOT(showMessage(const QString&)));
 }

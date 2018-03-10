@@ -8,15 +8,16 @@
 #include "CustomMainTabWidget.h"
 #include "GUIConf.h"
 #include <fstream>
+#include "GUIStyle.h"
 
 CustomMainTabWidget::CustomMainTabWidget(QWidget *parent) : QTabWidget(parent) {
     eventTabWidget = new CustomEventTabWidget(this);
 //    stateTabWidget = new CustomStateTabWidget(this);
     runWidget = new CustomRunWidget(this);
 
-    this->addTab(eventTabWidget, "事件模板定义");
+    this->addTab(eventTabWidget, EVENT_TEMPLATE_DEFINE);
 //    this->addTab(stateTabWidget, "事件状态机定义");
-    this->addTab(runWidget, "运行展示");
+    this->addTab(runWidget, RUN_SHOW);
 
     QObject::connect(eventTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));
 //    QObject::connect(stateTabWidget, SIGNAL(sendStatusMessage(const QString&)), this, SLOT(recvStatusMessage(const QString&)));

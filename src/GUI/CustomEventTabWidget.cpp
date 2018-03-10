@@ -39,7 +39,7 @@ void CustomEventTabWidget::saveConfToXML() {
 }
 
 void CustomEventTabWidget::addCustomTab() {
-    listWidget->addItem(("事件" + std::to_string(listWidget->count() + 1)).c_str());
+    listWidget->addItem((EVENT + std::to_string(listWidget->count() + 1)).c_str());
 
     auto eventWidget = new CustomEventWidget(this);
     stackedWidget->addWidget(eventWidget);

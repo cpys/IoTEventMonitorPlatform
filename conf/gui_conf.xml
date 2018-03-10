@@ -1,12 +1,11 @@
 <xml projectName="IoTEventMonitorPlatform">
     <events>
-        <event name="事件1">
-            <head>&lt;xml type="event"</head>
-            <body> name="event1" important="1"&gt;
-&lt;varName&gt;value&lt;/varName&gt;</body>
+        <event name="event1">
+            <head>&lt;xml&gt;</head>
+            <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
         </event>
-        <event name="事件2">
+        <event name="event2">
             <head>&lt;xml&gt;</head>
             <body>&lt;name&gt;value&lt;/name&gt;</body>
             <tail>&lt;/xml&gt;</tail>
@@ -15,5 +14,5 @@
     <stateMachines>
         <stateMachine name="状态机1"/>
     </stateMachines>
-    <run event="事件1" stateMachine="/home/chenkuan/nat/system-test/simple-model.xml" vmIP="10.108.111.222" externalIP="10.205.333.444" pseudoTerminal="/dev/pts/2" serialPort="/dev/ttyS0"/>
+    <run event="" stateMachine="/home/chenkuan/nat/system-test/simple-model.xml" vmIP="10.108.111.222" externalIP="10.205.333.444" pseudoTerminal="/dev/pts/2" serialPort="/dev/ttyS0"/>
 </xml>
