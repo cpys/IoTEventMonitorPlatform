@@ -7,15 +7,30 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_AUTOMOC ON)
 
 # 查找 QT的库
-#set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
-#set(Qt5Widgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5Widgets)
-find_package(Qt5Widgets)
+if (WIN32)
+    #set(Qt5Widgets_DIR D:\\Qt\\5.9.2\\mingw53_32\\lib\\cmake\\Qt5Widgets)
 
-# 依赖库
-#link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
-link_directories(D:\\Users\\chenkuan\\ClionProjects\\tinylog\\lib)
-link_directories(D:\\Users\\chenkuan\\ClionProjects\\tinyxml2\\lib)
-link_directories(D:\\Users\\chenkuan\\ClionProjects\\runtime-verification-system\\lib)
+    #link_directories(D:\\Qt\\Tools\\mingw530_32\\i686-w64-mingw32\\lib)
+    link_directories(D:\\Users\\chenkuan\\ClionProjects\\tinylog\\lib)
+    link_directories(D:\\Users\\chenkuan\\ClionProjects\\tinyxml2\\lib)
+    link_directories(D:\\Users\\chenkuan\\ClionProjects\\runtime-verification-system\\lib)
+
+    include_directories(D:\\Users\\chenkuan\\ClionProjects\\tinylog\\headers)
+    include_directories(D:\\Users\\chenkuan\\ClionProjects\\tinyxml2\\headers)
+    include_directories(D:\\Users\\chenkuan\\ClionProjects\\runtime-verification-system\\headers\\DFA)
+    include_directories(D:\\software\\compilerandalgorithm\\z3\\z3-4.6.0-x86-win\\include)
+elseif(UNIX)
+    set(Qt5Widgets_DIR /home/chenkuan/Qt/5.9.2/gcc_64/lib/cmake/Qt5Widgets)
+
+    link_directories(/home/chenkuan/CLionProjects/tinylog/lib)
+    link_directories(/home/chenkuan/CLionProjects/tinyxml2/lib)
+    link_directories(/home/chenkuan/CLionProjects/runtime-verification-system/lib)
+
+    include_directories(/home/chenkuan/CLionProjects/tinylog/headers)
+    include_directories(/home/chenkuan/CLionProjects/tinyxml2/headers)
+    include_directories(/home/chenkuan/CLionProjects/runtime-verification-system/headers/DFA)
+endif()
+find_package(Qt5Widgets)
 
 # 依赖头文件
 include_directories(headers/GUI)
@@ -23,10 +38,6 @@ include_directories(headers/manager)
 include_directories(headers/memoryClient)
 include_directories(headers/netfilterClient)
 include_directories(headers/serialPortClient)
-include_directories(D:\\Users\\chenkuan\\ClionProjects\\tinylog\\headers)
-include_directories(D:\\Users\\chenkuan\\ClionProjects\\tinyxml2\\headers)
-include_directories(D:\\Users\\chenkuan\\ClionProjects\\runtime-verification-system\\headers\\DFA)
-include_directories(D:\\software\\compilerandalgorithm\\z3\\z3-4.6.0-x86-win\\include)
 
 # 代码文件
 set(SRC_MAIN src/main.cpp)

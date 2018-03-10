@@ -56,7 +56,7 @@ bool SerialPortRepeater::hasEvent() {
     return false;
 }
 
-const char &SerialPortRepeater::getEvent(int fd) {
+const char *SerialPortRepeater::getEvent(int fd) {
     if (pseudoTerminal->getFd() == fd) {
         if (pseudoTerminal->getMessage() && searchEvent(pseudoTerminal->getMessageQueue(), serialPort)) {
             lastDevice = pseudoTerminal;

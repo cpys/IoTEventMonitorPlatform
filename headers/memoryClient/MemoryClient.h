@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <string>
 #include <Logger.h>
-#include <memoryClientConf.h>
+#include <MemoryClientConf.h>
 
 using std::string;
 

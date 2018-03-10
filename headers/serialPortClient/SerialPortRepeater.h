@@ -45,7 +45,7 @@ public:
      * 从串口上获取事件
      * @return
      */
-    const char &getEvent(int fd);
+    const char *getEvent(int fd);
     /**
      * 通过上一个获取的事件
      */

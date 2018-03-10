@@ -48,10 +48,11 @@ void EventManager::run() {
     Model *model = StateMachineParser::initFromFile(stateMachineFilePath.toLocal8Bit().data());
     if (model == nullptr) {
         logger->error("从文件\"%s\"初始化模型失败！", stateMachineFilePath.toLocal8Bit().data());
-        emit showLogMessage(QString("从文件\"%s\"初始化模型失败！").arg(stateMachineFilePath));
+        emit showLogMessage(QString("从文件\"%1\"初始化模型失败！").arg(stateMachineFilePath));
         return;
     } else {
-        emit showLogMessage(QString("从状态机文件\"%s\"初始化模型完成！").arg(stateMachineFilePath));
+        logger->info("从状态机文件\"%s\"初始化模型完成！", stateMachineFilePath.toLocal8Bit().data());
+        emit showLogMessage(QString("从状态机文件\"%1\"初始化模型完成！").arg(stateMachineFilePath));
     }
 
     bool hasNetfilterClient = true, hasSerialPortRepeater = true, hasMemoryClient = true;
@@ -66,6 +67,7 @@ void EventManager::run() {
         emit showLogMessage("安装netfilter失败!");
         hasNetfilterClient = false;
     } else {
+        logger->info("成功编译安装netfilter内核模块！");
         emit showLogMessage("成功编译安装netfilter内核模块！");
     }
 
@@ -76,8 +78,9 @@ void EventManager::run() {
             emit showLogMessage("netfilter连接失败!");
             netfilterClient->stop();
             netfilterClient->remove();
-            return;
+            hasNetfilterClient = false;
         } else {
+            logger->info("成功连接到内核中的netfilter模块！");
             emit showLogMessage("成功连接到内核中的netfilter模块！");
             socketNetlink = netfilterClient->getFd();
         }
@@ -92,8 +95,6 @@ void EventManager::run() {
         logger->error("串口转发器初始化失败！");
         emit showLogMessage("串口转发器初始化失败！");
         serialPortRepeater->closePorts();
-        netfilterClient->stop();
-        netfilterClient->remove();
         hasSerialPortRepeater = false;
     } else {
         emit showLogMessage("初始化串口转发器成功！");
@@ -124,7 +125,8 @@ void EventManager::run() {
         maxfd = std::max(maxfd, socketMemoryClient);
     }
     if (maxfd == 0) {
-        return;
+        emit showLogMessage("没有可用的服务器!");
+        logger->error("一个能连接的服务器都没有!");
     }
 
 //    while (!)
@@ -214,10 +216,19 @@ void EventManager::run() {
 //    logger->debug("接收到事件总数为%d", eventNum);
 //    logger->debug("拦截失败的事件/应该拦截的事件为%d/%d", interceptFailedNum, interceptNum);
 //
-//    // 先关闭netfilterClient
-//    netfilterClient->stop();
-//    netfilterClient->remove();
-//
-//    // 再关闭serialPortClient
-//    serialPortRepeater->closePorts();
+    // 先关闭netfilterClient
+    if (hasNetfilterClient) {
+        netfilterClient->stop();
+        netfilterClient->remove();
+    }
+
+    // 再关闭serialPortClient
+    if (hasSerialPortRepeater) {
+        serialPortRepeater->closePorts();
+    }
+
+    // 最后关闭memoryClient
+    if (hasMemoryClient) {
+        memoryClient->stop();
+    }
 }
